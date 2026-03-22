@@ -16,6 +16,8 @@ import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import Link from "next/link";
+import { AddToCartButton } from "./AddToCartButton";
+import { formatPriceINR } from "@/lib/utils";
 
 export function SearchClient({ initialProducts, totalCount, query }: { initialProducts: any[], totalCount: number, query: string }) {
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -67,7 +69,7 @@ export function SearchClient({ initialProducts, totalCount, query }: { initialPr
             </div>
           </FilterSection>
 
-          <FilterSection title="Procurement Range ($)">
+          <FilterSection title="Procurement Range (₹)">
             <div className="space-y-8 px-2">
               <div className="flex items-center gap-4">
                 <Input 
@@ -138,6 +140,7 @@ export function SearchClient({ initialProducts, totalCount, query }: { initialPr
           <div className={`${view === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" : "flex flex-col gap-6"} ${isPending ? 'grayscale' : ''}`}>
             {initialProducts.map((item) => (
               <div key={item.id} className="group bg-white rounded-[40px] p-8 transition-all hover:shadow-2xl hover:shadow-primary/10 border border-border/40 hover:border-primary/20 relative flex flex-col">
+                <Link href={`/products/${item.id}`} className="block flex-grow">
                 <div className="relative mb-8 aspect-square bg-surface rounded-[32px] overflow-hidden flex items-center justify-center shadow-inner group-hover:bg-white transition-all">
                   <Image 
                     src={item.images?.[0] || "/placeholder-product.png"} 
@@ -158,17 +161,26 @@ export function SearchClient({ initialProducts, totalCount, query }: { initialPr
                   <h3 className="text-2xl font-black font-headline leading-tight tracking-tight uppercase mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
                   <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest opacity-40 mb-6">Manifest: {item.sku}</p>
                 </div>
+                </Link>
 
                 <div className="mt-auto">
                   <div className="flex items-end justify-between mb-8">
                     <div>
                       <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest opacity-40 mb-1">Unit Inception</p>
-                      <p className="text-3xl font-black font-headline text-on-surface tracking-tighter">${(item.base_price || 0).toFixed(2)}</p>
+                      <p className="text-3xl font-black font-headline text-on-surface tracking-tighter">{formatPriceINR(item.base_price || 0)}</p>
                     </div>
                     <div className="text-right">
-                      <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${(item.stock_quantity || 0) < 100 ? 'text-red-500' : 'text-emerald-500'}`}>
-                        <div className={`w-2 h-2 rounded-full ${(item.stock_quantity || 0) < 100 ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'} shadow-[0_0_8px_currentColor]`}></div>
-                        Inventory: {(item.stock_quantity || 0).toLocaleString()}
+                      <div
+                        className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${
+                          (item.stock_quantity || 0) > 0 ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            (item.stock_quantity || 0) > 0 ? "bg-emerald-500" : "bg-red-500 animate-pulse"
+                          } shadow-[0_0_8px_currentColor]`}
+                        ></div>
+                        {(item.stock_quantity || 0) > 0 ? "In stock" : "Out of stock"}
                       </div>
                     </div>
                   </div>
@@ -178,9 +190,10 @@ export function SearchClient({ initialProducts, totalCount, query }: { initialPr
                         View Details
                         </Button>
                     </Link>
-                    <Button className="h-14 bg-primary text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-xl shadow-primary/20">
+                    <AddToCartButton productId={item.id} className="h-14 bg-primary text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:scale-[1.05] active:scale-95 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-lg">shopping_cart</span>
                       Procure
-                    </Button>
+                    </AddToCartButton>
                   </div>
                 </div>
               </div>

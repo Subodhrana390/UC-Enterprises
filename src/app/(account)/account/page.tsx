@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { formatPriceINR } from "@/lib/utils";
 
 export default async function CustomerDashboard() {
   const supabase = await createClient();
@@ -27,7 +28,7 @@ export default async function CustomerDashboard() {
     .limit(3);
 
   const { count: wishlistCount } = await supabase
-    .from("wishlist")
+    .from("wishlist_items")
     .select("*", { count: 'exact', head: true })
     .eq("user_id", user.id);
 
@@ -83,7 +84,7 @@ export default async function CustomerDashboard() {
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="font-black text-sm">${order.total_amount?.toLocaleString()}</p>
+                        <p className="font-black text-sm">{formatPriceINR(order.total_amount ?? 0)}</p>
                         <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter ${
                           order.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-blue-500/10 text-blue-600'
                         }`}>{order.status}</span>

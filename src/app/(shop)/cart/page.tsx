@@ -1,10 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { formatPriceINR } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { CartItemActions } from "@/components/shop/CartItemActions";
+import { CartQuantityControls } from "@/components/shop/CartQuantityControls";
+import { ApplyCouponForm } from "@/components/shop/ApplyCouponForm";
 
 export default async function CartPage() {
   const supabase = await createClient();
@@ -54,27 +57,27 @@ export default async function CartPage() {
                           </Badge>
                         </div>
                       </div>
-                      <div className="flex gap-6 mt-6">
-                        <button className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors">
-                          <span className="material-symbols-outlined text-sm">bookmark</span> Save for Later
-                        </button>
-                        <button className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 flex items-center gap-1.5 transition-colors">
-                          <span className="material-symbols-outlined text-sm">delete</span> Remove
-                        </button>
-                      </div>
+                      <CartItemActions cartItemId={item.id} />
                     </div>
                     
                     <div className="md:col-span-4 flex flex-col items-start md:items-end justify-between gap-6 border-l border-border/20 md:pl-6">
                       <div className="text-left md:text-right">
                         <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Unit Price</p>
-                        <p className="font-black text-on-surface text-lg font-headline">${item.products?.base_price.toFixed(2)}</p>
+                        <p className="font-black text-on-surface text-lg font-headline">{formatPriceINR(item.products?.base_price ?? 0)}</p>
                       </div>
-                      <div className="flex items-center gap-4 bg-surface rounded-xl p-1.5 border border-border/40">
-                         <span className="px-4 text-center font-black text-sm">{item.quantity} Units</span>
+                      <div className="flex flex-col items-start md:items-end gap-1">
+                        <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1 opacity-60 w-full text-left md:text-right">
+                          Quantity
+                        </p>
+                        <CartQuantityControls
+                          cartItemId={item.id}
+                          quantity={item.quantity}
+                          maxStock={item.products?.stock_quantity}
+                        />
                       </div>
                       <div className="text-left md:text-right">
                         <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Line Valuation</p>
-                        <p className="font-black text-2xl text-primary font-headline tracking-tighter">${(item.products?.base_price * item.quantity).toFixed(2)}</p>
+                        <p className="font-black text-2xl text-primary font-headline tracking-tighter">{formatPriceINR((item.products?.base_price ?? 0) * item.quantity)}</p>
                       </div>
                     </div>
                   </div>
@@ -98,46 +101,40 @@ export default async function CartPage() {
               <div className="space-y-6 mb-10 opacity-80">
                 <div className="flex justify-between text-xs font-black uppercase tracking-widest">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatPriceINR(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-xs font-black uppercase tracking-widest">
                   <span>Estimated Shipping</span>
-                  <span>${shipping.toFixed(2)}</span>
+                  <span>{formatPriceINR(shipping)}</span>
                 </div>
                 <div className="flex justify-between text-xs font-black uppercase tracking-widest items-center">
                   <div className="flex items-center gap-2">
                     <span>GST (18%)</span>
                     <Badge variant="outline" className="text-white border-white/20 px-1 font-mono text-[9px] py-0 cursor-default">INDUSTRIAL</Badge>
                   </div>
-                  <span>${gst.toFixed(2)}</span>
+                  <span>{formatPriceINR(gst)}</span>
                 </div>
               </div>
               
               <div className="py-8 border-t border-white/10">
                 <p className="text-[10px] font-black uppercase tracking-[0.25em] mb-4 opacity-60">Coupon Code</p>
-                <div className="flex gap-2">
-                  <Input 
-                    className="flex-grow bg-white/10 border-none rounded-xl h-12 text-sm px-4 focus:ring-2 focus:ring-white transition-all font-bold placeholder:text-white/20" 
-                    placeholder="ENTER CODE"
-                  />
-                  <Button className="h-12 px-6 bg-white text-primary font-black text-[10px] rounded-xl hover:bg-blue-50 transition-all uppercase tracking-widest">
-                    Apply
-                  </Button>
-                </div>
+                <ApplyCouponForm />
               </div>
 
               <div className="py-8 border-t border-white/10 mb-10">
                 <div className="flex justify-between items-end">
                   <p className="text-sm font-black uppercase tracking-widest opacity-60">Total Payable</p>
-                  <p className="text-4xl font-black tracking-tighter font-headline">${total.toFixed(2)}</p>
+                  <p className="text-4xl font-black tracking-tighter font-headline">{formatPriceINR(total)}</p>
                 </div>
-                <p className="text-[9px] font-bold uppercase tracking-widest mt-4 opacity-40 text-right">Prices in USD. Net Payable at Payment.</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest mt-4 opacity-40 text-right">Prices in INR. Net payable at checkout.</p>
               </div>
 
-              <Button disabled={!cartItems || cartItems.length === 0} className="w-full h-16 bg-white text-primary font-black text-sm rounded-2xl shadow-xl hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-[0.15em] flex items-center justify-center gap-3">
-                Finalize Procurement
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </Button>
+              <Link href={cartItems && cartItems.length > 0 ? "/checkout" : "#"}>
+                <Button disabled={!cartItems || cartItems.length === 0} className="w-full h-16 bg-white text-primary font-black text-sm rounded-2xl shadow-xl hover:bg-blue-50 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-[0.15em] flex items-center justify-center gap-3">
+                  Finalize Procurement
+                  <span className="material-symbols-outlined">arrow_forward</span>
+                </Button>
+              </Link>
             </div>
           </aside>
         </div>

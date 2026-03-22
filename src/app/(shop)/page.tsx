@@ -117,6 +117,7 @@ export default async function HomePage() {
                 key={p.id} 
                 id={p.id}
                 name={p.name}
+                description={p.description}
                 brand={p.brands}
                 price={p.base_price}
                 images={p.images}

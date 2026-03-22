@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
+import { AddAddressForm } from "@/components/account/AddAddressForm";
+import { AddressActions } from "@/components/account/AddressActions";
 
 export default async function AddressesPage() {
   const supabase = await createClient();
@@ -24,9 +26,7 @@ export default async function AddressesPage() {
           <h1 className="text-4xl font-black font-headline tracking-tighter uppercase mb-2">Logistics Endpoints</h1>
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">Manage your global shipping and billing coordinates</p>
         </div>
-        <Button className="h-12 px-8 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
-          Register New Endpoint
-        </Button>
+        <AddAddressForm />
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -45,17 +45,16 @@ export default async function AddressesPage() {
               </div>
               
               <div>
-                <h3 className="text-lg font-black uppercase tracking-tight mb-2">{addr.label || "Unnamed Location"}</h3>
+                <h3 className="text-lg font-black uppercase tracking-tight mb-2">{addr.label || addr.full_name || "Unnamed Location"}</h3>
                 <div className="text-[11px] font-bold text-on-surface-variant opacity-60 uppercase tracking-widest leading-relaxed">
-                  <p>{addr.street}</p>
-                  <p>{addr.city}, {addr.state} {addr.zip}</p>
-                  <p>{addr.country}</p>
+                  <p>{addr.street || addr.address_line1}</p>
+                  <p>{addr.city}, {addr.state} {addr.zip || addr.pincode}</p>
+                  <p>{addr.country || ""}</p>
                 </div>
               </div>
 
               <div className="flex gap-4 pt-6 border-t border-border/10">
-                <Button variant="ghost" className="flex-1 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 h-10">Expand</Button>
-                <Button variant="ghost" className="flex-1 rounded-lg text-[9px] font-black uppercase tracking-widest text-on-surface-variant hover:bg-surface h-10">Edit</Button>
+                <AddressActions addressId={addr.id} isDefault={!!addr.is_default} />
               </div>
             </CardContent>
           </Card>

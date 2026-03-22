@@ -13,6 +13,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { submitFabricationRequest } from "@/lib/actions/fabrication";
 
 export default function FabricationPage() {
   return (
@@ -37,7 +38,7 @@ export default function FabricationPage() {
                  <span className="material-symbols-outlined text-[180px]">precision_manufacturing</span>
                </div>
               
-              <form className="space-y-16 relative z-10">
+              <form action={submitFabricationRequest} className="space-y-16 relative z-10">
                 {/* Project Scope Section */}
                 <div className="space-y-10">
                   <div className="flex items-center gap-4 border-b border-border/10 pb-6">
@@ -47,21 +48,18 @@ export default function FabricationPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-4">
                       <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-60 px-1">Service Classification</label>
-                      <Select>
-                        <SelectTrigger className="h-14 bg-surface border-border/40 rounded-2xl px-6 font-black uppercase tracking-tight text-sm focus:ring-primary">
-                          <SelectValue placeholder="Select Service" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-border/40 font-black uppercase tracking-tight text-xs">
-                          <SelectItem value="pcb">PCB Fabrication & Assembly</SelectItem>
-                          <SelectItem value="iot">IoT Device Development</SelectItem>
-                          <SelectItem value="proto">Rapid Prototyping</SelectItem>
-                          <SelectItem value="mech">Mechanical Enclosures</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <select name="serviceType" required className="h-14 w-full bg-surface border border-border/40 rounded-2xl px-6 font-black uppercase tracking-tight text-sm focus:ring-primary">
+                        <option value="">Select Service</option>
+                        <option value="pcb">PCB Fabrication & Assembly</option>
+                        <option value="iot">IoT Device Development</option>
+                        <option value="proto">Rapid Prototyping</option>
+                        <option value="mech">Mechanical Enclosures</option>
+                      </select>
                     </div>
                     <div className="space-y-4">
                       <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-60 px-1">Estimated Quantity Portfolio</label>
                       <Input 
+                        name="quantity"
                         className="h-14 bg-surface border-border/40 rounded-2xl px-6 font-black uppercase tracking-tight text-sm focus:ring-primary" 
                         placeholder="e.g. 500 units" 
                         type="number"
@@ -92,7 +90,15 @@ export default function FabricationPage() {
                     <span className="material-symbols-outlined text-primary text-3xl">event_available</span>
                     <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Project Horizon</h3>
                   </div>
-                  <RadioGroup defaultValue="standard" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <input type="hidden" name="timeline" value="standard" id="timeline-value" />
+                  <RadioGroup
+                    defaultValue="standard"
+                    onValueChange={(v) => {
+                      const el = document.getElementById("timeline-value") as HTMLInputElement;
+                      if (el) el.value = v;
+                    }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                  >
                     <TimelineOption value="urgent" title="Urgent" duration="2-3 Weeks" icon="bolt" />
                     <TimelineOption value="standard" title="Standard" duration="4-6 Weeks" icon="schedule" />
                     <TimelineOption value="flexible" title="Flexible" duration="8+ Weeks" icon="update" />
@@ -106,10 +112,10 @@ export default function FabricationPage() {
                     <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Corporate Identity</h3>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <FormInput label="Full Name" placeholder="John Architect" />
-                    <FormInput label="Corporate Email" placeholder="john.a@enterprise.com" type="email" />
-                    <FormInput label="Company Entity" placeholder="Tech Industries Inc." />
-                    <FormInput label="Direct Line" placeholder="+1 (555) 000-0000" type="tel" />
+                    <FormInput name="fullName" label="Full Name" placeholder="John Architect" />
+                    <FormInput name="email" label="Corporate Email" placeholder="john.a@enterprise.com" type="email" />
+                    <FormInput name="company" label="Company Entity" placeholder="Tech Industries Inc." />
+                    <FormInput name="phone" label="Direct Line" placeholder="+1 (555) 000-0000" type="tel" />
                   </div>
                 </div>
 
@@ -188,11 +194,12 @@ function FeatureItem({ icon, title, desc }: any) {
   );
 }
 
-function FormInput({ label, placeholder, type = "text" }: any) {
+function FormInput({ name, label, placeholder, type = "text" }: any) {
   return (
     <div className="space-y-4">
       <label className="block text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-60 px-1">{label}</label>
       <Input 
+        name={name}
         className="h-14 bg-surface border-border/40 rounded-2xl px-6 font-black uppercase tracking-tight text-sm focus:ring-primary shadow-inner" 
         placeholder={placeholder} 
         type={type}

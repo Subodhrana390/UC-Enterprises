@@ -9,10 +9,14 @@ import { logout } from "@/lib/actions/auth";
 interface NavbarProps {
   categories?: any[];
   user?: any;
+  /** When set, only one dashboard icon is shown: admin vs customer account */
+  userRole?: string | null;
   cartCount?: number;
+  wishlistCount?: number;
 }
 
-export function Navbar({ categories = [], user, cartCount = 0 }: NavbarProps) {
+export function Navbar({ categories = [], user, userRole = null, cartCount = 0, wishlistCount = 0 }: NavbarProps) {
+  const isAdmin = userRole === "admin";
   return (
     <header className="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-sm border-b border-border/40 h-20">
       <div className="flex items-center justify-between px-4 md:px-8 h-full w-full max-w-[1920px] mx-auto">
@@ -88,11 +92,29 @@ export function Navbar({ categories = [], user, cartCount = 0 }: NavbarProps) {
               </span>
             </Button>
             
+            <Link href="/account/wishlist">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full relative"
+                title="Wishlist"
+              >
+                <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">
+                  favorite
+                </span>
+                {wishlistCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 min-w-0 p-0 flex items-center justify-center bg-rose-500 hover:bg-rose-500 text-white border-none text-[10px] font-bold">
+                    {wishlistCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
             <Link href="/cart">
               <Button
                 variant="ghost"
                 size="icon"
                 className="rounded-full relative"
+                title="Cart"
               >
                 <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">
                   shopping_cart
@@ -107,28 +129,31 @@ export function Navbar({ categories = [], user, cartCount = 0 }: NavbarProps) {
 
             {user ? (
               <div className="flex items-center gap-4 pl-4 border-l border-border/40">
-                <Link href="/admin">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full text-primary hover:bg-primary/10"
-                  >
-                    <span className="material-symbols-outlined">
-                      admin_panel_settings
-                    </span>
-                  </Button>
-                </Link>
-                <Link href="/account">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full"
-                  >
-                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">
-                      account_circle
-                    </span>
-                  </Button>
-                </Link>
+                {isAdmin ? (
+                  <Link href="/admin">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full text-primary hover:bg-primary/10"
+                      title="Admin dashboard"
+                    >
+                      <span className="material-symbols-outlined">admin_panel_settings</span>
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/account">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full"
+                      title="My account"
+                    >
+                      <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">
+                        account_circle
+                      </span>
+                    </Button>
+                  </Link>
+                )}
                 <form action={logout}>
                   <Button 
                     type="submit"

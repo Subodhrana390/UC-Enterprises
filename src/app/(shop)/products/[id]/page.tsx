@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { getProductById } from "@/lib/actions/products";
+import { formatDateINR, formatPriceINR } from "@/lib/utils";
+import { ProductAddToCartWithQuantity } from "@/components/shop/ProductAddToCartWithQuantity";
+import { AddToWishlistButton } from "@/components/shop/AddToWishlistButton";
+import { Button } from "@/components/ui/button";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -14,22 +17,38 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     notFound();
   }
 
-  const mainImage = product.product_images?.find((img: any) => img.is_main)?.image_url || product.image_url;
-  const thumbnails = product.product_images?.map((img: any) => img.image_url) || [];
+  const rawImages = product.product_images?.map((img: any) => img.image_url) || (Array.isArray(product.images) ? product.images : product.images ? Object.values(product.images) : []);
+  const mainImage = product.product_images?.find((img: any) => img.is_main)?.image_url || product.image_url || rawImages?.[0] || "/placeholder-product.png";
+  const thumbnails = rawImages || [];
+
+  const productReviews = (product as { productReviews?: Array<{ id: string; rating: number; comment: string | null; created_at: string; profiles?: { full_name: string | null } | null }> }).productReviews ?? [];
+  const reviewCount = productReviews.length;
+  const avgRating =
+    reviewCount > 0 ? productReviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount : Number(product.rating) || 0;
+  const displayRating = reviewCount > 0 ? Math.round(avgRating * 10) / 10 : Number(product.rating) || 0;
+
+  const bulkTiers = product.bulk_pricing || product.pricing_tiers || [];
+  const specSource = product.product_specifications;
+  const specsFromJson = product.specifications && typeof product.specifications === "object" && !Array.isArray(product.specifications)
+    ? Object.entries(product.specifications as Record<string, string>).map(([key, value]) => ({ key, value: String(value) }))
+    : [];
+  const specificationRows = Array.isArray(specSource) && specSource.length > 0 ? specSource : specsFromJson;
 
   return (
     <div className="bg-surface min-h-screen">
       <main className="pt-10 pb-20 max-w-7xl mx-auto px-6 lg:px-12">
         {/* Breadcrumb & Brand Hero */}
         <div className="mb-12">
-          <nav className="flex text-on-surface-variant text-[10px] mb-6 gap-2 uppercase tracking-[0.2em] font-bold">
+          <nav className="flex flex-wrap items-center text-on-surface-variant text-[10px] mb-6 gap-2 uppercase tracking-[0.2em] font-bold min-w-0">
             <Link className="hover:text-primary transition-colors" href="/">Home</Link>
             <span className="opacity-30">/</span>
             <Link className="hover:text-primary transition-colors" href={`/categories/${product.categories?.slug}`}>
               {product.categories?.name}
             </Link>
             <span className="opacity-30">/</span>
-            <span className="text-primary opacity-60">Product Details</span>
+            <span className="text-primary opacity-60 truncate min-w-0 max-w-[min(100%,28rem)]" title={product.name}>
+              {product.name}
+            </span>
           </nav>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -40,23 +59,32 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-wider">
                 <span className="text-on-surface-variant">SKU: <span className="text-on-surface font-black">{product.sku}</span></span>
                 <span className="h-4 w-px bg-border/40 hidden sm:block"></span>
-                <Link className="text-blue-600 hover:underline decoration-2 underline-offset-4" href="#">{product.manufacturer}</Link>
+                <Link className="text-blue-600 hover:underline decoration-2 underline-offset-4" href="#">{product.brands?.name || product.manufacturer}</Link>
                 <span className="h-4 w-px bg-border/40 hidden sm:block"></span>
                 <div className="flex items-center text-on-surface">
                   <span className="material-symbols-outlined text-sm text-yellow-500 mr-1" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                  <span className="font-black">{product.rating}</span>
-                  <span className="text-on-surface-variant ml-1 font-medium italic">(124 reviews)</span>
+                  <span className="font-black">{displayRating}</span>
+                  <span className="text-on-surface-variant ml-1 font-medium italic">({reviewCount} {reviewCount === 1 ? "review" : "reviews"})</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-full border border-border/40 shadow-sm self-start">
               <span className={`flex h-2.5 w-2.5 rounded-full ${product.stock_quantity > 0 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
               <span className="text-xs font-black text-on-surface uppercase tracking-widest leading-none">
-                {product.stock_quantity > 0 ? `In Stock: ${product.stock_quantity.toLocaleString()} Units` : 'Out of Stock'}
+                {product.stock_quantity > 0 ? "In stock" : "Out of stock"}
               </span>
             </div>
           </div>
         </div>
+
+        {product.description ? (
+          <div className="mb-12 max-w-4xl">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-on-surface-variant mb-3">Description</h2>
+            <p className="text-on-surface leading-relaxed text-base md:text-lg">
+              {product.description}
+            </p>
+          </div>
+        ) : null}
 
         {/* Product Summary Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-24">
@@ -94,14 +122,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <div className="flex justify-between items-center p-4 rounded-xl border border-blue-100 bg-blue-50/50">
                   <span className="font-bold text-sm text-on-surface-variant tracking-tight">1 - 10 units</span>
                   <span className="text-xl font-black text-blue-700">
-                    ${product?.price?.toFixed(2)} <span className="text-[10px] text-on-surface-variant font-medium uppercase">/ea</span>
+                    {formatPriceINR(product?.base_price ?? product?.price ?? 0)} <span className="text-[10px] text-on-surface-variant font-medium uppercase">/ea</span>
                   </span>
                 </div>
-                {product.bulk_pricing?.map((tier: any, i: number) => (
+                {bulkTiers.map((tier: { min_quantity?: number; unit_price?: number }, i: number) => (
                   <div key={i} className="flex justify-between items-center p-4 rounded-xl hover:bg-surface-container-low transition-all">
                     <span className="font-bold text-sm text-on-surface-variant tracking-tight">{tier.min_quantity}+ units</span>
                     <span className="text-xl font-black text-on-surface">
-                      ${tier.unit_price.toFixed(2)} <span className="text-[10px] text-on-surface-variant font-medium uppercase">/ea</span>
+                      {formatPriceINR(tier.unit_price ?? 0)} <span className="text-[10px] text-on-surface-variant font-medium uppercase">/ea</span>
                     </span>
                   </div>
                 ))}
@@ -116,16 +144,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {/* Actions */}
             <div className="flex flex-col gap-4">
-              <div className="flex gap-4 h-16">
-                <div className="flex items-center bg-white rounded-xl px-4 border border-border/60 shadow-sm">
-                  <button className="p-2 hover:text-primary transition-colors font-black">—</button>
-                  <input className="w-12 text-center bg-transparent border-none focus:ring-0 font-black text-lg" type="number" defaultValue="1" />
-                  <button className="p-2 hover:text-primary transition-colors font-black">+</button>
-                </div>
-                <Button className="flex-1 bg-primary text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/10 hover:opacity-90 transition-all flex items-center justify-center gap-3">
-                  <span className="material-symbols-outlined">shopping_cart</span>
-                  Add to Engineering Cart
-                </Button>
+              <div className="flex gap-4 items-center">
+                <ProductAddToCartWithQuantity productId={product.id} maxStock={product.stock_quantity || 999} />
+                <AddToWishlistButton productId={product.id} variant="outline" className="h-16 px-6 rounded-xl flex-shrink-0" />
               </div>
             </div>
 
@@ -162,48 +183,84 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </span>
               </div>
             ))}
-            {(!product.product_specifications || product.product_specifications.length === 0) && (
+            {specificationRows.length === 0 && (
               <p className="text-on-surface-variant italic text-sm">No specialized specifications available for this component.</p>
             )}
           </div>
         </section>
 
-        {/* Reviews Integration Preview */}
+        {/* Reviews */}
         <section className="bg-surface-container-low rounded-3xl p-10 border border-border/40">
           <div className="flex flex-col md:flex-row gap-16">
-            <div className="flex-1">
-              <h2 className="text-3xl font-black tracking-tight font-headline uppercase mb-10">Verified Reviews</h2>
-              <div className="space-y-10">
-                <div className="pb-10 border-b border-border/30 last:border-0 last:pb-0">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex text-yellow-500">
-                      {[1, 2, 3, 4, 5].map(s => <span key={s} className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
-                    </div>
-                    <span className="text-xs font-black uppercase tracking-widest text-on-surface">Precision Grade Authentication</span>
-                  </div>
-                  <p className="text-on-surface-variant text-sm leading-relaxed mb-6 font-medium">
-                    Component performed exactly as specified in the datasheet. Packaging was secure and delivered within 48 hours.
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none rounded text-[9px] font-black uppercase tracking-widest px-2 py-1">
-                      Verified Engineer
-                    </Badge>
-                  </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-3xl font-black tracking-tight font-headline uppercase mb-10">Reviews</h2>
+              {productReviews.length === 0 ? (
+                <p className="text-on-surface-variant text-sm leading-relaxed">
+                  No reviews yet. Purchase this product to share your experience.
+                </p>
+              ) : (
+                <div className="space-y-10">
+                  {productReviews.map((rev) => {
+                    const author = rev.profiles?.full_name?.trim() || "Verified customer";
+                    const stars = rev.rating ?? 0;
+                    return (
+                      <div key={rev.id} className="pb-10 border-b border-border/30 last:border-0 last:pb-0">
+                        <div className="flex flex-wrap items-center gap-3 mb-3">
+                          <div className="flex text-amber-400">
+                            {[...Array(5)].map((_, i) => (
+                              <span
+                                key={i}
+                                className="material-symbols-outlined text-sm"
+                                style={{ fontVariationSettings: i < stars ? "'FILL' 1" : "'FILL' 0" }}
+                              >
+                                star
+                              </span>
+                            ))}
+                          </div>
+                          <span className="text-xs font-black text-on-surface">{author}</span>
+                          <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">
+                            {formatDateINR(rev.created_at)}
+                          </span>
+                        </div>
+                        {rev.comment ? (
+                          <p className="text-on-surface-variant text-sm leading-relaxed font-medium whitespace-pre-wrap">
+                            {rev.comment}
+                          </p>
+                        ) : (
+                          <p className="text-on-surface-variant text-sm italic">No written comment.</p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+              )}
             </div>
-            <div className="w-full md:w-80 h-fit bg-white rounded-2xl p-8 border border-border/40 shadow-sm">
-              <h3 className="text-xl font-black uppercase mb-6 tracking-tight">Rating Summary</h3>
+            <div className="w-full md:w-80 h-fit bg-white rounded-2xl p-8 border border-border/40 shadow-sm shrink-0">
+              <h3 className="text-xl font-black uppercase mb-6 tracking-tight">Rating summary</h3>
               <div className="flex items-end gap-3 mb-10">
-                <span className="text-6xl font-black leading-none">{product.rating}</span>
+                <span className="text-6xl font-black leading-none text-primary">{displayRating}</span>
                 <div className="pb-1">
-                  <div className="flex text-yellow-500 mb-1">
-                    {[1, 2, 3, 4].map(s => <span key={s} className="material-symbols-outlined text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
-                    <span className="material-symbols-outlined text-xs" style={{ fontVariationSettings: "'FILL' 0.5" }}>star_half</span>
+                  <div className="flex text-amber-400 mb-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span
+                        key={i}
+                        className="material-symbols-outlined text-lg"
+                        style={{
+                          fontVariationSettings: i < Math.round(displayRating) ? "'FILL' 1" : "'FILL' 0",
+                        }}
+                      >
+                        star
+                      </span>
+                    ))}
                   </div>
-                  <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-[0.15em]">Aggregate Data</p>
+                  <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-[0.15em]">
+                    Based on {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                  </p>
                 </div>
               </div>
+              <Link href="/account/reviews" className="text-xs font-black text-primary uppercase tracking-widest hover:underline">
+                Write a review
+              </Link>
             </div>
           </div>
         </section>

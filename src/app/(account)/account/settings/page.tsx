@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { redirect } from "next/navigation";
+import { PasswordForm, DeactivationButton } from "@/components/account/SettingsForms";
+import { Label } from "@/components/ui/label";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -64,21 +64,7 @@ export default async function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-8 space-y-8">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Current Password</Label>
-              <Input type="password" placeholder="••••••••" className="h-14 rounded-xl bg-surface border-border/10 font-bold" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">New Password</Label>
-              <Input type="password" placeholder="Minimum 8 characters" className="h-14 rounded-xl bg-surface border-border/10 font-bold" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Confirm New Password</Label>
-              <Input type="password" placeholder="Re-enter new password" className="h-14 rounded-xl bg-surface border-border/10 font-bold" />
-            </div>
-            <Button className="h-14 px-10 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20">
-              Update Security Credentials
-            </Button>
+            <PasswordForm />
           </CardContent>
         </Card>
 
@@ -94,19 +80,19 @@ export default async function SettingsPage() {
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Currency</Label>
               <select className="w-full h-14 rounded-xl bg-surface border border-border/10 px-5 font-bold text-sm">
+                <option>INR - Indian Rupee</option>
                 <option>USD - US Dollar</option>
                 <option>EUR - Euro</option>
-                <option>INR - Indian Rupee</option>
-                <option>GBP - British Pound</option>
+                <option>GBP - British Pound Sterling</option>
               </select>
             </div>
             <div className="space-y-2">
               <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Language</Label>
               <select className="w-full h-14 rounded-xl bg-surface border border-border/10 px-5 font-bold text-sm">
-                <option>English (US)</option>
+                <option>English (India)</option>
                 <option>Hindi</option>
-                <option>German</option>
-                <option>Japanese</option>
+                <option>Tamil</option>
+                <option>Telugu</option>
               </select>
             </div>
           </CardContent>
@@ -124,9 +110,7 @@ export default async function SettingsPage() {
             <div className="p-6 rounded-2xl border border-rose-200/40 bg-white/50">
               <h4 className="font-black text-sm uppercase tracking-tight text-rose-800 mb-2">Deactivate Account</h4>
               <p className="text-[10px] text-rose-600 opacity-70 mb-4 leading-relaxed">This will disable your access to all UCEnterprises services. Active orders will still be fulfilled.</p>
-              <Button variant="outline" className="h-10 rounded-lg border-rose-300 text-rose-600 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50">
-                Request Deactivation
-              </Button>
+              <DeactivationButton />
             </div>
             <div className="p-6 rounded-2xl border border-rose-300/40 bg-white/50">
               <h4 className="font-black text-sm uppercase tracking-tight text-rose-800 mb-2">Delete Account Permanently</h4>

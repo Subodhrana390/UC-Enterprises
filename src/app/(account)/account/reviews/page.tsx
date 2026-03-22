@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { ReviewDeleteButton } from "@/components/account/ReviewDeleteButton";
 
 export default async function ReviewsHistoryPage() {
   const supabase = await createClient();
@@ -55,7 +56,7 @@ export default async function ReviewsHistoryPage() {
                   <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] opacity-40">{new Date(review.created_at).toLocaleDateString()}</span>
                 </div>
                 <p className="text-sm text-on-surface-variant font-medium leading-relaxed mb-8 opacity-80 max-w-2xl">
-                  "{review.content}"
+                  "{review.content || review.comment}"
                 </p>
                 <div className="flex items-center gap-4">
                   <Link href={`/reviews/${review.id}/edit`}>
@@ -64,9 +65,7 @@ export default async function ReviewsHistoryPage() {
                       Edit Feedback
                     </Button>
                   </Link>
-                  <Button variant="ghost" className="h-10 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl px-6">
-                    Discard
-                  </Button>
+                  <ReviewDeleteButton reviewId={review.id} />
                 </div>
               </div>
             </div>
@@ -115,9 +114,11 @@ export default async function ReviewsHistoryPage() {
           <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] leading-loose opacity-60 mb-10">
             Share your technical insights with the community and earn Architect Credits for your next B2B procurement phase.
           </p>
-          <Button className="h-14 px-10 bg-primary text-white font-black text-xs uppercase tracking-[0.15em] rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
-            Initiate New Review
-          </Button>
+          <Link href="/search">
+            <Button className="h-14 px-10 bg-primary text-white font-black text-xs uppercase tracking-[0.15em] rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
+              Initiate New Review
+            </Button>
+          </Link>
         </div>
       </div>
     </main>

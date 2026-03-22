@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { formatPriceINR } from "@/lib/utils";
 
 export default async function OrdersPage() {
   const supabase = await createClient();
@@ -24,9 +26,11 @@ export default async function OrdersPage() {
           <h1 className="text-4xl font-black font-headline tracking-tighter uppercase mb-2">Procurement History</h1>
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">Archival record of your engineering component acquisitions and logistics</p>
         </div>
-        <Button variant="outline" className="h-12 px-8 rounded-xl border-border/40 font-black text-[10px] uppercase tracking-widest hover:bg-white">
-          Generate Tax Manifest
-        </Button>
+        <Link href="/account/orders?export=tax">
+          <Button variant="outline" className="h-12 px-8 rounded-xl border-border/40 font-black text-[10px] uppercase tracking-widest hover:bg-white">
+            Generate Tax Manifest
+          </Button>
+        </Link>
       </header>
 
       <Card className="rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5">
@@ -52,7 +56,7 @@ export default async function OrdersPage() {
                                         </div>
                                         <div>
                                             <p className="font-black text-sm uppercase">Order #{order.id.substring(0, 8)}</p>
-                                            <p className="text-[10px] text-on-surface-variant opacity-60 uppercase font-bold tracking-widest">Ordered: {new Date(order.created_at).toLocaleDateString()}</p>
+                                            <p className="text-[10px] text-on-surface-variant opacity-60 uppercase font-bold tracking-widest">Ordered: {new Date(order.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" })}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -65,12 +69,14 @@ export default async function OrdersPage() {
                                         {order.status}
                                     </span>
                                 </td>
-                                <td className="py-6 px-6 font-black text-xs tracking-tight">${order.total_amount?.toLocaleString()}</td>
+                                <td className="py-6 px-6 font-black text-xs tracking-tight">{formatPriceINR(order.total_amount ?? 0)}</td>
                                 <td className="py-6 px-6 text-[10px] font-black text-on-surface-variant opacity-60 uppercase tracking-widest">Global Distribution Center</td>
                                 <td className="py-6 pl-6 text-right">
-                                    <Button variant="ghost" className="rounded-xl text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 h-10 px-6">
-                                        Trace Shipment
-                                    </Button>
+                                    <Link href={order.tracking_number ? `https://tracking.example.com/${order.tracking_number}` : "/support"}>
+                                        <Button variant="ghost" className="rounded-xl text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 h-10 px-6">
+                                            Trace Shipment
+                                        </Button>
+                                    </Link>
                                 </td>
                             </tr>
                         )) : (

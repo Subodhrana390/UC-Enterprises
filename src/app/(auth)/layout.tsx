@@ -10,11 +10,15 @@ export default async function AuthLayout({
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const categories = await getCategories();
+  const [categories, profileRow] = await Promise.all([
+    getCategories(),
+    user ? supabase.from("profiles").select("role").eq("id", user.id).single() : Promise.resolve({ data: null }),
+  ]);
+  const userRole = profileRow?.data?.role ?? null;
 
   return (
     <>
-      <Navbar categories={categories} user={user} />
+      <Navbar categories={categories} user={user} userRole={userRole} />
       <main className="pt-20 flex-1 bg-surface-container-low">{children}</main>
       <Footer />
     </>

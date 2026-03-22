@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { formatPriceINR } from "@/lib/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { WishlistRemoveButton, WishlistAddToCartButton } from "@/components/account/WishlistItemActions";
 
 export default async function WishlistPage() {
   const supabase = await createClient();
@@ -15,7 +17,7 @@ export default async function WishlistPage() {
   }
 
   const { data: wishlistItems } = await supabase
-    .from("wishlist")
+    .from("wishlist_items")
     .select("*, products(*, brands(name))")
     .eq("user_id", user.id);
 
@@ -74,9 +76,7 @@ export default async function WishlistPage() {
             <div className="p-8">
               <div className="flex justify-between items-start mb-4">
                 <Badge variant="outline" className="text-[9px] font-black font-mono border-primary/20 text-primary py-0 px-2 uppercase shadow-sm">{item.products?.sku}</Badge>
-                <button className="text-red-500/40 hover:text-red-600 transition-all scale-100 hover:scale-110 active:scale-95">
-                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>delete</span>
-                </button>
+                <WishlistRemoveButton wishlistItemId={item.id} />
               </div>
               <h3 className="text-xl font-black font-headline mb-3 group-hover:text-primary transition-colors leading-tight uppercase tracking-tight">{item.products?.name}</h3>
               <p className="text-[11px] text-on-surface-variant font-bold leading-relaxed mb-10 opacity-60 uppercase tracking-widest line-clamp-2">
@@ -85,12 +85,9 @@ export default async function WishlistPage() {
               <div className="flex items-center justify-between mt-auto pt-6 border-t border-border/10">
                 <div>
                   <p className="text-[9px] font-black text-on-surface-variant uppercase tracking-widest opacity-40 mb-1">Unit Value</p>
-                  <p className="text-3xl font-black font-headline text-on-surface font-headline tracking-tighter">${item.products?.base_price.toFixed(2)}</p>
+                  <p className="text-3xl font-black font-headline text-on-surface font-headline tracking-tighter">{formatPriceINR(item.products?.base_price ?? 0)}</p>
                 </div>
-                <Button className="bg-primary text-white h-14 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 hover:scale-[1.05] active:scale-95 transition-all shadow-xl shadow-primary/10">
-                  <span className="material-symbols-outlined text-lg">shopping_cart</span>
-                  Incept to Cart
-                </Button>
+                <WishlistAddToCartButton wishlistItemId={item.id} />
               </div>
             </div>
           </div>

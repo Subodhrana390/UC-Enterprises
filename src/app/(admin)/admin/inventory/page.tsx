@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { InventoryAdjustButton } from "@/components/admin/InventoryAdjustButton";
 
 export default async function InventoryManagementPage() {
   const supabase = await createClient();
@@ -86,9 +87,7 @@ export default async function InventoryManagementPage() {
                                 </td>
                                 <td className="py-6 px-6 font-black text-xs tracking-tight">${product.base_price.toLocaleString()}</td>
                                 <td className="py-6 pl-6 text-right">
-                                    <Button variant="ghost" className="rounded-xl text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 h-10 px-6">
-                                        Adjust Reserve
-                                    </Button>
+                                    <InventoryAdjustButton productId={product.id} />
                                 </td>
                             </tr>
                         ))}

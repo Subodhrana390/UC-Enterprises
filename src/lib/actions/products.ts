@@ -46,12 +46,24 @@ export async function getProductById(id: string) {
     .eq("id", id)
     .single();
 
-  if (error) {
+  if (error || !data) {
     console.error(`Error fetching product ${id}:`, error);
     return null;
   }
 
-  return data;
+  const { data: reviewRows } = await supabase
+    .from("reviews")
+    .select("id, rating, comment, created_at, is_approved, profiles(full_name)")
+    .eq("product_id", id)
+    .order("created_at", { ascending: false });
+
+  const all = reviewRows ?? [];
+  const productReviews = all.filter((r) => r.is_approved === true);
+
+  return {
+    ...data,
+    productReviews,
+  };
 }
 
 export async function getProductsByCategory(categorySlug: string) {

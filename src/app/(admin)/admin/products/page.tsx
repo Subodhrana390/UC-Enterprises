@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ProductDeleteButton } from "@/components/admin/ProductActions";
 
 export default async function ProductManagementPage() {
   const supabase = await createClient();
@@ -73,9 +74,7 @@ export default async function ProductManagementPage() {
                                     <Button variant="ghost" size="icon" className="rounded-xl hover:bg-primary/5 hover:text-primary transition-all">
                                         <span className="material-symbols-outlined text-lg">edit</span>
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-all ml-2">
-                                        <span className="material-symbols-outlined text-lg">delete</span>
-                                    </Button>
+                                    <ProductDeleteButton productId={product.id} />
                                 </td>
                             </tr>
                         ))}

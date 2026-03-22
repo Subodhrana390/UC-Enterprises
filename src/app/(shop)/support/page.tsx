@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Image from "next/image";
+import { SupportNewsletterForm } from "@/components/support/SupportNewsletterForm";
 
 export default function SupportPage() {
   return (
@@ -125,16 +126,7 @@ export default function SupportPage() {
             <p className="text-on-surface-variant mb-8 text-base leading-relaxed">
               Receive technical whitepapers and fabrication updates directly from our engineering leads.
             </p>
-            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-              <Input 
-                className="flex-1 bg-white border-none rounded-lg h-12 px-4 focus:ring-2 focus:ring-primary transition-all text-sm" 
-                placeholder="Professional Email" 
-                type="email"
-              />
-              <Button className="bg-primary text-white px-8 h-12 rounded-lg font-bold text-sm hover:opacity-90 transition-all">
-                Subscribe
-              </Button>
-            </form>
+            <SupportNewsletterForm />
           </div>
           <div className="md:w-1/2 min-h-[300px] relative">
             <Image 

@@ -11,11 +11,19 @@ export default async function ShopLayout({
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const categories = await getCategories();
+  const [categories, cartResult, wishlistResult, profileResult] = await Promise.all([
+    getCategories(),
+    user ? supabase.from("cart_items").select("*", { count: "exact", head: true }).eq("user_id", user.id) : Promise.resolve({ count: 0 }),
+    user ? supabase.from("wishlist_items").select("*", { count: "exact", head: true }).eq("user_id", user.id) : Promise.resolve({ count: 0 }),
+    user ? supabase.from("profiles").select("role").eq("id", user.id).single() : Promise.resolve({ data: null }),
+  ]);
+  const cartCount = cartResult?.count ?? 0;
+  const wishlistCount = wishlistResult?.count ?? 0;
+  const userRole = profileResult?.data?.role ?? null;
 
   return (
     <>
-      <Navbar categories={categories} user={user} />
+      <Navbar categories={categories} user={user} userRole={userRole} cartCount={cartCount} wishlistCount={wishlistCount} />
       <main className="pt-20 flex-1">{children}</main>
       <Footer />
       {/* Floating WhatsApp Button */}

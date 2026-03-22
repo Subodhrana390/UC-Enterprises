@@ -105,9 +105,11 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                     key={p.id} 
                     id={p.id}
                     name={p.name}
+                    description={p.description}
                     brand={p.brands}
                     price={p.base_price || p.price}
                     image={p.image_url}
+                    images={p.images}
                     rating={p.rating}
                     sku={p.sku}
                     stock_quantity={p.stock_quantity}

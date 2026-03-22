@@ -1,12 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { AddToCartButton } from "./AddToCartButton";
+import { AddToWishlistButton } from "./AddToWishlistButton";
+import { formatPriceINR } from "@/lib/utils";
 
 interface ProductCardProps {
   id: string;
   name: string;
+  description?: string | null;
   brand?: { name: string };
   price: number;
   image?: string;
@@ -20,6 +24,7 @@ interface ProductCardProps {
 export function ProductCard({
   id,
   name,
+  description,
   brand,
   price,
   image,
@@ -33,41 +38,43 @@ export function ProductCard({
   const inStock = stock_quantity > 0;
   return (
     <div className="group">
-      <div className="bg-surface-container-low aspect-square rounded-xl mb-4 relative overflow-hidden">
-        <Image
-          src={displayImage}
-          alt={name}
-          width={400}
-          height={400}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-4 right-4 bg-white/80 backdrop-blur rounded-full shadow-sm hover:bg-white transition-colors h-8 w-8"
-        >
-          <span className="material-symbols-outlined text-sm">favorite</span>
-        </Button>
-        {inStock && (
-          <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold tracking-tighter uppercase text-on-surface flex items-center shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-            In Stock
+      <Link href={`/products/${id}`} className="block cursor-pointer">
+        <div className="bg-surface-container-low aspect-square rounded-xl mb-4 relative overflow-hidden">
+          <Image
+            src={displayImage}
+            alt={name}
+            width={400}
+            height={400}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
+            <AddToWishlistButton productId={id} variant="outline" className="h-8 w-8 rounded-full bg-white/80 backdrop-blur shadow-sm hover:bg-white border-0 p-0" />
           </div>
-        )}
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform">
-          <Button className="w-full bg-primary text-white py-3 rounded-lg font-bold text-sm shadow-xl flex items-center justify-center gap-2 h-11">
-            <span className="material-symbols-outlined text-sm">shopping_cart</span>
-            Add to Cart
-          </Button>
+          {inStock && (
+            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold tracking-tighter uppercase text-on-surface flex items-center shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+              In Stock
+            </div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform" onClick={(e) => e.stopPropagation()}>
+            <AddToCartButton productId={id} className="w-full bg-primary text-white py-3 rounded-lg font-bold text-sm shadow-xl flex items-center justify-center gap-2 h-11">
+              <span className="material-symbols-outlined text-sm">shopping_cart</span>
+              Add to Cart
+            </AddToCartButton>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1">
         <span className="text-blue-600 text-[10px] font-bold uppercase tracking-wider">{brand?.name}</span>
         {sku && <span className="text-[9px] text-on-surface-variant font-mono bg-surface-container-low px-1 rounded">{sku}</span>}
       </div>
       <h3 className="font-bold text-on-surface group-hover:text-blue-600 transition-colors truncate">
         {name}
       </h3>
+      {description ? (
+        <p className="text-xs text-on-surface-variant leading-relaxed mt-1 line-clamp-3">
+          {description}
+        </p>
+      ) : null}
       <div className="flex items-center gap-1 my-2">
         <div className="flex text-amber-400">
           {[...Array(5)].map((_, i) => (
@@ -84,9 +91,10 @@ export function ProductCard({
         </div>
         <span className="text-xs text-on-surface-variant">({reviewCount})</span>
       </div>
-      <p className="text-xl font-black text-on-surface">
-        ${price.toFixed(2)} <span className="text-sm font-normal text-on-surface-variant">/ unit</span>
-      </p>
+        <p className="text-xl font-black text-on-surface">
+          {formatPriceINR(price)} <span className="text-sm font-normal text-on-surface-variant">/ unit</span>
+        </p>
+      </Link>
     </div>
   );
 }
