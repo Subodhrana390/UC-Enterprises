@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quote Request History | Fabrication Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#524531",
+              "secondary": "#585e6c",
+              "on-primary-fixed": "#001d37",
+              "inverse-on-surface": "#ecf0ff",
+              "tertiary-fixed-dim": "#d8c3a9",
+              "surface": "#f9f9ff",
+              "on-primary-container": "#3d8bd7",
+              "inverse-surface": "#2a303d",
+              "primary-container": "#00213e",
+              "on-tertiary-container": "#96856d",
+              "surface-container-high": "#e3e8f9",
+              "error-container": "#ffdad6",
+              "surface-container": "#e8eeff",
+              "on-error-container": "#93000a",
+              "on-surface": "#161c27",
+              "surface-dim": "#d4daea",
+              "on-primary-fixed-variant": "#00497e",
+              "surface-tint": "#0061a5",
+              "secondary-fixed-dim": "#c1c6d7",
+              "outline": "#76777c",
+              "surface-container-low": "#f1f3ff",
+              "primary": "#000816",
+              "outline-variant": "#c6c6cc",
+              "inverse-primary": "#9fcaff",
+              "on-secondary-container": "#5e6473",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed-variant": "#414754",
+              "on-tertiary-fixed": "#241a09",
+              "tertiary-container": "#291e0d",
+              "secondary-container": "#dde2f3",
+              "surface-bright": "#f9f9ff",
+              "on-background": "#161c27",
+              "secondary-fixed": "#dde2f3",
+              "primary-fixed": "#d2e4ff",
+              "primary-fixed-dim": "#9fcaff",
+              "on-tertiary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#dde2f3",
+              "tertiary-fixed": "#f5dfc4",
+              "on-secondary": "#ffffff",
+              "surface-variant": "#dde2f3",
+              "on-error": "#ffffff",
+              "tertiary": "#0e0700",
+              "on-surface-variant": "#45474c",
+              "on-secondary-fixed": "#161c27",
+              "background": "#f9f9ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl">
+<div class="flex justify-between items-center px-6 py-3 w-full max-w-screen-2xl mx-auto">
+<div class="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tighter">Fabrication Pro</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-manrope font-bold tracking-tight text-lg" href="#">Services</a>
+<a class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 pb-1 font-manrope font-bold tracking-tight text-lg" href="#">Quotes</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-manrope font-bold tracking-tight text-lg" href="#">Reorder</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-manrope font-bold tracking-tight text-lg" href="#">Inventory</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors rounded-full">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors rounded-full">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="Close up professional male headshot portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOrRu0GQiSLEmtcvOey3X5rUh3ZUu10HdQPUgJ2X-2qQQm_McN-_LduveSC8tPV8IM-rJLQ24NVjcPSkATSS7wc9DoFwW3gagMLSILEqn6qlXJ5KIcCm_khlE5iSUIAb7DkHZEssfTAIdk6UYHY5fhIzO54vZVsetzDrk-6NjsKxOtruL-UiCY1dYUDHtzjUbY2JpZJ9jZr6hma9kGzGnNUALkBFVwjigZMfBAg7xmfoOD2_KqbsE7CsG7qgHgk6_S3tG1Lv7CEXAq"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden lg:flex flex-col fixed left-0 top-0 h-full py-6 h-screen w-64 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 z-40">
+<div class="px-6 mb-10 pt-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-slate-900 dark:text-slate-50 tracking-tighter">Precision Labs</h2>
+<p class="text-xs text-on-surface-variant">B2B Enterprise</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:translate-x-1 transition-transform duration-200 font-manrope font-semibold text-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:translate-x-1 transition-transform duration-200 font-manrope font-semibold text-sm" href="#">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+                Custom Fab
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-r-4 border-blue-600 font-manrope font-semibold text-sm" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+                Quote History
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:translate-x-1 transition-transform duration-200 font-manrope font-semibold text-sm" href="#">
+<span class="material-symbols-outlined">reorder</span>
+                Quick Reorder
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 hover:translate-x-1 transition-transform duration-200 font-manrope font-semibold text-sm" href="#">
+<span class="material-symbols-outlined">description</span>
+                Engineering Docs
+            </a>
+</nav>
+<div class="mt-auto px-4 space-y-4">
+<button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-lg font-manrope font-bold text-sm shadow-lg active:opacity-80 transition-all">
+                New Quote Request
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 font-manrope font-semibold text-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 dark:text-slate-400 font-manrope font-semibold text-sm hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-24 pb-24 lg:pb-12 px-6 lg:px-12 max-w-7xl">
+<!-- Header Section -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-4 font-medium uppercase tracking-widest">
+<span>Account</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-on-surface">Quote History</span>
+</nav>
+<h1 class="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight font-headline">Quote Request <span class="text-on-primary-container">History</span></h1>
+<p class="mt-4 text-on-surface-variant max-w-xl text-lg leading-relaxed">
+                    Review and manage your active fabrication proposals. Finalize approved quotes or request revisions on pending items.
+                </p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+<input class="pl-10 pr-4 py-2.5 bg-surface-container-highest rounded-lg border-none focus:ring-2 focus:ring-on-primary-container text-sm w-full md:w-64 transition-all" placeholder="Search by Request ID..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest border border-outline-variant/20 rounded-lg text-sm font-semibold hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                    Filter
+                </button>
+</div>
+</header>
+<!-- Stats Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="bg-surface-container-low rounded-xl p-6 relative overflow-hidden group border border-outline-variant/5">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-semibold mb-1">Active Requests</p>
+<p class="text-4xl font-extrabold font-headline">12</p>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-on-primary-container/10 group-hover:scale-110 transition-transform duration-500">pending_actions</span>
+</div>
+<div class="bg-surface-container rounded-xl p-6 relative overflow-hidden group border border-outline-variant/5">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-semibold mb-1">Awaiting Approval</p>
+<p class="text-4xl font-extrabold font-headline">04</p>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-on-primary-container/10 group-hover:scale-110 transition-transform duration-500">request_quote</span>
+</div>
+<div class="bg-surface-container-high rounded-xl p-6 relative overflow-hidden group border border-outline-variant/5">
+<div class="relative z-10">
+<p class="text-on-surface-variant text-sm font-semibold mb-1">Total Spent (Q4)</p>
+<p class="text-4xl font-extrabold font-headline">$42.8k</p>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-on-primary-container/10 group-hover:scale-110 transition-transform duration-500">payments</span>
+</div>
+</section>
+<!-- Quotes History Table Container -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Request ID</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Service Type</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Submission Date</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant">Status</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-5">
+<span class="font-mono font-bold text-on-surface">#FP-99021</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-medium">Multi-Layer PCB Fab</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant text-sm">Oct 24, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary-container text-on-secondary-container">
+                                    Quoted
+                                </span>
+</td>
+<td class="px-6 py-5 text-right space-x-2">
+<button class="p-2 text-on-primary-container hover:bg-primary-fixed/30 rounded-lg transition-colors" title="Download PDF">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</button>
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded hover:opacity-90 transition-opacity">
+                                    View Details
+                                </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-5">
+<span class="font-mono font-bold text-on-surface">#FP-98845</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-slate-500"></span>
+<span class="font-medium">CNC Machined Parts</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant text-sm">Oct 21, 2023</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-blue-400 blur-[2px]"></div>
+<span class="text-xs font-bold text-blue-600">Under Review</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="px-4 py-2 bg-surface-container-highest text-on-surface text-xs font-bold rounded hover:bg-surface-variant transition-colors">
+                                    View Details
+                                </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-5">
+<span class="font-mono font-bold text-on-surface">#FP-98712</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-medium">Injection Molding</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant text-sm">Oct 18, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                    Approved
+                                </span>
+</td>
+<td class="px-6 py-5 text-right space-x-2">
+<button class="p-2 text-on-primary-container hover:bg-primary-fixed/30 rounded-lg transition-colors" title="Download PDF">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</button>
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded hover:opacity-90 transition-opacity">
+                                    View Details
+                                </button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-6 py-5">
+<span class="font-mono font-bold text-on-surface">#FP-98550</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-medium">Sheet Metal Enclosures</span>
+</div>
+</td>
+<td class="px-6 py-5 text-on-surface-variant text-sm">Oct 12, 2023</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-error-container text-on-error-container">
+                                    Revision Required
+                                </span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded hover:opacity-90 transition-opacity">
+                                    Update Specs
+                                </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/30 border-t border-surface-container-low">
+<p class="text-xs text-on-surface-variant font-medium">Showing 1 to 4 of 24 entries</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/20 hover:bg-surface-container transition-colors disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/20 hover:bg-surface-container transition-colors text-xs font-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/20 hover:bg-surface-container transition-colors text-xs font-bold">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant/20 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Shared Component) - Visible on Mobile -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-safe pt-2 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-lg z-50 rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.05)] border-t border-slate-200 dark:border-slate-800">
+<a class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-900 px-3 py-1" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-manrope text-[10px] font-medium">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-xl px-3 py-1" href="#">
+<span class="material-symbols-outlined">request_quote</span>
+<span class="font-manrope text-[10px] font-medium">Quotes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-900 px-3 py-1" href="#">
+<span class="material-symbols-outlined">refresh</span>
+<span class="font-manrope text-[10px] font-medium">Reorder</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-900 px-3 py-1" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-manrope text-[10px] font-medium">Account</span>
+</a>
+</nav>
+</body></html>

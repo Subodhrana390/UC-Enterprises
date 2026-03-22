@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UCEnterprises | Search Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed-dim": "#d8c3a9",
+                        "primary-fixed": "#d2e4ff",
+                        "primary": "#000816",
+                        "surface": "#f9f9ff",
+                        "outline": "#76777c",
+                        "on-primary-fixed": "#001d37",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#c1c6d7",
+                        "surface-tint": "#0061a5",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#dde2f3",
+                        "tertiary": "#0e0700",
+                        "on-tertiary-fixed-variant": "#524531",
+                        "background": "#f9f9ff",
+                        "tertiary-fixed": "#f5dfc4",
+                        "on-primary-fixed-variant": "#00497e",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e3e8f9",
+                        "on-secondary-container": "#5e6473",
+                        "surface-bright": "#f9f9ff",
+                        "on-tertiary-container": "#96856d",
+                        "inverse-surface": "#2a303d",
+                        "surface-container": "#e8eeff",
+                        "secondary": "#585e6c",
+                        "on-surface-variant": "#45474c",
+                        "secondary-fixed": "#dde2f3",
+                        "primary-container": "#00213e",
+                        "primary-fixed-dim": "#9fcaff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#3d8bd7",
+                        "inverse-on-surface": "#ecf0ff",
+                        "tertiary-container": "#291e0d",
+                        "outline-variant": "#c6c6cc",
+                        "on-secondary-fixed-variant": "#414754",
+                        "on-tertiary-fixed": "#241a09",
+                        "secondary-container": "#dde2f3",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d4daea",
+                        "on-surface": "#161c27",
+                        "on-background": "#161c27",
+                        "surface-container-low": "#f1f3ff",
+                        "on-secondary-fixed": "#161c27",
+                        "inverse-primary": "#9fcaff",
+                        "surface-variant": "#dde2f3",
+                        "error-container": "#ffdad6"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar Implementation -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/70 backdrop-blur-xl shadow-sm font-['Manrope'] tracking-tight">
+<div class="flex items-center justify-between px-8 py-4 w-full max-w-[1920px] mx-auto">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-black text-slate-900 tracking-tighter">UCEnterprises</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-slate-600 hover:text-slate-900 transition-colors" href="#">Resistors</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors" href="#">Capacitors</a>
+<a class="text-blue-600 border-b-2 border-blue-600 pb-1" href="#">ICs</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors" href="#">Sensors</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors" href="#">Power</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors" href="#">Tools</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-80">
+<input class="w-full bg-slate-200/20 border-none rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-600 text-sm" placeholder="Search components..." type="text" value="microcontrollers"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-slate-100 p-2 rounded-full transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:bg-slate-100 p-2 rounded-full transition-colors"><span class="material-symbols-outlined">favorite</span></button>
+<button class="hover:bg-slate-100 p-2 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-0 right-0 bg-blue-600 text-[10px] text-white w-4 h-4 flex items-center justify-center rounded-full">3</span>
+</button>
+<button class="hover:bg-slate-100 p-2 rounded-full transition-colors"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-16 px-8 max-w-[1920px] mx-auto flex gap-8">
+<!-- Sidebar Filters -->
+<aside class="w-72 flex-shrink-0 space-y-8">
+<div class="pb-4">
+<h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600">filter_list</span>
+                    Advanced Filters
+                </h2>
+<div class="h-px bg-slate-200"></div>
+</div>
+<!-- Category Filter -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Category</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span class="group-hover:text-blue-600 transition-colors">Microcontrollers (MCU)</span>
+</label>
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span class="group-hover:text-blue-600 transition-colors">Digital Signal Processors</span>
+</label>
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span class="group-hover:text-blue-600 transition-colors">Embedded Processors</span>
+</label>
+</div>
+</section>
+<!-- Technical Spec: Voltage -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Supply Voltage</h3>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 bg-white border border-outline-variant rounded text-xs font-medium hover:border-blue-600 hover:text-blue-600 transition-all">1.8V</button>
+<button class="px-3 py-2 bg-blue-50 border border-blue-600 rounded text-xs font-bold text-blue-600">3.3V</button>
+<button class="px-3 py-2 bg-white border border-outline-variant rounded text-xs font-medium hover:border-blue-600 hover:text-blue-600 transition-all">5V</button>
+<button class="px-3 py-2 bg-white border border-outline-variant rounded text-xs font-medium hover:border-blue-600 hover:text-blue-600 transition-all">12V</button>
+</div>
+</section>
+<!-- Package Type -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Package Type</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span>LQFP-64</span>
+</label>
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span>TSSOP-20</span>
+</label>
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span>VQFN-32</span>
+</label>
+</div>
+</section>
+<!-- Brand Filter -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Manufacturer</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span>STMicroelectronics</span>
+</label>
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span>Texas Instruments</span>
+</label>
+<label class="flex items-center gap-3 text-sm cursor-pointer group">
+<input class="rounded border-outline-variant text-blue-600 focus:ring-blue-500" type="checkbox"/>
+<span>Microchip Technology</span>
+</label>
+</div>
+</section>
+<!-- Price Range -->
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4">Price Range</h3>
+<div class="flex items-center gap-2">
+<input class="w-full bg-white border-outline-variant rounded px-2 py-1.5 text-xs" placeholder="Min" type="text"/>
+<span class="text-slate-400">—</span>
+<input class="w-full bg-white border-outline-variant rounded px-2 py-1.5 text-xs" placeholder="Max" type="text"/>
+</div>
+<div class="mt-4 h-1 w-full bg-slate-200 rounded-full relative">
+<div class="absolute h-full w-2/3 bg-blue-600 left-0"></div>
+<div class="absolute h-4 w-4 bg-white border-2 border-blue-600 rounded-full -top-1.5 left-0"></div>
+<div class="absolute h-4 w-4 bg-white border-2 border-blue-600 rounded-full -top-1.5 left-2/3"></div>
+</div>
+</section>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-grow">
+<!-- Header/Breadcrumb Area -->
+<div class="mb-10">
+<p class="text-sm text-on-surface-variant mb-2">Home / Integrated Circuits / <span class="text-blue-600">Microcontrollers</span></p>
+<h1 class="text-4xl font-extrabold tracking-tighter mb-2">Showing results for "microcontrollers"</h1>
+<p class="text-on-surface-variant">1,248 components matching your engineering criteria.</p>
+</div>
+<!-- Sorting & Tools -->
+<div class="flex justify-between items-center mb-8 bg-surface-container-low p-4 rounded-xl">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 text-sm font-bold text-blue-600 bg-white px-4 py-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+                        Grid
+                    </button>
+<button class="flex items-center gap-2 text-sm font-medium text-slate-500 px-4 py-2 hover:bg-white rounded-lg transition-all">
+<span class="material-symbols-outlined text-lg">list</span>
+                        Table
+                    </button>
+</div>
+<div class="flex items-center gap-3 text-sm">
+<span class="text-on-surface-variant">Sort by:</span>
+<select class="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer">
+<option>Most Relevant</option>
+<option>Price: Low to High</option>
+<option>Stock: High to Low</option>
+<option>Newest Arrivals</option>
+</select>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Product Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:shadow-2xl hover:shadow-blue-900/5 group relative flex flex-col">
+<div class="relative mb-6 aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+<img alt="Microcontroller chip" class="object-cover w-4/5 h-4/5 transition-transform duration-500 group-hover:scale-110" data-alt="Close up high quality silicon microcontroller chip on white surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxIgwx3LiRKY-9AfslDgzAQBj8J3uzbNL6LHjVt6Hh800Cseehqna_hDPGfkDzhDJFWJom9n6fp5S7SlYOcDfCNG5oq0a3fmLy8uyA3qXhIAdqCiVA8yas5Sk3ILvUsEAEp_C_njKAZrqRTombHBsVYP_t4CglZwAQJ0ehIn4-sIF3x2yzzJOIrbcv8FL-fQH0eNjSBbhi1GvaerkLzLGCmDHeJOAhGF-Prl85OdcgIhspouKZffpghfDS-AYRbozP2wBLevGcxD0C"/>
+<div class="absolute top-3 left-3 flex flex-col gap-2">
+<span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">New</span>
+</div>
+<button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-full shadow-md text-slate-400 hover:text-red-500">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">STMicroelectronics</p>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-amber-400 text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold ml-1">4.9</span>
+</div>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1 group-hover:text-blue-600 transition-colors">STM32F405RGT6</h3>
+<p class="text-xs text-on-surface-variant mb-4">SKU: UC-MCU-00492-ST</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">LQFP-64</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">168MHz</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">3.3V</span>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-end justify-between mb-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-medium">Unit Price</p>
+<p class="text-2xl font-black text-on-surface">$12.45</p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1.5 text-xs text-green-600 font-bold">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                    In Stock: 4,502
+                                </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant rounded-lg text-xs font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Compare
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:shadow-2xl hover:shadow-blue-900/5 group relative flex flex-col border-2 border-transparent hover:border-blue-100">
+<div class="relative mb-6 aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+<img alt="Texas Instruments Processor" class="object-cover w-4/5 h-4/5 transition-transform duration-500 group-hover:scale-110" data-alt="Electronic circuit board with TI logo microchip clearly visible" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU5Gfqc1-nmo5P5QZuFryGUBJebFsrbNBYjoapqcbisUJVHWWVyCZ42E2SfwpcA7LVMLg2bgMr7CcyyFYXhOVtdbf7vdaUW0GvOzuqQSdnpwFXqvVaK6bQ7u8l9OEfgarlJpUt8oskufD_6pKFgclpRYXW5WiVnmVsbGnUEjiF_m4F28qZaekzzZSWPzAHDEPD4C3dbTGYi4T9o1t0reL15FMHFBcCq-m1-laM_OLnrGzdpjNmyZlriDC94Jlqf0pcMNvvPrLQFnwV"/>
+<div class="absolute top-3 left-3">
+<span class="bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">Certified</span>
+</div>
+<button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-full shadow-md text-slate-400">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Texas Instruments</p>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-amber-400 text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold ml-1">4.8</span>
+</div>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1 group-hover:text-blue-600 transition-colors">MSP430G2553IN20</h3>
+<p class="text-xs text-on-surface-variant mb-4">SKU: UC-MCU-TI-7721</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">PDIP-20</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">16MHz</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">Low Power</span>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-end justify-between mb-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-medium">Unit Price</p>
+<p class="text-2xl font-black text-on-surface">$2.85</p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1.5 text-xs text-green-600 font-bold">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                    In Stock: 12.5k
+                                </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant rounded-lg text-xs font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Compare
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:shadow-2xl hover:shadow-blue-900/5 group relative flex flex-col">
+<div class="relative mb-6 aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+<img alt="Microchip Tech product" class="object-cover w-4/5 h-4/5 transition-transform duration-500 group-hover:scale-110" data-alt="Detailed macro shot of an integrated circuit chip on a dark green PCB" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCd3t9KnpLZB5yhSrI4msAMB42EtDkrIhiWJgIjNMW7kNbr0eflLhHVlSAycibR99DCB1YKhM2pnHjHsXxd1LNbnXKhMD3hWmBElq4u1vQzXIwHWXccOaIVXizLLQdfsqQKrgnCvFIGvyPK4sHR2quPdUv8bzZ32YfhmkF_ZTLgBy9oSpklUJnpSBjy0YnOx85-uVosqxtMhakaxSVfIzqWQtKxmoi_7tF88iYMLikUEz9WSf_rXaBGhhnKvR2uSuGzVIRbRu07i1rY"/>
+<button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-full shadow-md text-slate-400">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Microchip Tech</p>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-amber-400 text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold ml-1">4.5</span>
+</div>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1 group-hover:text-blue-600 transition-colors">PIC16F877A-I/P</h3>
+<p class="text-xs text-on-surface-variant mb-4">SKU: UC-MCU-MC-1109</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">DIP-40</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">20MHz</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">5.0V</span>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-end justify-between mb-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-medium">Unit Price</p>
+<p class="text-2xl font-black text-on-surface">$5.12</p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1.5 text-xs text-error font-bold">
+<div class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></div>
+                                    Low Stock: 42
+                                </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant rounded-lg text-xs font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Compare
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:shadow-2xl hover:shadow-blue-900/5 group relative flex flex-col">
+<div class="relative mb-6 aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+<img alt="AVR Microcontroller" class="object-cover w-4/5 h-4/5 transition-transform duration-500 group-hover:scale-110" data-alt="Atmel brand microcontroller on a blue circuit board background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6imPuLAwym6q4CmcVeSLQEu95ZMK0Kbyk_eBXFoZlmLn64vryd4Or8ZqAHAdkSIFFIhheFUcZVlQTcYpuhEdM0qhW5RFBM92W7H_6XFDcrsDyRE2lUFfBRdE9hQYrHvZ_ohM3i9EpiDTAQJZpzN21gPhOzRJqDA_zzD_eDcthAX-AzxZzDGtQINHL49BayL-JLFtTFsK5y_d8V_24fwSy2awH0vsqCk0bpTciXK5ndtsBVWOKWLBt_71g030sr0RVoeFpm5q8utEz"/>
+<button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-full shadow-md text-slate-400">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Atmel</p>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-amber-400 text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold ml-1">4.9</span>
+</div>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1 group-hover:text-blue-600 transition-colors">ATmega328P-PU</h3>
+<p class="text-xs text-on-surface-variant mb-4">SKU: UC-MCU-AVR-328</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">PDIP-28</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">20MHz</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">Arduino Ready</span>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-end justify-between mb-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-medium">Unit Price</p>
+<p class="text-2xl font-black text-on-surface">$4.35</p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1.5 text-xs text-green-600 font-bold">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                    In Stock: 2,100
+                                </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant rounded-lg text-xs font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Compare
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:shadow-2xl hover:shadow-blue-900/5 group relative flex flex-col">
+<div class="relative mb-6 aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+<img alt="Advanced IC" class="object-cover w-4/5 h-4/5 transition-transform duration-500 group-hover:scale-110" data-alt="Technical engineering schematic background with microchip" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs3QtbwXjmDW8Cf35Zsc4hVjf2xGqB-kBHHtif76IAh1fBFAG18ux0cMYqaV92pc7KAAt5Z8cQ6yzPHgcn7jXYu2SISboIA1RIIS5cOSxVxEnmT_j9PwFVFATbbcJrlwgHEQP0aCw1uNInse00jOi3fC0Rq7fnhi2gKRVL-g6VSAs80hno3VBN4Z9_qhKNz6DBB9Z0je8JRILeLyidRmRlYrrB-GxZvhUE8VrcqWJc5jYGsUcztZnVHejhADfIH34cOaXbDuaOimAW"/>
+<button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-full shadow-md text-slate-400">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Nordic Semi</p>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-amber-400 text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold ml-1">5.0</span>
+</div>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1 group-hover:text-blue-600 transition-colors">nRF52840-QIAA-R</h3>
+<p class="text-xs text-on-surface-variant mb-4">SKU: UC-MCU-BLE-840</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">AQFN-73</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">Bluetooth 5.3</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">M4F Core</span>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-end justify-between mb-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-medium">Unit Price</p>
+<p class="text-2xl font-black text-on-surface">$15.75</p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1.5 text-xs text-green-600 font-bold">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                    In Stock: 850
+                                </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant rounded-lg text-xs font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Compare
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 transition-all hover:shadow-2xl hover:shadow-blue-900/5 group relative flex flex-col">
+<div class="relative mb-6 aspect-square bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+<img alt="FPGA Chip" class="object-cover w-4/5 h-4/5 transition-transform duration-500 group-hover:scale-110" data-alt="Square silicon chip with metallic pins on a green fiber circuit board" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgi5vGSGaWsORpepVAalPedyxr9Ns5s1_3h1FOOQ0B8Cy15Tpeaz0jJdbFt86hPQzvsDyFxw26myUrMreTQIgbGneQGTPzN6DvI3WgrLlA4w_jDPDBiUlrh1cQR0i4RQhY897YUTiWxZM__Xq5TQjmhYmq4DN2a19p9zqeimyoxHytLo0smMFNWiKGZBCovsAv44VVec0pxiJRvEaTZ_O45R-zLOY-tUhyuAFLC0IXCNurjb4SM7if2qdZaKVw_t0jeykTOME-jrRo"/>
+<button class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-full shadow-md text-slate-400">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Espressif Systems</p>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-amber-400 text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs font-bold ml-1">4.7</span>
+</div>
+</div>
+<h3 class="text-lg font-bold leading-tight mb-1 group-hover:text-blue-600 transition-colors">ESP32-WROOM-32E</h3>
+<p class="text-xs text-on-surface-variant mb-4">SKU: UC-MCU-ESP-2283</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">Module</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">Wi-Fi &amp; BT</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">Dual Core</span>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex items-end justify-between mb-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-medium">Unit Price</p>
+<p class="text-2xl font-black text-on-surface">$3.90</p>
+</div>
+<div class="text-right">
+<div class="flex items-center gap-1.5 text-xs text-green-600 font-bold">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                    In Stock: 55k
+                                </div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant rounded-lg text-xs font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Compare
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                Add to Cart
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-white transition-all text-slate-400">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold shadow-lg shadow-primary/20">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-white transition-all font-medium">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-white transition-all font-medium">3</button>
+<span class="px-2 text-slate-400">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-white transition-all font-medium">42</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-white transition-all text-slate-400">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer implementation -->
+<footer class="w-full border-t border-slate-200 bg-slate-50 dark:bg-slate-950">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 px-12 py-16 w-full max-w-7xl mx-auto font-['Inter'] text-sm leading-relaxed">
+<div class="col-span-2">
+<span class="text-xl font-black text-slate-900 tracking-tighter block mb-6">UCEnterprises</span>
+<p class="text-slate-500 mb-6 max-w-xs">Pioneering precision engineering solutions and high-performance electronic components for the next generation of global innovation.</p>
+<p class="text-xs text-slate-400">© 2024 UCEnterprises. Engineering Precision.</p>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 mb-4">Categories</h4>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Microcontrollers</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Passive Components</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Sensors &amp; Modules</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Power Systems</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 mb-4">Fabrication Services</h4>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Custom PCB Layout</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Prototyping</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Assembly Services</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 mb-4">Support</h4>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Contact Support</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Technical Docs</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Global Distribution</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 mb-4">Legal</h4>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>

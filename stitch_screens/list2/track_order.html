@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Track Order - TechArch E-Com</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#e3e8f9",
+              "outline-variant": "#c6c6cc",
+              "primary-container": "#00213e",
+              "on-tertiary-container": "#96856d",
+              "inverse-primary": "#9fcaff",
+              "surface-container": "#e8eeff",
+              "on-background": "#161c27",
+              "inverse-surface": "#2a303d",
+              "primary": "#000816",
+              "outline": "#76777c",
+              "tertiary": "#0e0700",
+              "on-tertiary": "#ffffff",
+              "surface-dim": "#d4daea",
+              "secondary": "#585e6c",
+              "surface-container-highest": "#dde2f3",
+              "on-secondary-container": "#5e6473",
+              "secondary-fixed-dim": "#c1c6d7",
+              "tertiary-fixed": "#f5dfc4",
+              "background": "#f9f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#161c27",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-tint": "#0061a5",
+              "primary-fixed": "#d2e4ff",
+              "on-tertiary-fixed": "#241a09",
+              "primary-fixed-dim": "#9fcaff",
+              "surface": "#f9f9ff",
+              "secondary-fixed": "#dde2f3",
+              "on-surface-variant": "#45474c",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#d8c3a9",
+              "inverse-on-surface": "#ecf0ff",
+              "on-primary-fixed": "#001d37",
+              "tertiary-container": "#291e0d",
+              "surface-bright": "#f9f9ff",
+              "on-primary-container": "#3d8bd7",
+              "surface-container-low": "#f1f3ff",
+              "error": "#ba1a1a",
+              "surface-variant": "#dde2f3",
+              "secondary-container": "#dde2f3",
+              "on-primary-fixed-variant": "#00497e",
+              "on-tertiary-fixed-variant": "#524531",
+              "on-secondary-fixed": "#161c27",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#414754",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9f9ff;
+        color: #161c27;
+      }
+      h1, h2, h3, .font-headline {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar (JSON Source) -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-slate-50 font-headline">
+                TechArch E-Com
+            </div>
+<div class="hidden md:flex items-center gap-8 font-manrope text-sm font-medium tracking-tight">
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Components</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Solutions</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">B2B Portal</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Specs</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Support</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined text-on-surface">shopping_cart</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Portrait of a professional user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz-mU4gMejzLQqM5OL84MzwBbXg7TVz5PSYygrao_iGBkoahfU0Xb7pcqNUIuWk_mMVO_UJRTqDzfDC5_m1jWIHMM8OcZ17Tqd5eYmA8S5MMflYoQAKEuByn-0JFU3kwdi1p-vgQvkXzEhQpDQhAXmTNvUtI7zqzs3rigLkN802eIpvQGYMZ1NDXicfrxxxIwiffB7B8f4P51GpOxRqBo6LCUmfT0BG5numIOEe26n9_TJIexUc3DCSM4SIfZRQgSttThF7ADMDNhl"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<nav class="flex items-center gap-2 text-xs font-label text-on-surface-variant mb-4 uppercase tracking-widest">
+<span>Orders</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-on-surface">Track Shipment</span>
+</nav>
+<h1 class="text-4xl md:text-5xl font-extrabold font-headline tracking-tighter text-on-surface mb-2">Order #TA-9920148</h1>
+<p class="text-on-surface-variant font-body">Placed on Oct 12, 2024 • Estimated Delivery: Oct 18, 2024</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs font-label text-on-surface-variant uppercase mb-1">Current Status</span>
+<div class="flex items-center gap-2 bg-primary-container px-4 py-2 rounded-lg">
+<span class="w-2 h-2 rounded-full bg-on-primary-container shadow-[0_0_8px_#3d8bd7]"></span>
+<span class="text-on-primary-container font-bold text-sm tracking-tight uppercase">Shipped</span>
+</div>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Journey & Tracking -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Journey Timeline Card -->
+<section class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<h2 class="text-xl font-bold font-headline mb-10 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">route</span>
+                        Delivery Progress
+                    </h2>
+<div class="relative">
+<!-- Progress Line -->
+<div class="absolute top-5 left-0 w-full h-1 bg-surface-container rounded-full">
+<div class="h-full bg-on-primary-container rounded-full w-[66%]"></div>
+</div>
+<!-- Milestones -->
+<div class="relative flex justify-between">
+<!-- Step 1: Placed -->
+<div class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-on-primary-container flex items-center justify-center text-on-primary mb-3 z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-xs font-bold font-headline text-on-surface">Order Placed</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Oct 12, 10:30 AM</span>
+</div>
+<!-- Step 2: Processing -->
+<div class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-on-primary-container flex items-center justify-center text-on-primary mb-3 z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-xs font-bold font-headline text-on-surface">Processing</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Oct 12, 02:15 PM</span>
+</div>
+<!-- Step 3: Shipped -->
+<div class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-on-primary-container flex items-center justify-center text-on-primary mb-3 z-10 ring-4 ring-surface-container-high ring-offset-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<span class="text-xs font-bold font-headline text-on-surface">Shipped</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Oct 14, 09:00 AM</span>
+</div>
+<!-- Step 4: Out for Delivery -->
+<div class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-3 z-10">
+<span class="material-symbols-outlined text-sm">hail</span>
+</div>
+<span class="text-xs font-bold font-headline text-on-surface-variant">Out for Delivery</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Pending</span>
+</div>
+<!-- Step 5: Delivered -->
+<div class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-3 z-10">
+<span class="material-symbols-outlined text-sm">home_pin</span>
+</div>
+<span class="text-xs font-bold font-headline text-on-surface-variant">Delivered</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Scheduled</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Carrier & Logistics Bento Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container rounded-xl p-6">
+<h3 class="text-sm font-label text-on-surface-variant uppercase tracking-widest mb-4">Carrier Information</h3>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl text-primary">precision_manufacturing</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Apex Logistics Group</p>
+<p class="text-xs text-on-surface-variant">Standard Air Freight</p>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/20">
+<p class="text-xs text-on-surface-variant mb-1">Tracking Number</p>
+<a class="text-xl font-bold font-headline text-on-primary-container hover:underline underline-offset-4 flex items-center gap-2" href="#">
+                                AX-4491-00129
+                                <span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+</div>
+<div class="bg-primary-container rounded-xl p-6 text-on-primary">
+<h3 class="text-sm font-label text-on-primary/60 uppercase tracking-widest mb-4">Latest Update</h3>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-primary-container mt-1">history</span>
+<div>
+<p class="font-bold text-lg leading-tight mb-2">Departed Regional Distribution Center</p>
+<p class="text-sm text-on-primary/70 mb-4">San Francisco Gateway (SFO-4), CA</p>
+<div class="text-xs font-medium bg-white/10 w-fit px-3 py-1 rounded-full">
+                                    Oct 15, 2024 — 11:42 PM
+                                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent History Details -->
+<section class="bg-surface-container-low rounded-xl overflow-hidden">
+<div class="px-8 py-6 bg-surface-container-high/50 flex justify-between items-center">
+<h3 class="font-bold font-headline text-on-surface">Detailed Tracking History</h3>
+<button class="text-xs font-label text-on-primary-container font-bold hover:underline">Download Report</button>
+</div>
+<div class="p-8 space-y-6">
+<div class="flex gap-6 relative">
+<div class="absolute left-[7px] top-6 bottom-[-30px] w-px bg-outline-variant/30"></div>
+<div class="w-4 h-4 rounded-full bg-on-primary-container ring-4 ring-on-primary-container/20 mt-1 relative z-10"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="font-bold text-on-surface">Departed Regional Facility</p>
+<span class="text-xs text-on-surface-variant font-medium">Oct 15, 11:42 PM</span>
+</div>
+<p class="text-sm text-on-surface-variant">San Francisco, CA</p>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="absolute left-[7px] top-6 bottom-[-30px] w-px bg-outline-variant/30"></div>
+<div class="w-4 h-4 rounded-full bg-outline-variant/50 mt-1 relative z-10"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="font-bold text-on-surface">Arrived at Regional Facility</p>
+<span class="text-xs text-on-surface-variant font-medium">Oct 15, 08:15 AM</span>
+</div>
+<p class="text-sm text-on-surface-variant">San Francisco, CA</p>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="w-4 h-4 rounded-full bg-outline-variant/50 mt-1 relative z-10"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="font-bold text-on-surface">Shipment Tendered to Carrier</p>
+<span class="text-xs text-on-surface-variant font-medium">Oct 14, 09:00 AM</span>
+</div>
+<p class="text-sm text-on-surface-variant">Silicon Valley Hub, CA</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Shipment Contents -->
+<div class="lg:col-span-4">
+<aside class="bg-white rounded-xl shadow-sm overflow-hidden sticky top-24">
+<div class="p-6 bg-surface-container-low border-b border-outline-variant/10">
+<h3 class="font-bold font-headline text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined">inventory_2</span>
+                            Shipment Contents
+                        </h3>
+<p class="text-xs text-on-surface-variant mt-1">3 Items in this package</p>
+</div>
+<div class="p-6 space-y-6">
+<!-- Item 1 -->
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Architecture Grade CPU" class="w-full h-full object-cover" data-alt="High-end electronic microchip on blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhqslN9C6fbeQHecdzP87w_3gXVJopqVAisq2ffIQQfxGdcARsvZ9pRTtFyea5lgpNQDYFTsHoF_qLNYQHJ_ClgWnP8Wcb_bKmR2mmUFYTSqBTo_y58HYYgBsnnJweFfZ1aAhThwzy-UxAyd-kngCnjfvxXuCH8oybTdjafRPXDzl1jOMyfKWNFGC-IzdhRegXmMm9PsptnMgcuDP3k-4Xe4RbhdDO5FR6RlD3fizl4GZEK2M2WQGfl3wCaWL9AV8VxFWIeP5bUUzm"/>
+</div>
+<div class="flex-1">
+<p class="text-xs font-label text-on-surface-variant">ARK-9910</p>
+<p class="text-sm font-bold text-on-surface leading-tight mb-1">Quantum-X Processor Module</p>
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium bg-secondary-container px-2 py-0.5 rounded text-on-secondary-container">QTY: 1</span>
+<span class="text-sm font-bold">$1,249.00</span>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Heatsink" class="w-full h-full object-cover" data-alt="Close up of a metallic electronic component" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKqqlQ1mZdDCAiYEyh6pRMrYMe3AA1KM4mA6dGW5-NJN-T9PMpxvHecTh-8weBAGy7eLierpeVnetU9o1eOldib2apLrNWvXcC8p4rLz7Q0cxfC3N9VWnh-9aC-wWoCg0r4hI6NG_BGTfkyOpbnatz7dc4FgCdTTtzX77PmF4wrNZDD057VF27mTVqXf06N3ZwJu5z_z4TsH82CluzArXH5f9Y9EbsN0tv_rWvrxqViSg7IE6FcLK1rISVq2pG2_WVbTALfoZGMCd6"/>
+</div>
+<div class="flex-1">
+<p class="text-xs font-label text-on-surface-variant">THR-202</p>
+<p class="text-sm font-bold text-on-surface leading-tight mb-1">Cryo-Thermal Shield Plate</p>
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium bg-secondary-container px-2 py-0.5 rounded text-on-secondary-container">QTY: 2</span>
+<span class="text-sm font-bold">$198.00</span>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/20">
+<div class="flex justify-between text-sm text-on-surface-variant mb-2">
+<span>Subtotal</span>
+<span>$1,447.00</span>
+</div>
+<div class="flex justify-between text-sm text-on-surface-variant mb-2">
+<span>Shipping (Express)</span>
+<span>$45.00</span>
+</div>
+<div class="flex justify-between text-lg font-bold text-on-surface mt-4">
+<span>Total Value</span>
+<span>$1,492.00</span>
+</div>
+</div>
+<button class="w-full bg-primary py-4 text-on-primary rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 mt-4">
+<span class="material-symbols-outlined text-sm">mail</span>
+                            Get Status Updates
+                        </button>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Footer (JSON Source) -->
+<footer class="w-full border-t border-slate-200/50 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-950">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 px-8 py-12 max-w-screen-2xl mx-auto">
+<div class="col-span-2">
+<p class="font-manrope font-bold text-slate-900 dark:text-slate-100 text-lg mb-4">TechArch Engineering</p>
+<p class="font-inter text-xs tracking-wide text-slate-500 mb-6">Building the infrastructure of the digital future with precision and authoritative engineering excellence.</p>
+<p class="font-inter text-xs tracking-wide text-slate-500">© 2024 TechArch Engineering. All Rights Reserved. ISO 9001 Certified.</p>
+</div>
+<div>
+<p class="text-on-surface font-bold text-sm mb-4">Resources</p>
+<ul class="space-y-2">
+<li><a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-inter text-xs tracking-wide" href="#">Datasheets</a></li>
+<li><a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-inter text-xs tracking-wide" href="#">Compliance</a></li>
+<li><a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-inter text-xs tracking-wide" href="#">API Docs</a></li>
+</ul>
+</div>
+<div>
+<p class="text-on-surface font-bold text-sm mb-4">Company</p>
+<ul class="space-y-2">
+<li><a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-inter text-xs tracking-wide" href="#">Global Logistics</a></li>
+<li><a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-inter text-xs tracking-wide" href="#">Privacy Policy</a></li>
+<li><a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-inter text-xs tracking-wide" href="#">B2B Terms</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>

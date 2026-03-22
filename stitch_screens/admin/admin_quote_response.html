@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quote Response | Circuit Core</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#c6c6cc",
+              "secondary": "#585e6c",
+              "primary-container": "#00213e",
+              "surface-container-highest": "#dde2f3",
+              "on-secondary-fixed-variant": "#414754",
+              "on-error-container": "#93000a",
+              "primary-fixed": "#d2e4ff",
+              "on-secondary-fixed": "#161c27",
+              "error": "#ba1a1a",
+              "secondary-fixed-dim": "#c1c6d7",
+              "secondary-fixed": "#dde2f3",
+              "on-error": "#ffffff",
+              "surface": "#f9f9ff",
+              "on-surface-variant": "#45474c",
+              "outline": "#76777c",
+              "on-background": "#161c27",
+              "tertiary": "#0e0700",
+              "surface-container": "#e8eeff",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#d8c3a9",
+              "tertiary-container": "#291e0d",
+              "on-surface": "#161c27",
+              "on-primary-fixed-variant": "#00497e",
+              "primary": "#000816",
+              "on-tertiary-fixed-variant": "#524531",
+              "inverse-primary": "#9fcaff",
+              "error-container": "#ffdad6",
+              "tertiary-fixed": "#f5dfc4",
+              "on-secondary": "#ffffff",
+              "inverse-on-surface": "#ecf0ff",
+              "surface-dim": "#d4daea",
+              "surface-container-high": "#e3e8f9",
+              "surface-bright": "#f9f9ff",
+              "secondary-container": "#dde2f3",
+              "on-primary-container": "#3d8bd7",
+              "surface-variant": "#dde2f3",
+              "surface-tint": "#0061a5",
+              "on-primary-fixed": "#001d37",
+              "surface-container-low": "#f1f3ff",
+              "inverse-surface": "#2a303d",
+              "primary-fixed-dim": "#9fcaff",
+              "on-tertiary-container": "#96856d",
+              "on-tertiary-fixed": "#241a09",
+              "surface-container-lowest": "#ffffff",
+              "on-primary": "#ffffff",
+              "background": "#f9f9ff",
+              "on-secondary-container": "#5e6473"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar Component -->
+<header class="w-full sticky top-0 z-40 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-sm dark:shadow-none border-b border-slate-200/50 dark:border-slate-800/50">
+<div class="flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tighter">Circuit Core</span>
+<div class="hidden md:flex gap-6 items-center">
+<span class="text-slate-500 dark:text-slate-400 font-medium">Catalog</span>
+<span class="text-slate-500 dark:text-slate-400 font-medium">Orders</span>
+<span class="text-blue-600 dark:text-blue-400 font-semibold">Requests</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-slate-200/50 rounded-full transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-slate-200/50 rounded-full transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden">
+<img alt="Admin User Profile" data-alt="Admin user portrait profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx7bo6rmnaVd5bXahOJkJeoksmVQeA7ieKw5sYHyxAKLdh4szYyebbA003DpmUcRbNu8Q_WJvxRV02WiGs6Ev1puNhcCW_LPw2sBZZ40grQl57lg5AngHJcGEyIoMaQNgHcrMXoPqosVfCtLGGyDmNNEZmcRAkdsbJ4b9UUSBpfn1DN1JSr8nq5vnK9KcDcUVSBLL0fAbhYNvyu9OEbFkpD6Uhuui0LpyLbz9vBP1WENsPQpfaCEVOj87jqaoQX8SACZpulgzu5YHx"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-slate-100 dark:bg-slate-900 flex flex-col gap-1 py-4 border-r border-slate-200/50 dark:border-slate-800/50 hidden md:flex mt-16">
+<div class="px-4 py-4 border-b border-slate-200 dark:border-slate-800 mb-4">
+<h3 class="font-manrope text-lg font-extrabold text-slate-900 dark:text-slate-50">Circuit Core</h3>
+<p class="text-xs text-on-surface-variant">Enterprise Admin</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mx-2 hover:bg-slate-200/50 transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span> Catalog
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mx-2 hover:bg-slate-200/50 transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span> Orders
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mx-2 hover:bg-slate-200/50 transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span> Users
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mx-2 hover:bg-slate-200/50 transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="layers">layers</span> Inventory
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-slate-200 dark:border-slate-800 text-blue-600 dark:text-blue-400 rounded-lg mx-2 active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="message">message</span> Requests
+                </a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+<button class="w-[calc(100%-2rem)] mx-4 mb-4 bg-primary text-on-primary py-2.5 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all">
+                    Generate Report
+                </button>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span> Support
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 mx-2" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span> Sign Out
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-grow ml-0 md:ml-64 p-6 md:p-10">
+<div class="max-w-6xl mx-auto">
+<!-- Page Header with Contextual Action -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-4">
+<span>Requests</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="font-medium text-on-surface">Quote #RQ-98421</span>
+</nav>
+<h1 class="text-4xl font-extrabold tracking-tighter text-on-surface font-headline mb-2">Quote Response Interface</h1>
+<p class="text-on-surface-variant max-w-lg">Technical validation and pricing draft for UCEnterprises strategic fulfillment.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 rounded-lg border border-outline-variant/30 text-on-surface font-medium hover:bg-surface-container transition-colors">Save as Draft</button>
+<button class="px-8 py-2.5 rounded-lg bg-gradient-to-r from-primary to-primary-container text-white font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">Send Quote</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- LEFT COLUMN: REQUEST DETAILS (Original) -->
+<div class="lg:col-span-4 flex flex-col gap-8">
+<!-- Customer Info Card -->
+<section class="bg-surface-container-low rounded-xl p-6 border-b-2 border-primary/5">
+<h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Customer Entity</h2>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<h3 class="font-bold text-lg text-on-surface">UCEnterprises Ltd.</h3>
+<p class="text-sm text-on-surface-variant">Strategic Operations Division</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Requested by</span>
+<span class="font-medium">Sarah Jenkins</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Priority Level</span>
+<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded text-xs font-bold uppercase">Urgent</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant">Due Date</span>
+<span class="font-medium">Oct 24, 2023</span>
+</div>
+</div>
+</section>
+<!-- Original Requirements -->
+<section class="bg-surface-container-low rounded-xl p-6">
+<h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Request Specs</h2>
+<div class="space-y-6">
+<div>
+<p class="text-sm text-on-surface-variant mb-2 font-medium">Part Numbers:</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-secondary-container text-on-secondary-container text-xs px-2 py-1 rounded-sm font-mono tracking-tighter">XC7Z020-1CLG400C</span>
+<span class="bg-secondary-container text-on-secondary-container text-xs px-2 py-1 rounded-sm font-mono tracking-tighter">AD9361BBCZ</span>
+</div>
+</div>
+<div>
+<p class="text-sm text-on-surface-variant mb-2 font-medium">Description:</p>
+<p class="text-sm text-on-surface leading-relaxed italic">"We require full-batch fulfillment for our Q4 production run. Components must be from a single lot code (2022+) with certified anti-counterfeit documentation."</p>
+</div>
+<div>
+<p class="text-sm text-on-surface-variant mb-3 font-medium">Attachments (3):</p>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg group cursor-pointer hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-blue-600">picture_as_pdf</span>
+<div class="flex-grow">
+<p class="text-xs font-bold truncate">Project_Schematic_v4.pdf</p>
+<p class="text-[10px] text-on-surface-variant">4.2 MB</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">download</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-lg group cursor-pointer hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-blue-600">table_chart</span>
+<div class="flex-grow">
+<p class="text-xs font-bold truncate">BOM_Q4_Export.csv</p>
+<p class="text-[10px] text-on-surface-variant">128 KB</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">download</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: ADMIN RESPONSE FORM -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Main Quote Form Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-8 shadow-sm border border-outline-variant/10">
+<h2 class="text-2xl font-bold font-headline mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+                                Proposal Generation
+                            </h2>
+<form class="space-y-10">
+<!-- Pricing & Lead Time Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="block text-sm font-bold text-on-surface">Unit Offer Price (USD)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium">$</span>
+<input class="w-full pl-8 pr-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-blue-600/20 text-on-surface font-mono transition-all" placeholder="0.00" type="text"/>
+</div>
+<p class="text-[10px] text-on-surface-variant">Recommended margin: +12.5% (Market standard)</p>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-bold text-on-surface">Estimated Lead Time</label>
+<div class="relative">
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">Weeks</span>
+<select class="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-blue-600/20 text-on-surface transition-all appearance-none">
+<option>Immediate (Stock)</option>
+<option>2 - 4</option>
+<option>4 - 8</option>
+<option>8 - 12</option>
+<option>12+</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Technical Notes -->
+<div class="space-y-2">
+<label class="block text-sm font-bold text-on-surface">Technical Assessment &amp; Provisions</label>
+<textarea class="w-full p-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-blue-600/20 text-on-surface leading-relaxed transition-all" placeholder="Detail component sourcing, lot tracking details, and compliance certifications..." rows="6"></textarea>
+</div>
+<!-- Inventory & Validation -->
+<div class="p-6 bg-surface-container rounded-xl border-l-4 border-blue-600">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-blue-600 mt-1">verified</span>
+<div class="flex-grow">
+<h4 class="font-bold text-sm mb-1 text-primary">System Inventory Check</h4>
+<p class="text-xs text-on-surface-variant mb-4">Current global stock indicates 4,200 units available across Tier 1 warehouses.</p>
+<div class="flex items-center gap-6">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-offset-0 focus:ring-primary/20" type="checkbox"/>
+<span class="text-xs font-semibold group-hover:text-primary transition-colors">Lock Quantity for 48h</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="w-4 h-4 rounded text-primary focus:ring-offset-0 focus:ring-primary/20" type="checkbox"/>
+<span class="text-xs font-semibold group-hover:text-primary transition-colors">Apply Volume Discount</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Additional Options -->
+<div class="pt-6 border-t border-outline-variant/20">
+<h3 class="text-sm font-bold text-on-surface mb-4">Logistics &amp; Compliance</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl border border-outline-variant/30 hover:bg-surface-container transition-all text-center" type="button">
+<span class="material-symbols-outlined text-on-surface-variant">local_shipping</span>
+<span class="text-[11px] font-bold">Standard Air</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl border border-outline-variant/30 hover:bg-surface-container transition-all text-center" type="button">
+<span class="material-symbols-outlined text-on-surface-variant">security</span>
+<span class="text-[11px] font-bold">MIL-SPEC PKG</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl border border-blue-600/30 bg-blue-50/30 text-blue-600 text-center" type="button">
+<span class="material-symbols-outlined" data-weight="fill">verified_user</span>
+<span class="text-[11px] font-bold">COC Attached</span>
+</button>
+</div>
+</div>
+</form>
+</div>
+<!-- Secondary Summary Card (Asymmetric) -->
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex-grow p-6 bg-primary-container text-white rounded-2xl overflow-hidden relative">
+<div class="relative z-10">
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-primary-container mb-2">Quote Summary</h4>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-extrabold tracking-tighter">$14,250.00</span>
+<span class="text-sm text-on-primary-container mb-1">Total Est. Value</span>
+</div>
+</div>
+<!-- Abstract decorative element -->
+<div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-blue-500/10 blur-3xl"></div>
+</div>
+<div class="md:w-64 p-6 bg-surface-container-high rounded-2xl flex flex-col justify-center">
+<p class="text-xs text-on-surface-variant mb-2 font-medium">Internal Visibility</p>
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-slate-300">
+<img alt="Reviewer 1" class="rounded-full" data-alt="Male staff member portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOWvQu4UyuksCSg_zCVCmdA0KWJG-fTnsybdXzGdHG01prpx5lGXqfNRiwseXERVPsKUV4Iwa5The3LwD4hQ0rghQl62W6EQdjAlc2PrpdLJF96ozfi0-i9aMZSKKZoP4sXGvAF7kdLybUGZGUjg95mu4Gl8w9EPEJmmaCG6sE_0v0Pn9P8o1EjqcvpNNM3-80QnsyhmV6KrhcrIkgSsHqSMCcSc8OoOobg6P8T8ak_K-Xvuo8qSn5Yr4Ie1GEFVQqHqzQvB63mgFY"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-slate-300">
+<img alt="Reviewer 2" class="rounded-full" data-alt="Female staff member portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATgJtYk8mu1Ay3chS1jHkRxmYspezBrdmCVkFp7gwk3oWbizF6ozkhfpza-Xg8GfKl4GWhfhBxX1NuvfLevlpCOmUoprdbXJCwSf93k5wUDAhavS2w_pgzlgpLNn3d9quBhZvUHgSUPXtGFVjn0DTr4LcVjZvGrgb_fgkxo52ek0v60BdE2p5m3TzkeL9z74Vm1NMD7cGIKQbEzSt1KqysPJP066_upfcW6XJA9IHwktZiDGpJAW4rGUaLIEhe5N0mNWTg1SZ8bO0W"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center text-[10px] font-bold">+4</div>
+</div>
+<p class="text-[10px] mt-3 text-on-surface-variant">Team has read access to this draft.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Inventory Status Glow - Floating Element (Contextual FAB) -->
+<div class="fixed bottom-8 right-8 flex items-center gap-3 bg-surface-container-lowest shadow-2xl rounded-full px-6 py-4 border border-outline-variant/10">
+<div class="relative">
+<div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+<div class="absolute inset-0 w-3 h-3 bg-green-500 rounded-full blur-[4px]"></div>
+</div>
+<span class="text-xs font-bold text-on-surface tracking-tight">Supply Chain: Healthy</span>
+</div>
+</body></html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Address Book | TechArch E-Com</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-high": "#e3e8f9",
+            "outline-variant": "#c6c6cc",
+            "primary-container": "#00213e",
+            "on-tertiary-container": "#96856d",
+            "inverse-primary": "#9fcaff",
+            "surface-container": "#e8eeff",
+            "on-background": "#161c27",
+            "inverse-surface": "#2a303d",
+            "primary": "#000816",
+            "outline": "#76777c",
+            "tertiary": "#0e0700",
+            "on-tertiary": "#ffffff",
+            "surface-dim": "#d4daea",
+            "secondary": "#585e6c",
+            "surface-container-highest": "#dde2f3",
+            "on-secondary-container": "#5e6473",
+            "secondary-fixed-dim": "#c1c6d7",
+            "tertiary-fixed": "#f5dfc4",
+            "background": "#f9f9ff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#161c27",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "surface-tint": "#0061a5",
+            "primary-fixed": "#d2e4ff",
+            "on-tertiary-fixed": "#241a09",
+            "primary-fixed-dim": "#9fcaff",
+            "surface": "#f9f9ff",
+            "secondary-fixed": "#dde2f3",
+            "on-surface-variant": "#45474c",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#d8c3a9",
+            "inverse-on-surface": "#ecf0ff",
+            "on-primary-fixed": "#001d37",
+            "tertiary-container": "#291e0d",
+            "surface-bright": "#f9f9ff",
+            "on-primary-container": "#3d8bd7",
+            "surface-container-low": "#f1f3ff",
+            "error": "#ba1a1a",
+            "surface-variant": "#dde2f3",
+            "secondary-container": "#dde2f3",
+            "on-primary-fixed-variant": "#00497e",
+            "on-tertiary-fixed-variant": "#524531",
+            "on-secondary-fixed": "#161c27",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#414754",
+            "on-error": "#ffffff"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar Implementation -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">TechArch E-Com</span>
+<div class="hidden lg:flex gap-6 items-center">
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Components</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Solutions</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">B2B Portal</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Specs</a>
+<a class="font-manrope text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Support</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-surface-container-highest border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-on-primary-container" placeholder="Search components..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container overflow-hidden border border-outline-variant/20">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Close up of a professional male user profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYZ20BByOu9Lfg4ywYv9_8mowkCAKo8fXwZfPinWRV6opg_n0RHMGts48VkFVC9WIOb7XqF0igIxjcJDQSRpaulVecU4O-G9KazPjf2lavBnLqe99YsX8CK1ov45VH0-4yShmjH1EtPE1SjHcifvfmXV-6S5fLmlSL17AHJU-2RVl9OWlVbw9VTngvH0tyc6M4uYOTT0Mfq1H4Oslaezi8Ew-BNv-3qZQyOPRi2QSvTRit5QITENspvSul4DOfh2QsIrn6EOPqVimS"/>
+</div>
+</div>
+</div>
+</nav>
+<div class="flex pt-20">
+<!-- SideNavBar Implementation -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-5rem)] w-64 bg-slate-100 dark:bg-slate-900 border-r border-slate-200/50 dark:border-slate-800/50 sticky top-20 p-4 gap-2">
+<div class="mb-6 px-2">
+<h2 class="text-lg font-bold text-slate-800 dark:text-slate-200">Corporate Portal</h2>
+<p class="text-xs text-slate-500 font-inter font-semibold">Verified Tier 1 Partner</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 font-inter text-sm font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 font-inter text-sm font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="package_2">package_2</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 font-inter text-sm font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 font-inter text-sm font-semibold hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm font-inter text-sm font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200/50 dark:border-slate-800/50 space-y-1">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 font-inter text-sm font-semibold">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 font-inter text-sm font-semibold">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-8 py-12 max-w-6xl mx-auto">
+<!-- Header Section -->
+<header class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Address Book</h1>
+<p class="text-on-surface-variant font-body">Manage your global shipping, billing, and corporate logistics destinations.</p>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined" data-icon="add_location">add_location</span>
+<span class="font-semibold text-sm">Add New Address</span>
+</button>
+</header>
+<!-- Bento-style Grid for Addresses -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Address Card 1: Default -->
+<div class="group relative bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="business">business</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm">Primary</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-1">Corporate HQ</h3>
+<p class="text-sm font-semibold text-on-surface-variant mb-4 font-body">TechArch Engineering Ltd.</p>
+<div class="text-on-surface-variant text-sm space-y-1 mb-8 font-body flex-1">
+<p>1280 Innovation Way</p>
+<p>Silicon District, Building 4</p>
+<p>San Francisco, CA 94105</p>
+<p>United States</p>
+</div>
+<div class="flex items-center gap-3 pt-4 border-t border-surface-container">
+<button class="flex-1 py-2 text-xs font-bold text-on-primary-container hover:bg-surface-container-low rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit
+            </button>
+<button class="flex-1 py-2 text-xs font-bold text-error hover:bg-error-container/20 rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete
+            </button>
+</div>
+</div>
+<!-- Address Card 2 -->
+<div class="group relative bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="local_shipping">local_shipping</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-1">Logistics Hub West</h3>
+<p class="text-sm font-semibold text-on-surface-variant mb-4 font-body">Main Distribution Center</p>
+<div class="text-on-surface-variant text-sm space-y-1 mb-8 font-body flex-1">
+<p>4400 Terminal Blvd</p>
+<p>Dock 14, Zone B</p>
+<p>Long Beach, CA 90802</p>
+<p>United States</p>
+</div>
+<div class="flex items-center gap-3 pt-4 border-t border-surface-container">
+<button class="flex-1 py-2 text-xs font-bold text-on-primary-container hover:bg-surface-container-low rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit
+            </button>
+<button class="flex-1 py-2 text-xs font-bold text-error hover:bg-error-container/20 rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete
+            </button>
+</div>
+</div>
+<!-- Address Card 3 -->
+<div class="group relative bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="receipt_long">receipt_long</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-1">Billing Office</h3>
+<p class="text-sm font-semibold text-on-surface-variant mb-4 font-body">Accounts Payable Dept.</p>
+<div class="text-on-surface-variant text-sm space-y-1 mb-8 font-body flex-1">
+<p>P.O. Box 9920</p>
+<p>Financial Square</p>
+<p>New York, NY 10004</p>
+<p>United States</p>
+</div>
+<div class="flex items-center gap-3 pt-4 border-t border-surface-container">
+<button class="flex-1 py-2 text-xs font-bold text-on-primary-container hover:bg-surface-container-low rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit
+            </button>
+<button class="flex-1 py-2 text-xs font-bold text-error hover:bg-error-container/20 rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete
+            </button>
+</div>
+</div>
+<!-- Address Card 4 -->
+<div class="group relative bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="factory">factory</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-1">EU Assembly Plant</h3>
+<p class="text-sm font-semibold text-on-surface-variant mb-4 font-body">Fabrication Unit 2</p>
+<div class="text-on-surface-variant text-sm space-y-1 mb-8 font-body flex-1">
+<p>Industrialstrasse 14</p>
+<p>Gewerbepark Nord</p>
+<p>80331 Munich</p>
+<p>Germany</p>
+</div>
+<div class="flex items-center gap-3 pt-4 border-t border-surface-container">
+<button class="flex-1 py-2 text-xs font-bold text-on-primary-container hover:bg-surface-container-low rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span> Edit
+            </button>
+<button class="flex-1 py-2 text-xs font-bold text-error hover:bg-error-container/20 rounded-lg transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span> Delete
+            </button>
+</div>
+</div>
+<!-- Add New Card (Empty State Trigger) -->
+<button class="group border-2 border-dashed border-outline-variant/30 rounded-xl p-6 flex flex-col items-center justify-center gap-4 hover:border-on-primary-container hover:bg-surface-container-low transition-all duration-300 min-h-[320px]">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center group-hover:bg-primary-container/10 transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-on-primary-container" data-icon="add">add</span>
+</div>
+<div class="text-center">
+<p class="font-bold text-on-surface">Add New Address</p>
+<p class="text-xs text-on-surface-variant mt-1">Configure a new shipping destination</p>
+</div>
+</button>
+</div>
+<!-- Quick Tips / Info Section -->
+<section class="mt-20 p-8 rounded-2xl bg-surface-container-low border border-outline-variant/5">
+<h2 class="text-xl font-bold text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="info">info</span>
+          Address Management Protocols
+        </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<div>
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Verification</h4>
+<p class="text-sm text-on-surface-variant font-body leading-relaxed">All addresses are automatically validated against global postal databases upon entry.</p>
+</div>
+<div>
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Primary Rule</h4>
+<p class="text-sm text-on-surface-variant font-body leading-relaxed">Your Primary address is used by default for all automated B2B procurement cycles.</p>
+</div>
+<div>
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Compliance</h4>
+<p class="text-sm text-on-surface-variant font-body leading-relaxed">International shipping requires VAT/Tax IDs to be attached to each global address card.</p>
+</div>
+<div>
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Batch Editing</h4>
+<p class="text-sm text-on-surface-variant font-body leading-relaxed">Corporate accounts can import address manifests via the API Docs section in the footer.</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer Implementation -->
+<footer class="w-full border-t border-slate-200/50 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-950">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 px-8 py-12 max-w-screen-2xl mx-auto">
+<div class="col-span-2">
+<span class="font-manrope font-bold text-slate-900 dark:text-slate-100 text-lg block mb-4">TechArch Engineering</span>
+<p class="font-inter text-xs tracking-wide text-slate-500 max-w-xs leading-relaxed">
+          The global leader in high-precision electronic component distribution and architectural technical solutions.
+        </p>
+</div>
+<div>
+<h4 class="font-manrope font-bold text-xs uppercase tracking-widest text-slate-900 dark:text-slate-100 mb-4">Resources</h4>
+<div class="flex flex-col gap-2">
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Datasheets</a>
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Compliance</a>
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">API Docs</a>
+</div>
+</div>
+<div>
+<h4 class="font-manrope font-bold text-xs uppercase tracking-widest text-slate-900 dark:text-slate-100 mb-4">Support</h4>
+<div class="flex flex-col gap-2">
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Global Logistics</a>
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Help Center</a>
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Contact Us</a>
+</div>
+</div>
+<div>
+<h4 class="font-manrope font-bold text-xs uppercase tracking-widest text-slate-900 dark:text-slate-100 mb-4">Legal</h4>
+<div class="flex flex-col gap-2">
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Privacy Policy</a>
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">B2B Terms</a>
+<a class="font-inter text-xs tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="#">Cookie Settings</a>
+</div>
+</div>
+</div>
+<div class="border-t border-slate-200/50 dark:border-slate-800/50 px-8 py-6 max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-inter text-xs tracking-wide text-slate-500">© 2024 TechArch Engineering. All Rights Reserved. ISO 9001 Certified.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-slate-400 text-sm">language</span>
+<span class="font-inter text-[10px] font-bold text-slate-500 uppercase tracking-tighter">Region: Global Portal</span>
+</div>
+</div>
+</footer>
+</body></html>

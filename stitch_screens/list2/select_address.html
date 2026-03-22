@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout - Select Address | TechArch E-Com</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#e3e8f9",
+              "outline-variant": "#c6c6cc",
+              "primary-container": "#00213e",
+              "on-tertiary-container": "#96856d",
+              "inverse-primary": "#9fcaff",
+              "surface-container": "#e8eeff",
+              "on-background": "#161c27",
+              "inverse-surface": "#2a303d",
+              "primary": "#000816",
+              "outline": "#76777c",
+              "tertiary": "#0e0700",
+              "on-tertiary": "#ffffff",
+              "surface-dim": "#d4daea",
+              "secondary": "#585e6c",
+              "surface-container-highest": "#dde2f3",
+              "on-secondary-container": "#5e6473",
+              "secondary-fixed-dim": "#c1c6d7",
+              "tertiary-fixed": "#f5dfc4",
+              "background": "#f9f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#161c27",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-tint": "#0061a5",
+              "primary-fixed": "#d2e4ff",
+              "on-tertiary-fixed": "#241a09",
+              "primary-fixed-dim": "#9fcaff",
+              "surface": "#f9f9ff",
+              "secondary-fixed": "#dde2f3",
+              "on-surface-variant": "#45474c",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#d8c3a9",
+              "inverse-on-surface": "#ecf0ff",
+              "on-primary-fixed": "#001d37",
+              "tertiary-container": "#291e0d",
+              "surface-bright": "#f9f9ff",
+              "on-primary-container": "#3d8bd7",
+              "surface-container-low": "#f1f3ff",
+              "error": "#ba1a1a",
+              "surface-variant": "#dde2f3",
+              "secondary-container": "#dde2f3",
+              "on-primary-fixed-variant": "#00497e",
+              "on-tertiary-fixed-variant": "#524531",
+              "on-secondary-fixed": "#161c27",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#414754",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9f9ff;
+        color: #161c27;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/70 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-slate-900">TechArch E-Com</div>
+<nav class="hidden md:flex gap-8 font-manrope text-sm font-medium tracking-tight">
+<a class="text-slate-600 hover:text-slate-900 transition-colors duration-200" href="#">Components</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors duration-200" href="#">Solutions</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors duration-200" href="#">B2B Portal</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors duration-200" href="#">Specs</a>
+<a class="text-slate-600 hover:text-slate-900 transition-colors duration-200" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100 transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img alt="User profile avatar" data-alt="User profile avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG370h6LziAeBZ82O8iMezPGa2Nz8j5cnggUCWx2HRO4x-OQ-_pvCWVDzTT9R1mbn0L7ENix_y3ujonXkRc6YGyS7JvYgpY9tn18SFU0vIXtZOxZJTQbOG1FHb0hoiAvR5VkBUGNWLA5O09zxoTeqliTtd-mtGjIaETR7PVfqGoCILDjEQBGMtEhCLH-L3wAMhGRAikgC_FSqOs_rC0UH4ODDH48PY8Xx437xgEKzOPeQT8exjr3dEblUljhJ7lDovN8hglFje5oZo"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-24 px-8 max-w-6xl mx-auto">
+<!-- Checkout Progress Indicator -->
+<div class="mb-16 flex justify-center">
+<div class="flex items-center gap-4 w-full max-w-md">
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="h-1 w-full bg-primary rounded-full"></div>
+<span class="text-xs font-bold tracking-widest uppercase text-primary">Address</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="h-1 w-full bg-surface-container-highest rounded-full"></div>
+<span class="text-xs font-bold tracking-widest uppercase text-on-surface-variant">Payment</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="h-1 w-full bg-surface-container-highest rounded-full"></div>
+<span class="text-xs font-bold tracking-widest uppercase text-on-surface-variant">Review</span>
+</div>
+</div>
+</div>
+<!-- Section Header -->
+<div class="mb-12 flex justify-between items-end">
+<div>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-background mb-2">Select Shipping Address</h1>
+<p class="text-on-surface-variant font-medium">Choose where you want your architectural components delivered.</p>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-lowest border border-outline-variant/20 hover:bg-surface-container-low transition-all duration-200 rounded-lg group">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="add">add</span>
+<span class="font-semibold text-sm text-on-surface">Add a New Address</span>
+</button>
+</div>
+<!-- Address Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+<!-- Address Card 1: Selected -->
+<label class="relative cursor-pointer group">
+<input checked="" class="peer sr-only" name="address" type="radio"/>
+<div class="h-full p-8 bg-surface-container-lowest rounded-xl border-2 border-transparent peer-checked:border-primary-container peer-checked:bg-surface-container transition-all duration-300 shadow-sm hover:shadow-md">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-primary-container text-white rounded-lg">
+<span class="material-symbols-outlined" data-icon="business">business</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:bg-primary-container peer-checked:border-primary-container flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+<h3 class="text-lg font-bold mb-1">HQ Distribution Hub</h3>
+<p class="text-sm text-on-surface-variant mb-4">Industrial Sector 7, Block B</p>
+<div class="space-y-1 text-sm text-on-surface-variant">
+<p>1284 Innovation Way</p>
+<p>San Jose, CA 95134</p>
+<p>United States</p>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/10 flex gap-4">
+<span class="text-xs font-bold uppercase tracking-widest text-on-primary-container">Primary Office</span>
+</div>
+</div>
+</label>
+<!-- Address Card 2 -->
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="address" type="radio"/>
+<div class="h-full p-8 bg-surface-container-lowest rounded-xl border-2 border-transparent peer-checked:border-primary-container peer-checked:bg-surface-container transition-all duration-300 shadow-sm hover:shadow-md">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-surface-container-high text-on-surface-variant rounded-lg">
+<span class="material-symbols-outlined" data-icon="warehouse">warehouse</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:bg-primary-container peer-checked:border-primary-container flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+</div>
+</div>
+<h3 class="text-lg font-bold mb-1">East Coast Warehouse</h3>
+<p class="text-sm text-on-surface-variant mb-4">Logistics Park East</p>
+<div class="space-y-1 text-sm text-on-surface-variant">
+<p>4500 Commerce Blvd</p>
+<p>Newark, NJ 07105</p>
+<p>United States</p>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/10">
+<span class="text-xs font-bold uppercase tracking-widest text-outline">Receiving Dock A</span>
+</div>
+</div>
+</label>
+<!-- Address Card 3 -->
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="address" type="radio"/>
+<div class="h-full p-8 bg-surface-container-lowest rounded-xl border-2 border-transparent peer-checked:border-primary-container peer-checked:bg-surface-container transition-all duration-300 shadow-sm hover:shadow-md">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-surface-container-high text-on-surface-variant rounded-lg">
+<span class="material-symbols-outlined" data-icon="home_work">home_work</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant peer-checked:bg-primary-container peer-checked:border-primary-container flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+</div>
+</div>
+<h3 class="text-lg font-bold mb-1">Research Lab</h3>
+<p class="text-sm text-on-surface-variant mb-4">Tech Corridor North</p>
+<div class="space-y-1 text-sm text-on-surface-variant">
+<p>88 Quantum Circle</p>
+<p>Austin, TX 78701</p>
+<p>United States</p>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/10">
+<span class="text-xs font-bold uppercase tracking-widest text-outline">Verified Site</span>
+</div>
+</div>
+</label>
+</div>
+<!-- Summary & CTA Section -->
+<div class="bg-surface-container-low rounded-2xl p-8 lg:p-12 flex flex-col lg:flex-row justify-between items-center gap-8">
+<div class="max-w-md">
+<h2 class="text-2xl font-bold mb-2">Ready to proceed?</h2>
+<p class="text-on-surface-variant text-sm leading-relaxed">Your selection will be applied to the current shipment. All items in your cart (4 technical units) will be routed to the chosen destination.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+<button class="px-10 py-5 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold text-lg rounded-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3">
+                    Deliver to this Address
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full border-t border-slate-200/50 bg-slate-50">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 px-8 py-12 max-w-screen-2xl mx-auto">
+<div class="col-span-2">
+<div class="font-manrope font-bold text-slate-900 mb-4">TechArch Engineering</div>
+<p class="font-inter text-xs tracking-wide text-slate-500 max-w-xs">Building the future of industrial infrastructure through precision components and verified logistics solutions.</p>
+</div>
+<div>
+<h4 class="font-bold text-xs uppercase tracking-widest mb-4">Resources</h4>
+<ul class="space-y-2 font-inter text-xs tracking-wide text-slate-500">
+<li><a class="hover:text-blue-600 transition-colors" href="#">Datasheets</a></li>
+<li><a class="hover:text-blue-600 transition-colors" href="#">Compliance</a></li>
+<li><a class="hover:text-blue-600 transition-colors" href="#">API Docs</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-xs uppercase tracking-widest mb-4">Company</h4>
+<ul class="space-y-2 font-inter text-xs tracking-wide text-slate-500">
+<li><a class="hover:text-blue-600 transition-colors" href="#">Global Logistics</a></li>
+<li><a class="hover:text-blue-600 transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-blue-600 transition-colors" href="#">B2B Terms</a></li>
+</ul>
+</div>
+<div class="col-span-2 lg:col-span-2 flex flex-col justify-end items-end">
+<p class="font-inter text-xs tracking-wide text-slate-500">© 2024 TechArch Engineering. All Rights Reserved. ISO 9001 Certified.</p>
+</div>
+</div>
+</footer>
+</body></html>

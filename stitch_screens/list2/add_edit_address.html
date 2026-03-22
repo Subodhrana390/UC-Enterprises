@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add/Edit Address | TechArch E-Com</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#e3e8f9",
+              "outline-variant": "#c6c6cc",
+              "primary-container": "#00213e",
+              "on-tertiary-container": "#96856d",
+              "inverse-primary": "#9fcaff",
+              "surface-container": "#e8eeff",
+              "on-background": "#161c27",
+              "inverse-surface": "#2a303d",
+              "primary": "#000816",
+              "outline": "#76777c",
+              "tertiary": "#0e0700",
+              "on-tertiary": "#ffffff",
+              "surface-dim": "#d4daea",
+              "secondary": "#585e6c",
+              "surface-container-highest": "#dde2f3",
+              "on-secondary-container": "#5e6473",
+              "secondary-fixed-dim": "#c1c6d7",
+              "tertiary-fixed": "#f5dfc4",
+              "background": "#f9f9ff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#161c27",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-tint": "#0061a5",
+              "primary-fixed": "#d2e4ff",
+              "on-tertiary-fixed": "#241a09",
+              "primary-fixed-dim": "#9fcaff",
+              "surface": "#f9f9ff",
+              "secondary-fixed": "#dde2f3",
+              "on-surface-variant": "#45474c",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#d8c3a9",
+              "inverse-on-surface": "#ecf0ff",
+              "on-primary-fixed": "#001d37",
+              "tertiary-container": "#291e0d",
+              "surface-bright": "#f9f9ff",
+              "on-primary-container": "#3d8bd7",
+              "surface-container-low": "#f1f3ff",
+              "error": "#ba1a1a",
+              "surface-variant": "#dde2f3",
+              "secondary-container": "#dde2f3",
+              "on-primary-fixed-variant": "#00497e",
+              "on-tertiary-fixed-variant": "#524531",
+              "on-secondary-fixed": "#161c27",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#414754",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">
+                TechArch E-Com
+            </div>
+<nav class="hidden md:flex items-center space-x-8 font-manrope text-sm font-medium tracking-tight">
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Components</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Solutions</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">B2B Portal</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Specs</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-200" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container ml-2">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Professional user profile headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdagLWgXKT0xjxHSZOkNJE8CPrwmP7He62OhRqAPDfmFCiMA3vG6WQtFUxDcb8PaIVidjCRop5-xgiibNCRAEizoediCgwCHiLgPShKkwbDp5DYC3MrRsDuuefI9rTuD-0BypjCSqlrLoNKA4xcCMHB6zwq2tExGuSNe3QKNU28Cx8AsPQMsc1bfM07C6RXveon5OocrVX2aMBt1tM3FZkS9LwwM_RzCB9wOq8uqBlD6_w5u19yHthBg-QwpqhhC9QXxfDMz2sIUFJ"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow pt-28 pb-20 px-4">
+<div class="max-w-2xl mx-auto">
+<!-- Breadcrumbs / Back navigation -->
+<div class="mb-8 flex items-center gap-2 text-on-surface-variant text-sm font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+<a class="hover:text-primary transition-colors" href="#">Back to Account Settings</a>
+</div>
+<div class="mb-10">
+<h1 class="text-4xl font-extrabold tracking-tighter text-on-surface mb-2">Shipping Address</h1>
+<p class="text-on-surface-variant font-body">Manage your delivery destination with precision. This address will be used for future technical shipments and invoicing.</p>
+</div>
+<!-- Form Section -->
+<div class="bg-surface-container-lowest rounded-xl p-8 lg:p-10 border border-outline-variant/10">
+<form class="space-y-8">
+<!-- Name & Contact Section -->
+<section class="space-y-6">
+<div class="flex items-center gap-3 border-b border-surface-container-high pb-4">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="person">person</span>
+<h2 class="text-lg font-bold tracking-tight uppercase text-xs text-on-secondary-container">Contact Information</h2>
+</div>
+<div class="grid grid-cols-1 gap-6">
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="full_name">Full Name</label>
+<input class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface placeholder:text-outline/50 font-medium" id="full_name" placeholder="Engineering Manager / Recipient" type="text"/>
+</div>
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="phone">Phone Number</label>
+<input class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface placeholder:text-outline/50 font-medium" id="phone" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+</section>
+<!-- Logistics Section -->
+<section class="space-y-6 pt-4">
+<div class="flex items-center gap-3 border-b border-surface-container-high pb-4">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="location_on">location_on</span>
+<h2 class="text-lg font-bold tracking-tight uppercase text-xs text-on-secondary-container">Delivery Logistics</h2>
+</div>
+<div class="space-y-6">
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="street">Street Address</label>
+<input class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface placeholder:text-outline/50 font-medium" id="street" placeholder="123 Tech Center Blvd, Suite 400" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="city">City</label>
+<input class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface placeholder:text-outline/50 font-medium" id="city" placeholder="Palo Alto" type="text"/>
+</div>
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="state">State / Province</label>
+<input class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface placeholder:text-outline/50 font-medium" id="state" placeholder="California" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="zip">Zip / Postal Code</label>
+<input class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface placeholder:text-outline/50 font-medium" id="zip" placeholder="94304" type="text"/>
+</div>
+<div class="group">
+<label class="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2 ml-1" for="country">Country</label>
+<select class="w-full bg-surface-container-highest px-4 py-3.5 rounded-lg border-none focus:ring-2 focus:ring-on-primary-container transition-all text-on-surface font-medium appearance-none" id="country">
+<option value="US">United States</option>
+<option value="CA">Canada</option>
+<option value="UK">United Kingdom</option>
+<option value="DE">Germany</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- Preferences Section -->
+<section class="pt-6 border-t border-surface-container-high">
+<label class="flex items-center gap-4 cursor-pointer group">
+<div class="relative flex items-center">
+<input class="peer h-6 w-6 rounded border-none bg-surface-container-highest text-primary focus:ring-offset-0 focus:ring-primary/20 transition-all cursor-pointer" type="checkbox"/>
+<span class="material-symbols-outlined absolute pointer-events-none opacity-0 peer-checked:opacity-100 text-white left-0.5 top-0.5 text-lg" data-icon="check" data-weight="fill">check</span>
+</div>
+<span class="text-on-surface font-semibold text-sm select-none">Set as Primary Address</span>
+</label>
+<p class="text-xs text-on-surface-variant mt-2 ml-10 italic">This address will be the default for all future checkouts and corporate invoicing.</p>
+</section>
+<!-- Form Actions -->
+<div class="flex flex-col md:flex-row gap-4 pt-10">
+<button class="flex-1 bg-gradient-to-r from-primary to-primary-container text-on-primary py-4 px-8 rounded-lg font-bold tracking-tight hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2" type="submit">
+                            Save Address
+                            <span class="material-symbols-outlined" data-icon="save">save</span>
+</button>
+<button class="flex-1 bg-transparent border border-outline-variant/30 text-on-surface-variant py-4 px-8 rounded-lg font-bold tracking-tight hover:bg-surface-container-low transition-all active:scale-95" type="button">
+                            Cancel
+                        </button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-slate-200/50 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-950">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 px-8 py-12 max-w-screen-2xl mx-auto">
+<div class="col-span-2">
+<div class="font-manrope font-bold text-slate-900 dark:text-slate-100 mb-4">TechArch Engineering</div>
+<p class="font-inter text-xs tracking-wide text-slate-500 max-w-xs">
+                    Architecting the future of global logistics and high-end component distribution. ISO 9001 Certified for quality management.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-bold uppercase text-slate-900 dark:text-slate-100 mb-4">Resources</h4>
+<ul class="space-y-2">
+<li><a class="font-inter text-xs tracking-wide text-slate-500 hover:text-blue-600 transition-colors" href="#">Datasheets</a></li>
+<li><a class="font-inter text-xs tracking-wide text-slate-500 hover:text-blue-600 transition-colors" href="#">Compliance</a></li>
+<li><a class="font-inter text-xs tracking-wide text-slate-500 hover:text-blue-600 transition-colors" href="#">API Docs</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-xs font-bold uppercase text-slate-900 dark:text-slate-100 mb-4">Operations</h4>
+<ul class="space-y-2">
+<li><a class="font-inter text-xs tracking-wide text-slate-500 hover:text-blue-600 transition-colors" href="#">Global Logistics</a></li>
+<li><a class="font-inter text-xs tracking-wide text-slate-500 hover:text-blue-600 transition-colors" href="#">B2B Terms</a></li>
+<li><a class="font-inter text-xs tracking-wide text-slate-500 hover:text-blue-600 transition-colors" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div class="col-span-2 md:col-span-4 lg:col-span-6 border-t border-slate-200/50 dark:border-slate-800/50 pt-8 flex justify-between items-center">
+<span class="font-inter text-xs tracking-wide text-slate-500">© 2024 TechArch Engineering. All Rights Reserved. ISO 9001 Certified.</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors" data-icon="language">language</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors" data-icon="shield">shield</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

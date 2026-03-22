@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Reviews - TechArch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#5e6473",
+              "outline-variant": "#c6c6cc",
+              "surface-container-highest": "#dde2f3",
+              "on-secondary-fixed": "#161c27",
+              "on-primary-fixed-variant": "#00497e",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#dde2f3",
+              "surface-dim": "#d4daea",
+              "on-primary-fixed": "#001d37",
+              "inverse-surface": "#2a303d",
+              "secondary-fixed-dim": "#c1c6d7",
+              "on-tertiary-fixed-variant": "#524531",
+              "tertiary": "#0e0700",
+              "secondary": "#585e6c",
+              "primary-fixed": "#d2e4ff",
+              "on-tertiary-container": "#96856d",
+              "inverse-primary": "#9fcaff",
+              "surface-variant": "#dde2f3",
+              "surface-container": "#e8eeff",
+              "on-secondary-fixed-variant": "#414754",
+              "error-container": "#ffdad6",
+              "primary": "#000816",
+              "on-tertiary-fixed": "#241a09",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#d8c3a9",
+              "tertiary-container": "#291e0d",
+              "surface-tint": "#0061a5",
+              "surface-container-low": "#f1f3ff",
+              "error": "#ba1a1a",
+              "surface-bright": "#f9f9ff",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#dde2f3",
+              "tertiary-fixed": "#f5dfc4",
+              "primary-container": "#00213e",
+              "background": "#f9f9ff",
+              "inverse-on-surface": "#ecf0ff",
+              "on-background": "#161c27",
+              "surface-container-high": "#e3e8f9",
+              "on-surface-variant": "#45474c",
+              "on-primary-container": "#3d8bd7",
+              "primary-fixed-dim": "#9fcaff",
+              "on-surface": "#161c27",
+              "on-error-container": "#93000a",
+              "on-primary": "#ffffff",
+              "surface": "#f9f9ff",
+              "outline": "#76777c",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-md flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black text-slate-900 dark:text-slate-50 font-headline tracking-tight">TechArch</span>
+<div class="hidden md:flex gap-6">
+<a class="text-slate-600 dark:text-slate-400 font-['Manrope'] font-bold tracking-tight hover:text-blue-500 dark:hover:text-blue-300 transition-colors duration-200 ease-in-out" href="#">Components</a>
+<a class="text-slate-600 dark:text-slate-400 font-['Manrope'] font-bold tracking-tight hover:text-blue-500 dark:hover:text-blue-300 transition-colors duration-200 ease-in-out" href="#">Solutions</a>
+<a class="text-slate-600 dark:text-slate-400 font-['Manrope'] font-bold tracking-tight hover:text-blue-500 dark:hover:text-blue-300 transition-colors duration-200 ease-in-out" href="#">B2B Portal</a>
+<a class="text-slate-600 dark:text-slate-400 font-['Manrope'] font-bold tracking-tight hover:text-blue-500 dark:hover:text-blue-300 transition-colors duration-200 ease-in-out" href="#">Support</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-600 dark:text-slate-400">shopping_cart</button>
+<button class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile Avatar" data-alt="Close up portrait of a professional male user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2Q2hKEnTd89Vdin5Y5hUPnb2B3PX-pVcLpP-DrDEWFFAjB42R75I0XGpkiIe8eXE17JqfaoH9EKX0tiUfb2dvgvqewicmriH5B7zI48Vtbf5S9cTEyn-_J-jiQ4RlTsItzzvNgVNrLRPx5uxhwZBfFK_417R69G-j0KteXoAdHDjYQTW2PDf985ksB6mwy00HM1LbT1ntuHwUI0YTtYbpZd8ZN72L35zKqcmhpj-QT_fspIkkcdtNCH1_HE7Z76MqU2bGmIbJe8xv"/>
+</div>
+</div>
+</nav>
+<div class="flex pt-16 min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 border-r border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 flex flex-col p-4 space-y-2 sticky top-16">
+<div class="flex items-center gap-3 px-2 py-4 mb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container overflow-hidden">
+<img alt="User Profile Picture" data-alt="Portrait of Alex Architect" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyPEegxCxXafUghs5rMAf1HRScG9N-0B2XBOCCGgX0ngail13H0l7tWgqmSyUyHPE8Ms6QtWYwUSCCNX8BZh9k3PYbfZcOjXF1kLz5-kXn-oI04ZMFhKs2U3qU7LKSfA5EpuiskR6z7WZKBpXw8ffGqSkYfwKPm6HhbM5dqean1BhHlSY0wbDGd8aS9mIqEg3DdjbT3vR3EBEHAK_Sh8JruKn-NNt1WVr2PSMshI1i0ILHe-MIaD1RDEFagA6lvdadTJFpQLdHF8WH"/>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-slate-50 font-headline leading-tight">Alex Architect</h3>
+<p class="text-xs text-slate-500 font-medium">Premium Tier Member</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">package</span> Orders
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">favorite</span> Wishlist
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm rounded-lg hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">rate_review</span> My Reviews
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+                </a>
+</nav>
+<div class="mt-auto pt-4 space-y-2">
+<button class="w-full bg-primary text-on-primary py-2 px-4 rounded-lg text-sm font-bold tracking-tight hover:opacity-90 transition-opacity">Upgrade to B2B</button>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-200 font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">logout</span> Logout
+                </a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-12 bg-surface">
+<div class="max-w-5xl mx-auto">
+<header class="mb-12">
+<h1 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight mb-2">My Reviews</h1>
+<p class="text-on-surface-variant font-body">Manage your feedback on components and architectural solutions.</p>
+</header>
+<div class="grid grid-cols-1 gap-6">
+<!-- Review Item 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col md:flex-row gap-8 items-start relative group">
+<div class="w-24 h-24 bg-surface-container-low flex-shrink-0 rounded-lg overflow-hidden">
+<img alt="Microprocessor Unit" data-alt="High-end microprocessor unit on a circuit board" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjkLU4WN9Eh5n6UFFOa9HGevvToNDiVlF570IESCdDA9auV2ZtjGt-pJdZ-u6Czaey6FDSxdJs3jMrYESS5fmv2Pwm2A9KXuS5q397JFvHxCcpsBZdZNECnkqniZBQsCixeJkw78GadwconnKX5X9kl7HrfxEGyHvKcGhqoCPGYSbpFspK5fnG2TXmKy3wdSMWKfxyFKnCbPPpW0m77XNTXBz16w7l3ICCs-wTegaA9cLKMmG8yoIeaSvIaZKE5A76KjVNdew6Hsgm"/>
+</div>
+<div class="flex-1">
+<div class="flex flex-wrap justify-between items-start mb-4">
+<div>
+<h2 class="font-headline text-xl font-bold text-on-surface mb-1">Quantum-X7 Logic Controller</h2>
+<div class="flex items-center gap-4">
+<div class="flex text-on-primary-container">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs font-label text-on-surface-variant uppercase tracking-widest bg-secondary-container px-2 py-0.5 rounded-sm">Verified Purchase</span>
+</div>
+</div>
+<span class="text-sm font-label text-on-surface-variant">October 24, 2023</span>
+</div>
+<p class="text-on-surface-variant leading-relaxed mb-6 font-body">
+                                The thermal management on the X7 series is exceptional. We've implemented these across our high-load server arrays and seen a 12% decrease in ambient rack temperature. Integration was seamless with our existing B2B manifest system. Highly recommended for industrial-scale operations.
+                            </p>
+<div class="flex items-center gap-3">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">edit</span> Edit Review
+                                </button>
+<button class="text-on-surface-variant hover:text-error px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                                    Delete
+                                </button>
+</div>
+</div>
+</div>
+<!-- Review Item 2 -->
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col md:flex-row gap-8 items-start relative">
+<div class="w-24 h-24 bg-surface-container flex-shrink-0 rounded-lg overflow-hidden">
+<img alt="Server Hardware" data-alt="Blue glowing server hardware components" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdYUhAOMhNFaNPfL1xvPib1qbcdbpT7o5dxRgvwI6NLnyb26PlcW5aavBfsKx8d9aSEQuBhaRCIchMF4aRzg9M0zAxDPvfN9ZleyfKAHA7G2QfifEqIXLqP3A_sEkrfrpk4NeW7P3dM3eNSRARAEUN845_hEn9-Uogwjh_pHYRQVTqiu-c4ulqklo4CvCbGhV0komM72Kzyvw7HK7hy3De-uhZ-33YFCi64G4dCFDqo98gRi4n_RCqNYhcTgslmNFwCvRKP3WDKnZi"/>
+</div>
+<div class="flex-1">
+<div class="flex flex-wrap justify-between items-start mb-4">
+<div>
+<h2 class="font-headline text-xl font-bold text-on-surface mb-1">Titan Shield Data Vault</h2>
+<div class="flex items-center gap-4">
+<div class="flex text-on-primary-container">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-lg">star</span>
+</div>
+</div>
+</div>
+<span class="text-sm font-label text-on-surface-variant">September 12, 2023</span>
+</div>
+<p class="text-on-surface-variant leading-relaxed mb-6 font-body">
+                                Excellent durability and read/write speeds that exceed the technical specifications provided. The only drawback was the lack of mounting brackets in the standard B2B package, but the hardware performance itself is top-tier engineering.
+                            </p>
+<div class="flex items-center gap-3">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">edit</span> Edit Review
+                                </button>
+<button class="text-on-surface-variant hover:text-error px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                                    Delete
+                                </button>
+</div>
+</div>
+</div>
+<!-- Review Item 3 (Bento Grid Variation for Recent Activity) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+<div class="bg-surface-container p-6 rounded-xl flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline font-bold text-lg">Circuit Optimizer v2</h3>
+<div class="w-2 h-2 rounded-full bg-blue-500 blur-[2px]" title="Inventory Status Glow"></div>
+</div>
+<div class="flex text-on-primary-container mb-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+<p class="text-sm text-on-surface-variant font-body mb-4 line-clamp-2">The software interface for this optimizer is incredibly intuitive for our junior engineers. Great technical documentation provided.</p>
+<div class="mt-auto flex justify-between items-center">
+<span class="text-xs text-on-secondary-container">August 05, 2023</span>
+<button class="text-blue-600 font-bold text-xs hover:underline underline-offset-4 transition-all">Quick Edit</button>
+</div>
+</div>
+<div class="bg-surface-container-high p-6 rounded-xl flex flex-col border border-outline-variant/15">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline font-bold text-lg text-primary">Heavy-Duty Busbar (800A)</h3>
+<span class="text-xs font-label text-on-surface-variant uppercase tracking-widest bg-secondary-container px-2 py-0.5 rounded-sm">Review Pending</span>
+</div>
+<p class="text-sm text-on-surface-variant font-body mb-4 italic italic">"Waiting for final stress test results before finalizing technical feedback..."</p>
+<div class="mt-auto flex justify-between items-center">
+<span class="text-xs text-on-secondary-container">Draft saved July 29</span>
+<button class="bg-primary text-on-primary px-3 py-1 rounded text-xs font-bold hover:opacity-90">Finish Review</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State Suggestion for Editorial Feel -->
+<div class="mt-20 border-t border-outline-variant/10 pt-12 text-center max-w-2xl mx-auto">
+<span class="material-symbols-outlined text-4xl text-on-secondary-container mb-4">rate_review</span>
+<h3 class="font-headline text-2xl font-bold mb-2">Have a new component in your stack?</h3>
+<p class="text-on-surface-variant mb-8">Share your technical insights with the TechArch community and earn Architect Credits for your next B2B purchase.</p>
+<button class="bg-primary-container text-on-primary-container px-6 py-3 rounded-lg font-bold hover:bg-primary hover:text-on-primary transition-all">Write a New Review</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom Navigation (Responsive Pivot) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md flex justify-around items-center h-16 border-t border-slate-200/50 dark:border-slate-800/50 z-50">
+<a class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-medium">Dash</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">package</span>
+<span class="text-[10px] font-medium">Orders</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-blue-600 dark:text-blue-400" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rate_review</span>
+<span class="text-[10px] font-medium">Reviews</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-600 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</body></html>

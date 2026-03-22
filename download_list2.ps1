@@ -1,0 +1,22 @@
+$links = @(
+    @{ name = "fabrication_overview"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2I5MjdkZDMxOWE3NzQwNDk5OGYzZjM3OTIxMmUxZGI3EgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "quote_history"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2Y0YWE2M2I3NjNmNzQzOWNhMWU3ZTUwYzg5MGQ1N2NkEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "quick_reorder"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzY1YzVkMzYyNWE3ZTRlNjU4MGE5MzIyNDA1ZTRmZjA5EgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "track_order"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzhkZjM5N2M2NzhlZDRmZmFhYWM1Mzc5MWI3YjA3ODY2EgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "order_details"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2JhZTRkYWNhZjNkZjQxNzhiMDBkNGMzYjc2NTI2Y2MwEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "profile"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2ZlYWY5ZWJiYTZjZjQ2NGM5NWU1OTkyOGRkNThlOGU5EgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "address_book"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzNiM2RhZmY3NDQ2NjQ4MGY5MmZlOTdiMWE5MDc1MDk0EgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "add_edit_address"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzgxYjFiOTYxYzA5ZTQ5NjdhNzBkMWQzYjZiMDIzMDRmEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "cancel_order"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzM5MWFkODcxZWQ4ODQ4NmRhYTVlNTMyYTVlYzdjZTNkEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "saved_for_later"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzYyYzNjZWE5OWMxNzRjZmVhZGNjNDQxZGE0OWY3ZWExEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "select_address"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzNkMzA4M2Q4YjkxZTRjZTE5YjgyYTczNjRkNGFhYjk0EgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "select_payment"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzZhZGQ4YjE1NjY3ZTRjODNiNDg3NTRlYjA0NjRiN2ZhEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "order_success"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2QzNzAwMjAyMDM1MTRkZTJiOGZkMDEzOTUyN2E3ZGZmEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" },
+    @{ name = "order_failure"; url = "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzZmODUyNGMwNzU2MzQ5MDBiYTQzOGEzYzQzNDlhNDhmEgsSBxDykKaeowQYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA0ODQ5MzUxOTY1NDA3NDc1Mg&filename=&opi=89354086" }
+)
+
+foreach ($link in $links) {
+    $dest = "stitch_screens/list2/$($link.name).html"
+    Write-Host "Downloading $($link.name)..."
+    curl.exe -L $link.url -o $dest
+}
