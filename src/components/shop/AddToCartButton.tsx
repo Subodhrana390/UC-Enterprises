@@ -8,7 +8,7 @@ export function AddToCartButton({ productId, quantity = 1, className, children }
   const [pending, startTransition] = useTransition();
 
   return (
-    <form action={(fd) => startTransition(() => addToCartFromForm(fd))}>
+    <form action={(fd) => startTransition(() => { addToCartFromForm(fd); })}>
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="quantity" value={String(quantity)} />
       <Button type="submit" disabled={pending} className={className}>

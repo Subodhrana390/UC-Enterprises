@@ -8,7 +8,7 @@ export function CartItemActions({ cartItemId }: { cartItemId: string }) {
 
   return (
     <div className="flex gap-6 mt-6">
-      <form action={(fd) => startTransition(() => saveForLaterForm(fd))}>
+      <form action={(fd) => startTransition(() => { saveForLaterForm(fd); })}>
         <input type="hidden" name="cartItemId" value={cartItemId} />
         <button
           type="submit"
@@ -18,7 +18,7 @@ export function CartItemActions({ cartItemId }: { cartItemId: string }) {
           <span className="material-symbols-outlined text-sm">bookmark</span> Save for Later
         </button>
       </form>
-      <form action={(fd) => startTransition(() => removeFromCartForm(fd))}>
+      <form action={(fd) => startTransition(() => { removeFromCartForm(fd); })}>
         <input type="hidden" name="cartItemId" value={cartItemId} />
         <button
           type="submit"

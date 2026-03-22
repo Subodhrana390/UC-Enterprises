@@ -17,7 +17,7 @@ export function InventoryAdjustButton({ productId }: { productId: string }) {
   }
 
   return (
-    <form action={(fd) => startTransition(() => adjustStockForm(fd))} className="flex gap-2 items-center" onSubmit={() => setTimeout(() => setOpen(false), 100)}>
+    <form action={(fd) => startTransition(() => { adjustStockForm(fd); })} className="flex gap-2 items-center" onSubmit={() => setTimeout(() => setOpen(false), 100)}>
       <input type="hidden" name="productId" value={productId} />
       <input name="delta" type="number" placeholder="+/- qty" className="w-20 h-9 rounded-lg border px-2 text-xs font-bold" defaultValue={0} required />
       <Button type="submit" disabled={pending} size="sm" className="h-9 text-[9px]">Apply</Button>

@@ -38,7 +38,7 @@ export default function FabricationPage() {
                  <span className="material-symbols-outlined text-[180px]">precision_manufacturing</span>
                </div>
               
-              <form action={submitFabricationRequest} className="space-y-16 relative z-10">
+              <form action={async (formData) => { await submitFabricationRequest(formData); }} className="space-y-16 relative z-10">
                 {/* Project Scope Section */}
                 <div className="space-y-10">
                   <div className="flex items-center gap-4 border-b border-border/10 pb-6">

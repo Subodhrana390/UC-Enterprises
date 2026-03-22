@@ -7,7 +7,7 @@ import { removeFromWishlistForm, addWishlistItemToCartForm } from "@/lib/actions
 export function WishlistRemoveButton({ wishlistItemId }: { wishlistItemId: string }) {
   const [pending, startTransition] = useTransition();
   return (
-    <form action={(fd) => startTransition(() => removeFromWishlistForm(fd))}>
+    <form action={(fd) => startTransition(() => { removeFromWishlistForm(fd); })}>
       <input type="hidden" name="wishlistItemId" value={wishlistItemId} />
       <button
         type="submit"
@@ -23,7 +23,7 @@ export function WishlistRemoveButton({ wishlistItemId }: { wishlistItemId: strin
 export function WishlistAddToCartButton({ wishlistItemId }: { wishlistItemId: string }) {
   const [pending, startTransition] = useTransition();
   return (
-    <form action={(fd) => startTransition(() => addWishlistItemToCartForm(fd))}>
+    <form action={(fd) => startTransition(() => { addWishlistItemToCartForm(fd); })}>
       <input type="hidden" name="wishlistItemId" value={wishlistItemId} />
       <Button type="submit" disabled={pending} className="bg-primary text-white h-14 px-8 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 hover:scale-[1.05] active:scale-95 transition-all shadow-xl shadow-primary/10">
         <span className="material-symbols-outlined text-lg">shopping_cart</span>
