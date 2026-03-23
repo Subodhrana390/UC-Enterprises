@@ -4,14 +4,15 @@ import Link from "next/link";
 import { CheckoutProgress, CheckoutProgressCircles } from "@/components/checkout/CheckoutProgress";
 import { PaymentMethodStep } from "@/components/checkout/PaymentMethodStep";
 import { CheckoutOrderSummaryCard } from "@/components/checkout/CheckoutOrderSummaryCard";
-type Props = { searchParams: Promise<{ addressId?: string; gst?: string }> };
+
+type Props = { 
+  searchParams: Promise<{ addressId?: string; gst?: string }> 
+};
 
 export default async function CheckoutPaymentPage({ searchParams }: Props) {
   const { addressId, gst } = await searchParams;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
@@ -27,36 +28,76 @@ export default async function CheckoutPaymentPage({ searchParams }: Props) {
   if (!addressId || !addrRow) redirect("/checkout");
 
   const subtotal = cartItems.reduce(
-    (acc, item: { products?: { base_price?: number }; quantity: number }) => acc + (item.products?.base_price ?? 0) * item.quantity,
+    (acc, item: any) => acc + (item.products?.base_price ?? 0) * item.quantity,
     0
   );
   const gstAmount = subtotal * 0.18;
   const totalAmount = subtotal + gstAmount;
-
   const gstBool = gst === "1" || gst === "true";
 
   return (
-    <main className="pt-10 pb-24 px-4 md:px-8 lg:px-12 max-w-[1440px] mx-auto">
-      <div className="hidden md:block">
-        <CheckoutProgressCircles step={2} />
-      </div>
-      <div className="md:hidden mb-8">
-        <CheckoutProgress step={2} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        <div className="lg:col-span-8">
-          <PaymentMethodStep addressId={addressId} gst={gstBool} />
-        </div>
-        <aside className="lg:col-span-4">
-          <div className="sticky top-28 space-y-6">
-            <CheckoutOrderSummaryCard cartItems={cartItems} subtotal={subtotal} gst={gstAmount} totalAmount={totalAmount} />
-            <Link href="/checkout" className="block text-center text-sm font-black text-primary uppercase tracking-widest hover:underline">
-              ← Edit address
-            </Link>
+    <div className="bg-white min-h-screen text-[#1a1c1d]">
+      <main className="max-w-[1100px] mx-auto px-4 py-8 md:py-16">
+        
+        {/* Step Indicator - Subdued and Professional */}
+        <div className="mb-10">
+          <div className="hidden md:block">
+            <CheckoutProgressCircles step={2} />
           </div>
-        </aside>
-      </div>
-    </main>
+          <div className="md:hidden">
+            <CheckoutProgress step={2} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Main Column: Payment Selection */}
+          <div className="lg:col-span-7 space-y-8">
+            <header className="mb-6">
+              <h1 className="text-2xl font-semibold tracking-tight">Payment</h1>
+              <p className="text-sm text-[#616161] mt-1">All transactions are secure and encrypted.</p>
+            </header>
+
+            {/* Component should handle the Shopify-style radio list */}
+            <div className="border border-[#ebebeb] rounded-xl overflow-hidden shadow-sm">
+              <PaymentMethodStep addressId={addressId} gst={gstBool} />
+            </div>
+
+            {/* Shopify-style Footer Navigation */}
+            <div className="flex justify-between items-center pt-6 border-t border-[#ebebeb]">
+              <Link 
+                href="/checkout" 
+                className="text-sm font-medium text-[#005bd3] hover:text-blue-800 flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">chevron_left</span>
+                Return to shipping
+              </Link>
+            </div>
+          </div>
+
+          {/* Sidebar: Order Summary (Subtle background) */}
+          <aside className="lg:col-span-5">
+            <div className="bg-[#f7f7f7] rounded-xl p-6 md:p-8 sticky top-10 border border-[#ebebeb]">
+              <h2 className="text-lg font-semibold mb-6">Order summary</h2>
+              
+              <CheckoutOrderSummaryCard 
+                cartItems={cartItems} 
+                subtotal={subtotal} 
+                gst={gstAmount} 
+                totalAmount={totalAmount} 
+              />
+              
+              {/* Trust Badge / Security Micro-copy */}
+              <div className="mt-8 flex items-center gap-3 text-[#616161] bg-white p-4 rounded-lg border border-[#ebebeb]">
+                <span className="material-symbols-outlined text-green-600">lock</span>
+                <p className="text-[11px] leading-tight">
+                  Your payment is processed through secure protocols. We never store your full card details.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -1,68 +1,107 @@
 import { createClient } from "@/lib/supabase/server";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default async function UsersPage() {
   const supabase = await createClient();
+
   const { data: users } = await supabase
     .from("profiles")
     .select("*")
     .order("created_at", { ascending: false });
 
+  console.log(users)
+
   return (
-    <div className="p-8 space-y-8">
-      <header className="flex justify-between items-end">
-        <div>
-          <h1 className="text-4xl font-black font-headline tracking-tighter uppercase mb-2">Personnel Directory</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant opacity-40">Identity & Access Management</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <header className="flex justify-between items-center">
+        <h1 className="text-xl font-semibold text-[#1a1c1d]">Customers</h1>
+        <div className="flex gap-3">
+          <Button variant="outline" className="bg-white border-[#d2d2d2] h-9 text-xs font-medium px-4 shadow-sm">
+            Export
+          </Button>
+          <Button variant="outline" className="bg-white border-[#d2d2d2] h-9 text-xs font-medium px-4 shadow-sm">
+            Import
+          </Button>
+          <Button className="bg-[#1a1c1d] text-white h-9 text-xs font-medium px-4 hover:bg-[#303030]">
+            Add customer
+          </Button>
         </div>
-        <Button className="h-12 px-6 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">
-          <span className="material-symbols-outlined mr-2">person_add</span>
-          Invite Operator
-        </Button>
       </header>
 
-      <div className="bg-white/50 backdrop-blur-xl rounded-[32px] border border-border/40 shadow-2xl shadow-primary/5 overflow-hidden">
+      {/* Resource List Card */}
+      <div className="bg-white border border-[#ebebeb] shadow-sm rounded-xl overflow-hidden">
+        {/* Tabs */}
+        <div className="flex items-center px-4 border-b border-[#f1f1f1] gap-6">
+          {["All", "New", "Returning", "Abandoned checkouts"].map((tab, i) => (
+            <button
+              key={tab}
+              className={`py-3 text-xs font-medium border-b-2 transition-colors ${i === 0 ? "border-black text-black" : "border-transparent text-[#616161] hover:text-black"
+                }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Filter Bar */}
+        <div className="p-3 flex gap-2 border-b border-[#f1f1f1] bg-[#fafafa]">
+          <div className="relative flex-1 max-w-md">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#616161]">
+              search
+            </span>
+            <input
+              placeholder="Search customers"
+              className="w-full pl-9 pr-4 py-1.5 bg-white border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+            />
+          </div>
+          <Button variant="outline" className="bg-white border-[#d2d2d2] h-8 text-[11px]">Email subscription</Button>
+          <Button variant="outline" className="bg-white border-[#d2d2d2] h-8 text-[11px]">Location</Button>
+        </div>
+
         <Table>
-          <TableHeader className="bg-surface/50 border-b border-border/10">
-            <TableRow className="hover:bg-transparent border-none">
-              <TableHead className="h-14 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Identity</TableHead>
-              <TableHead className="h-14 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Email</TableHead>
-              <TableHead className="h-14 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Designation</TableHead>
-              <TableHead className="h-14 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Status</TableHead>
-              <TableHead className="h-14 text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Pulse</TableHead>
-              <TableHead className="h-14 text-[10px] font-black uppercase tracking-widest text-on-surface-variant text-center">Actions</TableHead>
+          <TableHeader className="bg-[#fafafa]">
+            <TableRow className="hover:bg-transparent border-[#f1f1f1]">
+              <TableHead className="w-10 px-6"><input type="checkbox" className="rounded-sm" /></TableHead>
+              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Customer name</TableHead>
+              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Role</TableHead>
+              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Email subscription</TableHead>
+              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Orders</TableHead>
+              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider text-right">Amount spent</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="divide-y divide-[#f1f1f1]">
             {users?.map((user) => (
-              <TableRow key={user.id} className="h-20 border-b border-border/5 hover:bg-white transition-colors">
+              <TableRow key={user.id} className="hover:bg-[#fafafa] cursor-pointer group border-[#f1f1f1]">
+                <TableCell className="px-6"><input type="checkbox" className="rounded-sm" /></TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary uppercase text-xs">
-                        {user.first_name ? user.first_name.charAt(0) : user.id.charAt(0)}
-                    </div>
-                    <p className="font-black text-sm uppercase leading-tight">
-                        {user.first_name} {user.last_name}
-                    </p>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-[#1a1c1d] group-hover:underline">
+                      {user.full_name}
+                    </span>
+                    <span className="text-[11px] text-[#616161]">{user.email}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-on-surface-variant opacity-60 font-medium text-xs font-mono">{user.email || "No email"}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="text-[9px] font-black bg-white uppercase border-border/20 px-3">{user.account_type || "Standard"}</Badge>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-[#1a1c1d] group-hover:underline">
+                      {user.role}
+                    </span>
+                    <span className="text-[11px] text-[#616161]">{user.email}</span>
+                  </div>
                 </TableCell>
                 <TableCell>
-                   <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                       Active
-                   </span>
+                  <Badge variant="secondary" className="bg-[#e3f1df] text-[#008060] hover:bg-[#e3f1df] border-none text-[10px] font-medium rounded-md px-2 py-0">
+                    Subscribed
+                  </Badge>
                 </TableCell>
-                <TableCell className="text-[10px] font-black uppercase tracking-widest opacity-40">{new Date(user.created_at).toLocaleDateString()}</TableCell>
-                <TableCell className="text-center">
-                   <Button variant="ghost" size="icon" className="h-10 w-10 text-on-surface-variant opacity-40 hover:opacity-100 transition-all">
-                       <span className="material-symbols-outlined text-sm">settings_account_box</span>
-                   </Button>
+                <TableCell className="text-xs text-[#1a1c1d]">
+                  {user.order_count || 0}
+                </TableCell>
+                <TableCell className="text-xs text-[#1a1c1d] text-right font-medium">
+                  ₹ 0.00
                 </TableCell>
               </TableRow>
             ))}

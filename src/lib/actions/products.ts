@@ -1,9 +1,11 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function getCategories() {
-  const supabase =  await createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("categories")
     .select("*")
@@ -81,18 +83,18 @@ export async function getProductsByCategory(categorySlug: string) {
   return data;
 }
 
-export async function searchProducts({ 
-  query, 
-  category, 
-  manufacturer, 
-  minPrice, 
+export async function searchProducts({
+  query,
+  category,
+  manufacturer,
+  minPrice,
   maxPrice,
   sort = "relevant"
-}: { 
-  query?: string; 
-  category?: string; 
-  manufacturer?: string; 
-  minPrice?: number; 
+}: {
+  query?: string;
+  category?: string;
+  manufacturer?: string;
+  minPrice?: number;
   maxPrice?: number;
   sort?: string;
 }) {
@@ -144,4 +146,89 @@ export async function searchProducts({
   }
 
   return data;
+}
+
+export async function getRelatedProducts(categorySlug: string, currentProductId: string, limit = 4) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      *,
+      categories!inner(slug, name),
+      brands(*),
+      reviews(
+        rating
+      )
+    `)
+    .eq("categories.slug", categorySlug)
+    .neq("id", currentProductId)
+    .limit(limit)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching related products:", error);
+    return [];
+  }
+
+  const productsWithMeta = data.map((product) => {
+    const reviews = product.reviews || [];
+    const reviewCount = reviews.length;
+    const averageRating = reviewCount > 0
+      ? reviews.reduce((acc: number, curr: any) => acc + curr.rating, 0) / reviewCount
+      : 0;
+
+    return {
+      ...product,
+      review_count: reviewCount,
+      average_rating: averageRating.toFixed(1)
+    };
+  });
+
+  return productsWithMeta;
+}
+
+export async function createProduct(formData: FormData) {
+  const supabase = await createClient();
+
+  const rawFormData = {
+    name: formData.get("name") as string,
+    description: formData.get("description") as string,
+    sku: formData.get("sku") as string,
+    base_price: parseFloat(formData.get("price") as string),
+    stock_quantity: parseInt(formData.get("inventory") as string),
+    category_id: formData.get("category_id") as string,
+    brand_id: formData.get("brand_id") as string,
+    status: formData.get("status") as string || "active",
+  };
+
+  const { error } = await supabase.from("products").insert([rawFormData]);
+
+  if (error) {
+    console.error(error);
+    return { error: "Failed to create product." };
+  }
+
+  revalidatePath("/admin/products");
+  redirect("/admin/products");
+}
+
+/**
+ * Fetches all brands/vendors for the product management forms.
+ * Ordered alphabetically for a better merchant experience.
+ */
+export async function getBrands() {
+  const supabase = await createClient();
+
+  const { data: brands, error } = await supabase
+    .from("brands")
+    .select("id, name, slug, logo_url")
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching brands:", error);
+    return [];
+  }
+
+  return brands;
 }

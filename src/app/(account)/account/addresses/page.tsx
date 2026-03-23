@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
-import { AddAddressForm } from "@/components/account/AddAddressForm";
 import { AddressActions } from "@/components/account/AddressActions";
+import { AddressForm } from "@/components/account/AddressForm"; // Import the form for the Add button
 
 export default async function AddressesPage() {
   const supabase = await createClient();
@@ -20,48 +19,87 @@ export default async function AddressesPage() {
     .order("is_default", { ascending: false });
 
   return (
-    <div className="p-8 space-y-10">
-      <header className="flex justify-between items-end">
+    <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-4xl font-black font-headline tracking-tighter uppercase mb-2">Logistics Endpoints</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">Manage your global shipping and billing coordinates</p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-1">Saved Addresses</h1>
+          <p className="text-sm text-gray-500">Manage your shipping and billing addresses for faster checkout.</p>
         </div>
-        <AddAddressForm />
+        {/* CORRECTED: Use AddressForm here for the 'Add New' functionality */}
+        <AddressForm mode="add" />
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {addresses && addresses.length > 0 ? addresses.map((addr) => (
-          <Card key={addr.id} className={`rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5 hover:border-primary/20 transition-all group p-8 ${addr.is_default ? "ring-2 ring-primary ring-offset-4 ring-offset-surface" : ""}`}>
-            <CardContent className="p-0 space-y-6">
-              <div className="flex justify-between items-start">
-                  <div className="h-12 w-12 rounded-2xl bg-surface border border-border/10 flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-all">
-                    <span className="material-symbols-outlined">{addr.type === 'billing' ? 'payments' : 'local_shipping'}</span>
-                  </div>
-                  {addr.is_default && (
-                    <span className="text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter bg-primary/10 text-primary border border-primary/20">
-                      Primary Destination
+      {/* Address Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {addresses && addresses.length > 0 ? (
+          addresses.map((addr) => (
+            <Card 
+              key={addr.id} 
+              className={`rounded-xl border transition-all duration-200 shadow-sm overflow-hidden flex flex-col ${
+                addr.is_default 
+                  ? "border-black ring-1 ring-black" 
+                  : "border-gray-100 hover:border-gray-300"
+              }`}
+            >
+              <CardContent className="p-6 flex flex-col h-full">
+                {/* Header: Icon & Badges */}
+                <div className="flex justify-between items-start mb-6">
+                  <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
+                    addr.is_default ? "bg-black text-white" : "bg-gray-50 text-gray-400"
+                  }`}>
+                    <span className="material-symbols-outlined text-xl">
+                      {addr.type === 'billing' ? 'receipt_long' : 'home_pin'}
                     </span>
-                  )}
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-black uppercase tracking-tight mb-2">{addr.label || addr.full_name || "Unnamed Location"}</h3>
-                <div className="text-[11px] font-bold text-on-surface-variant opacity-60 uppercase tracking-widest leading-relaxed">
-                  <p>{addr.street || addr.address_line1}</p>
-                  <p>{addr.city}, {addr.state} {addr.zip || addr.pincode}</p>
-                  <p>{addr.country || ""}</p>
+                  </div>
+                  
+                  <div className="flex flex-col items-end gap-2">
+                    {addr.is_default && (
+                      <span className="text-[10px] px-2 py-1 rounded bg-black text-white font-bold uppercase tracking-wider">
+                        Default
+                      </span>
+                    )}
+                    {addr.label && (
+                      <span className="text-[10px] px-2 py-1 rounded bg-gray-100 text-gray-600 font-bold uppercase tracking-wider">
+                        {addr.label}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
+                
+                {/* Address Details */}
+                <div className="flex-grow space-y-1">
+                  <div className="text-sm text-gray-600 leading-relaxed">
+                    <p className="font-bold text-gray-900 uppercase text-xs tracking-tight mb-2">
+                       {addr.full_name}
+                    </p>
+                    
+                    <p className="text-gray-900 font-medium">{addr.address_line1}</p>
+                    {addr.address_line2 && <p>{addr.address_line2}</p>}
+                    <p>{addr.city}, {addr.state} - <span className="font-semibold text-gray-900">{addr.pincode}</span></p>
+                    
+                    <p className="mt-4 flex items-center gap-2 text-[13px] text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">
+                      <span className="material-symbols-outlined text-sm text-gray-400">call</span>
+                      {addr.phone_number || "No phone provided"}
+                    </p>
+                  </div>
+                </div>
 
-              <div className="flex gap-4 pt-6 border-t border-border/10">
-                <AddressActions addressId={addr.id} isDefault={!!addr.is_default} />
-              </div>
-            </CardContent>
-          </Card>
-        )) : (
-          <div className="lg:col-span-3 py-20 text-center space-y-4 opacity-30">
-            <span className="material-symbols-outlined text-6xl">map</span>
-            <p className="text-[10px] font-black uppercase tracking-widest">No logistics endpoints registered in your system</p>
+                {/* Actions Row */}
+                <div className="flex gap-4 pt-6 mt-6 border-t border-gray-50">
+                  {/* CORRECTED: Pass the full 'addr' object so the edit form can populate */}
+                  <AddressActions address={addr} isDefault={!!addr.is_default} />
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <div className="col-span-full py-24 text-center border-2 border-dashed border-gray-100 rounded-2xl">
+            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-gray-300 text-3xl">map</span>
+            </div>
+            <h3 className="text-sm font-medium text-gray-900">No addresses found</h3>
+            <p className="text-xs text-gray-500 mt-1">Add an address to make your next checkout even faster.</p>
           </div>
         )}
       </div>

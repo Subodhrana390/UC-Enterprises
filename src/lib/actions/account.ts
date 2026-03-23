@@ -31,122 +31,147 @@ export async function updateProfile(formData: FormData) {
 export async function addAddress(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
   if (!user) return { error: "Unauthorized" };
 
-  const label = formData.get("label") as string;
+
+  const addressLabel = (formData.get("label") as string) || "Home";
+  const receiverName = (formData.get("full_name") as string);
   const street = formData.get("street") as string;
   const city = formData.get("city") as string;
   const state = formData.get("state") as string;
   const zip = formData.get("zip") as string;
+  const phone = formData.get("phone") as string;
   const country = formData.get("country") as string;
   const type = (formData.get("type") as string) || "shipping";
   const isDefault = formData.get("isDefault") === "true";
 
-  if (!street || !city || !zip || !country) {
-    return { error: "Street, city, zip, and country are required." };
+  if (!street || !city || !zip || !country || !receiverName || !phone) {
+    return { error: "Name, Street, City, Pincode, Country, and Phone are required." };
   }
 
-  if (isDefault) {
-    await supabase.from("addresses").update({ is_default: false }).eq("user_id", user.id);
+  try {
+    if (isDefault) {
+      await supabase
+        .from("addresses")
+        .update({ is_default: false })
+        .eq("user_id", user.id)
+        .eq("is_default", true);
+    }
+
+
+    const { error } = await supabase.from("addresses").insert({
+      user_id: user.id,
+      label: addressLabel,
+      full_name: receiverName,
+      phone_number: phone,
+      address_line1: street,
+      city: city,
+      state: state || "",
+      pincode: zip,
+      type: type,
+      is_default: isDefault,
+    });
+
+    if (error) {
+      console.error("Database Error:", error);
+      return { error: error.message };
+    }
+
+    revalidatePath("/account/addresses");
+    revalidatePath("/checkout");
+
+    return { success: true };
+
+  } catch (err) {
+    return { error: "An unexpected error occurred." };
   }
-
-  const { error } = await supabase.from("addresses").insert({
-    user_id: user.id,
-    full_name: label || "Customer",
-    phone_number: "",
-    address_line1: street,
-    city,
-    state: state || "",
-    pincode: zip,
-    type,
-    is_default: isDefault,
-  });
-
-  if (error) return { error: error.message };
-  revalidatePath("/account/addresses");
-  revalidatePath("/checkout");
-  return { success: true };
 }
 
 export async function updateAddress(id: string, formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized" };
-
-  const label = formData.get("label") as string;
-  const street = formData.get("street") as string;
-  const city = formData.get("city") as string;
-  const state = formData.get("state") as string;
-  const zip = formData.get("zip") as string;
-  const country = formData.get("country") as string;
-  const isDefault = formData.get("isDefault") === "true";
-
-  if (isDefault) {
-    await supabase.from("addresses").update({ is_default: false }).eq("user_id", user.id);
-  }
 
   const { error } = await supabase
     .from("addresses")
     .update({
-      full_name: label || "Customer",
-      address_line1: street,
-      city,
-      state: state || "",
-      pincode: zip,
-      is_default: isDefault,
+      label: formData.get("label"),
+      full_name: formData.get("full_name"),
+      address_line1: formData.get("street"),
+      city: formData.get("city"),
+      pincode: formData.get("zip"),
+      phone_number: formData.get("phone"),
     })
-    .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("id", id);
 
   if (error) return { error: error.message };
+
   revalidatePath("/account/addresses");
-  revalidatePath("/checkout");
   return { success: true };
+}
+
+// --- Form Wrappers ---
+export async function setDefaultAddressForm(formData: FormData) {
+  const id = formData.get("addressId") as string;
+  if (!id) return { error: "Address ID is missing" };
+  return setDefaultAddress(id);
 }
 
 export async function deleteAddressForm(formData: FormData) {
   const id = formData.get("addressId") as string;
+  if (!id) return { error: "Address ID is missing" };
   return deleteAddress(id);
-}
-
-export async function deleteAddress(id: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized" };
-
-  const { error } = await supabase
-    .from("addresses")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) return { error: error.message };
-  revalidatePath("/account/addresses");
-  revalidatePath("/checkout");
-  return { success: true };
-}
-
-export async function setDefaultAddressForm(formData: FormData) {
-  const id = formData.get("addressId") as string;
-  return setDefaultAddress(id);
 }
 
 export async function setDefaultAddress(id: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
   if (!user) return { error: "Unauthorized" };
 
-  await supabase.from("addresses").update({ is_default: false }).eq("user_id", user.id);
-  const { error } = await supabase
-    .from("addresses")
-    .update({ is_default: true, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("user_id", user.id);
+  try {
+  
+    await supabase
+      .from("addresses")
+      .update({ is_default: false })
+      .eq("user_id", user.id)
+      .eq("is_default", true);
 
-  if (error) return { error: error.message };
-  revalidatePath("/account/addresses");
-  revalidatePath("/checkout");
-  return { success: true };
+  
+    const { error } = await supabase
+      .from("addresses")
+      .update({ is_default: true })
+      .eq("id", id)
+      .eq("user_id", user.id); 
+
+    if (error) throw error;
+
+    revalidatePath("/account/addresses");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function deleteAddress(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Unauthorized" };
+
+  try {
+    const { error } = await supabase
+      .from("addresses")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) throw error;
+
+    revalidatePath("/account/addresses");
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
 }
 
 export async function updatePassword(formData: FormData) {

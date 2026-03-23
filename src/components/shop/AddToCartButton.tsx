@@ -15,7 +15,7 @@ export function AddToCartButton({ productId, quantity = 1, className, children }
         {children ?? (
           <>
             <span className="material-symbols-outlined">shopping_cart</span>
-            Add to Engineering Cart
+            Add to Cart
           </>
         )}
       </Button>

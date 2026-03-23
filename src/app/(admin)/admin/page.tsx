@@ -1,125 +1,135 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
 
-  // Fetch recent orders
+  // Data Fetching
   const { data: recentOrders } = await supabase
     .from("orders")
     .select("*, profiles(first_name, last_name, company_name)")
     .order("created_at", { ascending: false })
-    .limit(4);
+    .limit(5);
 
-  // Fetch stats (simplified aggregation)
   const { data: allOrders } = await supabase.from("orders").select("total_amount");
   const totalRevenue = allOrders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
-  
   const { count: totalProducts } = await supabase.from("products").select("*", { count: "exact", head: true });
   const { count: totalUsers } = await supabase.from("profiles").select("*", { count: "exact", head: true });
 
   return (
-    <div className="p-8 space-y-10">
-      <header>
-        <h1 className="text-5xl font-black font-headline tracking-tighter uppercase mb-2">Command Center</h1>
-        <p className="text-[11px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">Operational Overview & Intelligence</p>
-      </header>
+    <div className="min-h-screen bg-[#f1f1f1] p-4 md:p-8 text-[#1a1c1d]">
+      <div className="max-w-[1200px] mx-auto space-y-6">
+        
+        {/* Simple Header */}
+        <header className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-xl font-semibold text-[#1a1c1d]">Home</h1>
+            <p className="text-sm text-[#616161]">Overview of your store's performance</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="bg-white border-[#d2d2d2] text-sm h-9 rounded-md px-4 shadow-sm">
+              Customize
+            </Button>
+            <Button className="bg-[#1a1c1d] text-white text-sm h-9 rounded-md px-4 hover:bg-[#303030]">
+              Export Report
+            </Button>
+          </div>
+        </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard title="Total Revenue" value={`$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} delta="Real-time" icon="payments" color="text-emerald-500" />
-        <StatsCard title="Total Orders" value={allOrders?.length || 0} delta="Real-time" icon="receipt_long" color="text-amber-500" />
-        <StatsCard title="Inventory SKU" value={totalProducts || 0} delta="Real-time" icon="inventory_2" color="text-blue-500" />
-        <StatsCard title="Registered Users" value={totalUsers || 0} delta="Real-time" icon="group" color="text-rose-500" />
-      </div>
+        {/* Stats Grid: Clean & Boxy */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard title="Total Revenue" value={`₹${totalRevenue.toLocaleString()}`} delta="+12%" />
+          <StatsCard title="Total Orders" value={allOrders?.length || 0} delta="+5%" />
+          <StatsCard title="Inventory SKU" value={totalProducts || 0} delta="0%" />
+          <StatsCard title="Total Users" value={totalUsers || 0} delta="+2%" />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <Card className="lg:col-span-2 rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5">
-          <CardHeader className="flex flex-row items-center justify-between pb-8 border-b border-border/10">
-            <CardTitle className="text-xl font-black uppercase tracking-tight">Recent Manifests & Orders</CardTitle>
-            <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-primary">View Logistics Ledger</Button>
-          </CardHeader>
-          <CardContent className="pt-8">
-             <div className="space-y-6">
-                {recentOrders && recentOrders.length > 0 ? recentOrders.map((order: any) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl bg-surface-container-low/50 hover:bg-white transition-colors border border-transparent hover:border-border/40">
-                    <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                            <span className="material-symbols-outlined">receipt_long</span>
-                        </div>
-                        <div>
-                            <p className="font-black text-sm uppercase">Order #{order.id.toString().substring(0, 8)}</p>
-                            <p className="text-[10px] text-on-surface-variant opacity-60 uppercase font-bold tracking-widest">Client: {order.profiles?.company_name || `${order.profiles?.first_name} ${order.profiles?.last_name}` || "Independent"}</p>
-                        </div>
-                    </div>
-                    <div className="text-right">
-                        <p className="font-black text-sm">${order.total_amount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter ${
-                          order.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-blue-500/10 text-blue-600'
-                        }`}>{order.status}</span>
-                    </div>
-                  </div>
-                )) : (
-                  <div className="p-10 text-center opacity-40">
-                    <p className="text-xs font-black uppercase tracking-widest">No recent logistics activity detected.</p>
-                  </div>
-                )}
-             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5">
-            <CardHeader className="pb-8 border-b border-border/10">
-                <CardTitle className="text-xl font-black uppercase tracking-tight">System Status</CardTitle>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Orders Ledger */}
+          <Card className="lg:col-span-2 bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-[#f1f1f1] px-6 py-4">
+              <CardTitle className="text-sm font-semibold">Recent Orders</CardTitle>
+              <Link href="/admin/orders" className="text-xs font-medium text-blue-600 hover:underline">
+                View all orders
+              </Link>
             </CardHeader>
-            <CardContent className="pt-8 space-y-8">
-                <div className="space-y-4">
-                   <SystemIndicator label="Primary API Cluster" status="Optimal" />
-                   <SystemIndicator label="Supply Chain Connector" status="Warning" />
-                   <SystemIndicator label="Fabrication Queue" status="Optimal" />
-                   <SystemIndicator label="Auth & Encryption" status="Optimal" />
-                </div>
-                <div className="p-6 bg-slate-900 rounded-2xl text-white">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Cloud Infrastructure</p>
-                    <p className="text-xs font-bold leading-relaxed mb-4">Instance US-West-4 reporting high throughput on Search Indexing.</p>
-                    <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500 w-[78%]"></div>
+            <CardContent className="p-0">
+              <div className="divide-y divide-[#f1f1f1]">
+                {recentOrders?.map((order: any) => (
+                  <div key={order.id} className="flex items-center justify-between px-6 py-4 hover:bg-[#fafafa] transition-colors">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-[#1a1c1d]">#{order.id.toString().substring(0, 5)}</span>
+                      <span className="text-xs text-[#616161]">{order.profiles?.company_name || "Guest Customer"}</span>
                     </div>
-                </div>
+                    <div className="flex items-center gap-6">
+                      <div className="text-right">
+                        <span className="text-sm font-medium">₹{order.total_amount?.toLocaleString()}</span>
+                        <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                          <div className={`w-1.5 h-1.5 rounded-full ${order.status === 'completed' ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                          <span className="text-[11px] text-[#616161] capitalize">{order.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
-        </Card>
+          </Card>
+
+          {/* System & Marketing Activity */}
+          <div className="space-y-6">
+            <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl">
+              <CardHeader className="px-6 py-4 border-b border-[#f1f1f1]">
+                <CardTitle className="text-sm font-semibold">Store Status</CardTitle>
+              </CardHeader>
+              <CardContent className="px-6 py-4 space-y-4">
+                <StatusItem label="Online Store" status="Active" />
+                <StatusItem label="Inventory Sync" status="Pending" />
+                <StatusItem label="API Connections" status="Active" />
+              </CardContent>
+            </Card>
+
+            <div className="p-6 bg-[#1a1c1d] rounded-xl text-white">
+              <h4 className="text-sm font-semibold mb-2">Inventory Alert</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                45 SKUs in the "Microcontrollers" category are running below threshold.
+              </p>
+              <Button variant="link" className="text-white p-0 h-auto text-xs font-semibold hover:no-underline underline-offset-4 decoration-white/30 underline">
+                Manage Stock →
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function StatsCard({ title, value, delta, icon, color }: any) {
+function StatsCard({ title, value, delta }: { title: string, value: string | number, delta: string }) {
   return (
-    <Card className="rounded-[24px] border-border/40 bg-white/50 backdrop-blur-xl hover:shadow-xl transition-all group overflow-hidden relative">
-        <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-6">
-                <div className={`p-3 rounded-2xl bg-surface/50 border border-border/10 ${color} group-hover:scale-110 transition-transform`}>
-                    <span className="material-symbols-outlined">{icon}</span>
-                </div>
-                <span className={`text-[10px] font-black uppercase tracking-tighter ${delta.startsWith('+') ? 'text-emerald-500' : delta.startsWith('-') ? 'text-rose-500' : 'text-blue-500'}`}>
-                    {delta}
-                </span>
-            </div>
-            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1 opacity-40">{title}</p>
-            <p className="text-2xl font-black tracking-tighter uppercase">{value}</p>
-        </CardContent>
+    <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl hover:border-[#d2d2d2] transition-colors">
+      <CardContent className="p-5">
+        <p className="text-xs font-medium text-[#616161] mb-2">{title}</p>
+        <div className="flex items-baseline justify-between">
+          <p className="text-xl font-semibold text-[#1a1c1d]">{value}</p>
+          <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+            {delta}
+          </span>
+        </div>
+      </CardContent>
     </Card>
   );
 }
 
-function SystemIndicator({ label, status }: any) {
+function StatusItem({ label, status }: { label: string, status: string }) {
   return (
-    <div className="flex items-center justify-between">
-        <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">{label}</span>
-        <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${status === 'Optimal' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'}`}></div>
-            <span className={`text-[9px] font-black uppercase ${status === 'Optimal' ? 'text-emerald-600' : 'text-amber-600'}`}>{status}</span>
-        </div>
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-[#616161]">{label}</span>
+      <span className={`text-xs font-medium ${status === 'Active' ? 'text-emerald-600' : 'text-amber-600'}`}>
+        {status}
+      </span>
     </div>
-  )
+  );
 }

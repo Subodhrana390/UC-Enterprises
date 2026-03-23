@@ -1,42 +1,64 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCategories } from "@/lib/actions/products";
 
 export default async function CategoriesPage() {
   const categories = await getCategories();
 
   return (
-    <div className="bg-surface min-h-screen">
-      <main className="pt-20 pb-32 px-8 max-w-[1920px] mx-auto">
-        <header className="mb-20 text-center space-y-4 max-w-4xl mx-auto">
-          <nav className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant mb-6 opacity-40">
-            <Link href="/">Home</Link>
-            <span className="material-symbols-outlined text-[10px]">chevron_right</span>
-            <span className="text-primary">Manifest Encyclopedia</span>
+    <div className="bg-white min-h-screen text-[#1a1c1d]">
+      <main className="max-w-[1440px] mx-auto px-6 md:px-12 py-16 md:py-24">
+        
+        {/* Shopify Standard Header */}
+        <header className="mb-16">
+          <nav className="flex items-center gap-2 text-xs font-medium text-[#616161] mb-6">
+            <Link href="/" className="hover:text-black">Home</Link>
+            <span className="text-[10px] opacity-50">/</span>
+            <span className="text-black">Collections</span>
           </nav>
-          <h1 className="text-6xl md:text-8xl font-black font-headline tracking-tighter uppercase leading-none mb-6">Component Taxonomy</h1>
-          <p className="text-base md:text-xl text-on-surface-variant font-medium leading-relaxed max-w-2xl mx-auto">
-            Explore the world's most comprehensive catalog of high-performance electronic components, semiconductors, and industrial hardware.
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
+            Collections
+          </h1>
+          <p className="text-sm md:text-base text-[#616161] max-w-xl leading-relaxed">
+            Browse our curated selection of high-performance components and hardware for your next industrial project.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* Collection Grid: 3 Columns for impact */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((cat: any) => (
             <Link 
               key={cat.id} 
               href={`/categories/${cat.slug}`}
-              className="group relative h-[320px] rounded-[48px] overflow-hidden bg-white border border-border/40 hover:shadow-2xl transition-all hover:-translate-y-2 duration-500"
+              className="group block relative overflow-hidden"
             >
-              <div className="absolute inset-x-0 bottom-0 p-10 z-20 text-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl mx-auto mb-6 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
-                   <span className="material-symbols-outlined text-3xl">{cat.slug === 'microcontrollers' ? 'developer_board' : 'memory'}</span>
-                </div>
-                <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-2 group-hover:text-primary transition-colors">{cat.name}</h3>
-                <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Explore Line Card</p>
+              <div className="relative aspect-[4/5] bg-[#f5f5f5] rounded-xl overflow-hidden mb-4 transition-all duration-700">
+                <Image
+                  src={cat.image_url || "/placeholder-collection.png"}
+                  alt={cat.name}
+                  fill
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+                
+                {/* Subtle Overlay for contrast */}
+                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
               </div>
-              
-              {/* Decorative side badge */}
-              <div className="absolute top-8 right-8 writing-mode-vertical text-[9px] font-black uppercase tracking-widest opacity-10 group-hover:opacity-40 transition-opacity">
-                Manifest: {cat.slug.slice(0, 3)}
+
+              {/* Text Label: Placed below the image, not floating inside */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold group-hover:underline underline-offset-4 decoration-1">
+                    {cat.name}
+                  </h3>
+                  <p className="text-sm text-[#616161] mt-1">
+                    Shop collection
+                  </p>
+                </div>
+                
+                {/* Shopify-style Arrow Icon */}
+                <span className="material-symbols-outlined text-xl opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                  arrow_forward
+                </span>
               </div>
             </Link>
           ))}

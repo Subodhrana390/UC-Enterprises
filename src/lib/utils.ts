@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 /** Indian English: format currency with ₹ symbol and Indian number system (lakh/crore) */
 export function formatPriceINR(amount: number, options?: { minimumFractionDigits?: number; maximumFractionDigits?: number }) {
-  return `₹${amount.toLocaleString("en-IN", {
+  return `₹ ${amount.toLocaleString("en-IN", {
     minimumFractionDigits: options?.minimumFractionDigits ?? 2,
     maximumFractionDigits: options?.maximumFractionDigits ?? 2,
   })}`

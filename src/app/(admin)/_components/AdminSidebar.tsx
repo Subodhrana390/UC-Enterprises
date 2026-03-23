@@ -6,45 +6,67 @@ import { usePathname } from "next/navigation";
 export function AdminSidebar() {
   const pathname = usePathname();
 
+  // Renamed to Shopify-standard naming conventions
   const menuItems = [
-    { name: "Command Center", icon: "dashboard", href: "/admin" },
-    { name: "Product Catalog", icon: "inventory", href: "/admin/products" },
-    { name: "Taxonomy (Categories)", icon: "category", href: "/admin/categories" },
-    { name: "Inventory Ledger", icon: "inventory_2", href: "/admin/inventory" },
-    { name: "Partner Network", icon: "verified", href: "/admin/brands" },
-    { name: "Personnel (Users)", icon: "group", href: "/admin/users" },
-    { name: "Production Queue", icon: "precision_manufacturing", href: "/admin/fabrication" },
-    { name: "Quote Desk", icon: "request_quote", href: "/admin/quotes" },
+    { name: "Home", icon: "home", href: "/admin" },
+    { name: "Customers", icon: "person", href: "/admin/users" },
+    { name: "Brands", icon: "storefront", href: "/admin/brands" },
+    { name: "Categories", icon: "category", href: "/admin/categories" },
+    { name: "Products", icon: "shopping_basket", href: "/admin/products" },
+    { name: "Inventory", icon: "package_2", href: "/admin/inventory" },
+    { name: "Orders", icon: "shopping_cart", href: "/admin/orders" },
+    { name: "Fabrication", icon: "build", href: "/admin/fabrication" },
+    { name: "Quotes", icon: "description", href: "/admin/quotes" },
+    { name: "Settings", icon: "settings", href: "/admin/settings" },
   ];
 
   return (
-    <>
-      <div className="mb-10 pl-2">
-        <h2 className="text-2xl font-black text-on-surface font-headline uppercase tracking-tight">Enterprise</h2>
-        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] opacity-40">System Administration</p>
+    <div className="flex flex-col h-full bg-[#ebebeb] border-r border-[#d2d2d2]">
+      {/* Brand Header */}
+      <div className="px-4 py-6 flex items-center gap-3">
+        <div className="w-8 h-8 bg-[#1a1c1d] rounded-md flex items-center justify-center text-white font-bold text-xs italic">
+          M
+        </div>
+        <div>
+          <h2 className="text-sm font-semibold text-[#1a1c1d]">Manifest</h2>
+          <p className="text-[11px] text-[#616161]">Admin Store</p>
+        </div>
       </div>
-      <nav className="flex flex-col gap-2 flex-1">
-        {menuItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group ${
-              pathname === item.href
-                ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]"
-                : "text-on-surface-variant hover:bg-white hover:text-primary hover:shadow-md"
-            }`}
-          >
-            <span className={`material-symbols-outlined text-xl ${pathname === item.href ? "text-white" : "opacity-40 group-hover:opacity-100"}`}>
-              {item.icon}
-            </span>
-            <span className="font-black text-[12px] uppercase tracking-widest">{item.name}</span>
-          </Link>
-        ))}
+
+      {/* Navigation */}
+      <nav className="flex flex-col px-2 gap-0.5 flex-1">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-1.5 rounded-md transition-colors text-sm font-medium ${
+                isActive
+                  ? "bg-white text-[#1a1c1d] shadow-sm border border-[#d2d2d2]/30"
+                  : "text-[#303030] hover:bg-[#e3e3e3]"
+              }`}
+            >
+              <span 
+                className={`material-symbols-outlined text-[20px] ${
+                  isActive ? "text-[#1a1c1d]" : "text-[#616161]"
+                }`}
+              >
+                {item.icon}
+              </span>
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
       </nav>
       
-      <div className="mt-auto pt-8 border-t border-border/10 opacity-20">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-center">Enterprise Governance</p>
+      {/* User / Logout Section */}
+      <div className="p-4 border-t border-[#d2d2d2] mt-auto">
+        <button className="flex items-center gap-3 w-full px-2 py-1.5 text-sm font-medium text-[#303030] hover:bg-[#e3e3e3] rounded-md">
+          <span className="material-symbols-outlined text-[20px] text-[#616161]">account_circle</span>
+          <span>Admin Profile</span>
+        </button>
       </div>
-    </>
+    </div>
   );
 }

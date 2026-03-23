@@ -14,113 +14,118 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="p-8 space-y-10">
-      <header>
-        <h1 className="text-4xl font-black font-headline tracking-tighter uppercase mb-2">Account Settings</h1>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-on-surface-variant opacity-40">System preferences, notification governance, and security protocols</p>
-      </header>
+    <div className="min-h-screen bg-[#f1f1f1] p-4 md:p-8 lg:p-12">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Page Header */}
+        <header className="mb-6">
+          <h1 className="text-2xl font-semibold text-[#1a1c1d]">Settings</h1>
+        </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Notification Preferences */}
-        <Card className="rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5">
-          <CardHeader className="p-8 border-b border-border/10">
-            <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary">notifications</span>
-              Notification Preferences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            {[
-              { label: "Order Status Updates", desc: "Receive real-time tracking notifications", icon: "local_shipping" },
-              { label: "Price Alerts", desc: "Get notified when watched components change price", icon: "trending_down" },
-              { label: "Stock Alerts", desc: "Alert when low-stock components are replenished", icon: "inventory" },
-              { label: "Newsletter", desc: "Weekly engineering insights and product launches", icon: "mail" },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between p-4 rounded-2xl hover:bg-surface transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded-xl bg-surface border border-border/10">
-                    <span className="material-symbols-outlined text-on-surface-variant text-lg">{item.icon}</span>
-                  </div>
+        {/* 1. Account Details Section */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1">
+            <h2 className="text-sm font-semibold text-[#1a1c1d]">Security</h2>
+            <p className="text-sm text-[#616161] mt-1">Manage your password and account access.</p>
+          </div>
+          <Card className="md:col-span-2 shadow-sm border-[#ebebeb] rounded-xl bg-white">
+            <CardContent className="p-6">
+              <PasswordForm />
+            </CardContent>
+          </Card>
+        </section>
+
+        <hr className="border-[#d2d2d2]" />
+
+        {/* 2. Notification Governance */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1">
+            <h2 className="text-sm font-semibold text-[#1a1c1d]">Notifications</h2>
+            <p className="text-sm text-[#616161] mt-1">Control how you receive updates about orders and stock.</p>
+          </div>
+          <Card className="md:col-span-2 shadow-sm border-[#ebebeb] rounded-xl bg-white">
+            <CardContent className="p-0">
+              {[
+                { label: "Order updates", desc: "Real-time tracking notifications", icon: "local_shipping" },
+                { label: "Price alerts", desc: "Notify when prices change", icon: "trending_down" },
+                { label: "Newsletter", desc: "Weekly engineering insights", icon: "mail" },
+              ].map((item, idx, arr) => (
+                <div 
+                  key={item.label} 
+                  className={`flex items-center justify-between p-4 ${idx !== arr.length - 1 ? 'border-b border-[#f1f1f1]' : ''}`}
+                >
                   <div>
-                    <p className="font-black text-xs uppercase tracking-widest">{item.label}</p>
-                    <p className="text-[10px] text-on-surface-variant opacity-60">{item.desc}</p>
+                    <p className="text-sm font-medium text-[#1a1c1d]">{item.label}</p>
+                    <p className="text-sm text-[#616161]">{item.desc}</p>
                   </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" defaultChecked className="sr-only peer" />
+                    <div className="w-10 h-5 bg-[#e3e3e3] rounded-full peer peer-checked:bg-[#008060] after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+                  </label>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
+              ))}
+            </CardContent>
+          </Card>
+        </section>
+
+        <hr className="border-[#d2d2d2]" />
+
+        {/* 3. Regional Settings */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1">
+            <h2 className="text-sm font-semibold text-[#1a1c1d]">Regional preferences</h2>
+            <p className="text-sm text-[#616161] mt-1">Set your preferred language and currency.</p>
+          </div>
+          <Card className="md:col-span-2 shadow-sm border-[#ebebeb] rounded-xl bg-white">
+            <CardContent className="p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-[#616161]">Currency</Label>
+                  <select className="w-full h-10 rounded-lg border-[#d2d2d2] bg-white px-3 text-sm focus:border-[#008060] focus:ring-1 focus:ring-[#008060] outline-none">
+                    <option>INR - Indian Rupee</option>
+                    <option>USD - US Dollar</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-[#616161]">Language</Label>
+                  <select className="w-full h-10 rounded-lg border-[#d2d2d2] bg-white px-3 text-sm focus:border-[#008060] focus:ring-1 focus:ring-[#008060] outline-none">
+                    <option>English (India)</option>
+                    <option>Hindi</option>
+                  </select>
+                </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </section>
 
-        {/* Security Settings */}
-        <Card className="rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5">
-          <CardHeader className="p-8 border-b border-border/10">
-            <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary">security</span>
-              Security Protocols
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-8">
-            <PasswordForm />
-          </CardContent>
-        </Card>
+        <hr className="border-[#d2d2d2]" />
 
-        {/* Display Preferences */}
-        <Card className="rounded-[32px] border-border/40 bg-white/50 backdrop-blur-xl shadow-2xl shadow-primary/5">
-          <CardHeader className="p-8 border-b border-border/10">
-            <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary">palette</span>
-              Display Preferences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Currency</Label>
-              <select className="w-full h-14 rounded-xl bg-surface border border-border/10 px-5 font-bold text-sm">
-                <option>INR - Indian Rupee</option>
-                <option>USD - US Dollar</option>
-                <option>EUR - Euro</option>
-                <option>GBP - British Pound Sterling</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Language</Label>
-              <select className="w-full h-14 rounded-xl bg-surface border border-border/10 px-5 font-bold text-sm">
-                <option>English (India)</option>
-                <option>Hindi</option>
-                <option>Tamil</option>
-                <option>Telugu</option>
-              </select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Danger Zone */}
-        <Card className="rounded-[32px] border-rose-200/40 bg-rose-50/30 backdrop-blur-xl shadow-2xl shadow-rose-500/5">
-          <CardHeader className="p-8 border-b border-rose-200/20">
-            <CardTitle className="text-xl font-black uppercase tracking-tight flex items-center gap-3 text-rose-700">
-              <span className="material-symbols-outlined text-rose-500">warning</span>
-              Danger Zone
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="p-6 rounded-2xl border border-rose-200/40 bg-white/50">
-              <h4 className="font-black text-sm uppercase tracking-tight text-rose-800 mb-2">Deactivate Account</h4>
-              <p className="text-[10px] text-rose-600 opacity-70 mb-4 leading-relaxed">This will disable your access to all UCEnterprises services. Active orders will still be fulfilled.</p>
-              <DeactivationButton />
-            </div>
-            <div className="p-6 rounded-2xl border border-rose-300/40 bg-white/50">
-              <h4 className="font-black text-sm uppercase tracking-tight text-rose-800 mb-2">Delete Account Permanently</h4>
-              <p className="text-[10px] text-rose-600 opacity-70 mb-4 leading-relaxed">This action is irreversible. All data, order history, and account settings will be permanently removed.</p>
-              <Button className="h-10 rounded-lg bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-rose-700">
-                Permanently Delete
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* 4. Danger Zone (The Shopify 'Archive' Look) */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-20">
+          <div className="md:col-span-1">
+            <h2 className="text-sm font-semibold text-[#d72c0d]">Danger zone</h2>
+            <p className="text-sm text-[#616161] mt-1">Permanently remove your data from UC Enterprises.</p>
+          </div>
+          <Card className="md:col-span-2 shadow-sm border-[#f9d3d3] rounded-xl bg-white">
+            <CardContent className="p-6 space-y-6">
+              <div className="flex items-start justify-between">
+                <div className="max-w-[70%]">
+                  <p className="text-sm font-medium text-[#1a1c1d]">Deactivate account</p>
+                  <p className="text-sm text-[#616161]">Temporarily disable access. Active orders will be fulfilled.</p>
+                </div>
+                <DeactivationButton />
+              </div>
+              <div className="pt-6 border-t border-[#f1f1f1] flex items-start justify-between">
+                <div className="max-w-[70%]">
+                  <p className="text-sm font-medium text-[#1a1c1d]">Delete account</p>
+                  <p className="text-sm text-[#616161]">Permanently remove all data and order history. This cannot be undone.</p>
+                </div>
+                <Button variant="outline" className="text-[#d72c0d] border-[#d2d2d2] hover:bg-red-50 hover:text-[#d72c0d]">
+                  Delete account
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
       </div>
     </div>
   );

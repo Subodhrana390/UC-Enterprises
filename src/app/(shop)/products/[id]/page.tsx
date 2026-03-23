@@ -1,21 +1,20 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { getProductById } from "@/lib/actions/products";
+import { getProductById, getRelatedProducts } from "@/lib/actions/products";
 import { formatDateINR, formatPriceINR } from "@/lib/utils";
 import { ProductAddToCartWithQuantity } from "@/components/shop/ProductAddToCartWithQuantity";
 import { AddToWishlistButton } from "@/components/shop/AddToWishlistButton";
-import { Button } from "@/components/ui/button";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const product = await getProductById(id);
-
   if (!product) {
     notFound();
   }
+  const relatedProducts = await getRelatedProducts(product.categories?.slug, id);
+
+  console.log(relatedProducts);
 
   const rawImages = product.product_images?.map((img: any) => img.image_url) || (Array.isArray(product.images) ? product.images : product.images ? Object.values(product.images) : []);
   const mainImage = product.product_images?.find((img: any) => img.is_main)?.image_url || product.image_url || rawImages?.[0] || "/placeholder-product.png";
@@ -42,7 +41,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <nav className="flex flex-wrap items-center text-on-surface-variant text-[10px] mb-6 gap-2 uppercase tracking-[0.2em] font-bold min-w-0">
             <Link className="hover:text-primary transition-colors" href="/">Home</Link>
             <span className="opacity-30">/</span>
-            <Link className="hover:text-primary transition-colors" href={`/categories/${product.categories?.slug}`}>
+            <Link className="hover:text-primary transition-colors" href={`/categories/${product.categories.slug}`}>
               {product.categories?.name}
             </Link>
             <span className="opacity-30">/</span>
@@ -51,143 +50,117 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </span>
           </nav>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-on-surface leading-tight mb-4 font-headline uppercase">
-                {product.name}
-              </h1>
-              <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-wider">
-                <span className="text-on-surface-variant">SKU: <span className="text-on-surface font-black">{product.sku}</span></span>
-                <span className="h-4 w-px bg-border/40 hidden sm:block"></span>
-                <Link className="text-blue-600 hover:underline decoration-2 underline-offset-4" href="#">{product.brands?.name || product.manufacturer}</Link>
-                <span className="h-4 w-px bg-border/40 hidden sm:block"></span>
-                <div className="flex items-center text-on-surface">
-                  <span className="material-symbols-outlined text-sm text-yellow-500 mr-1" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                  <span className="font-black">{displayRating}</span>
-                  <span className="text-on-surface-variant ml-1 font-medium italic">({reviewCount} {reviewCount === 1 ? "review" : "reviews"})</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-full border border-border/40 shadow-sm self-start">
-              <span className={`flex h-2.5 w-2.5 rounded-full ${product.stock_quantity > 0 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
-              <span className="text-xs font-black text-on-surface uppercase tracking-widest leading-none">
-                {product.stock_quantity > 0 ? "In stock" : "Out of stock"}
-              </span>
-            </div>
-          </div>
         </div>
 
-        {product.description ? (
-          <div className="mb-12 max-w-4xl">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.25em] text-on-surface-variant mb-3">Description</h2>
-            <p className="text-on-surface leading-relaxed text-base md:text-lg">
-              {product.description}
-            </p>
-          </div>
-        ) : null}
-
         {/* Product Summary Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-24">
-          {/* Gallery */}
-          <div className="lg:col-span-7 grid grid-cols-4 gap-4 h-fit">
-            <div className="col-span-4 row-span-2 bg-white rounded-2xl overflow-hidden group relative border border-border/40 shadow-sm aspect-[4/3]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-20">
+          {/* Gallery Section */}
+          <div className="lg:col-span-6 space-y-4">
+            <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-50">
               <Image
                 src={mainImage}
                 alt={product.name}
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105 grayscale-[0.2]"
+                className="object-cover transition-transform duration-500 hover:scale-105"
+                priority
               />
-              <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-colors"></div>
             </div>
-            {thumbnails.slice(0, 3).map((thumb: string, i: number) => (
-              <div key={i} className="col-span-1 bg-white rounded-xl overflow-hidden border-2 border-transparent hover:border-primary transition-all cursor-pointer aspect-square relative shadow-sm">
-                <Image src={thumb} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
-              </div>
-            ))}
-            {thumbnails.length > 3 && (
-              <div className="col-span-1 bg-surface-container rounded-xl flex items-center justify-center border border-border/40 hover:bg-white transition-colors aspect-square text-[10px] font-black uppercase tracking-widest text-on-surface-variant cursor-pointer">
-                +{thumbnails.length - 3} More
-              </div>
-            )}
+
+            <div className="grid grid-cols-4 gap-4">
+              {thumbnails.slice(0, 4).map((thumb: string, i: number) => (
+                <div key={i} className="relative aspect-square rounded-md overflow-hidden bg-gray-50 cursor-pointer border hover:border-black transition-colors">
+                  <Image src={thumb} alt={`View ${i + 1}`} fill className="object-cover" />
+                  {i === 3 && thumbnails.length > 4 && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm font-medium">
+                      +{thumbnails.length - 3}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Pricing & Actions */}
-          <div className="lg:col-span-5 flex flex-col gap-8">
-            {/* Pricing Tiers */}
-            <div className="bg-white rounded-2xl p-8 border border-border/40 shadow-sm">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant mb-8 flex items-center">
-                <span className="material-symbols-outlined text-sm mr-2">layers</span> Bulk Pricing Tiers
-              </h3>
-              <div className="space-y-1">
-                <div className="flex justify-between items-center p-4 rounded-xl border border-blue-100 bg-blue-50/50">
-                  <span className="font-bold text-sm text-on-surface-variant tracking-tight">1 - 10 units</span>
-                  <span className="text-xl font-black text-blue-700">
-                    {formatPriceINR(product?.base_price ?? product?.price ?? 0)} <span className="text-[10px] text-on-surface-variant font-medium uppercase">/ea</span>
+          {/* Product Info Section */}
+          <div className="lg:col-span-6 flex flex-col">
+
+            {/* 1. Brand & Title */}
+            <div className="mb-2">
+              <span className="text-xs font-medium tracking-widest text-gray-500 uppercase">
+                {product.brands?.name || product.manufacturer}
+              </span>
+              <h1 className="text-3xl md:text-4xl font-normal text-gray-900 mt-2 mb-3 tracking-tight">
+                {product.name}
+              </h1>
+            </div>
+
+            <div className="flex flex-col gap-3 mb-6 pb-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-light text-gray-900">
+                  {formatPriceINR(product.base_price ?? product.price ?? 0)}
+                </span>
+
+                <AddToWishlistButton
+                  productId={product.id}
+                  variant="outline"
+                  className="h-10 w-10 p-0 text-gray-400 hover:text-red-500 transition-colors"
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center text-sm">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className={`material-symbols-outlined text-base ${i < Math.floor(displayRating) ? 'text-black' : 'text-gray-200'}`}>
+                      star
+                    </span>
+                  ))}
+                  <span className="ml-2 text-gray-500 underline underline-offset-4 cursor-pointer">
+                    {reviewCount} reviews
                   </span>
                 </div>
-                {bulkTiers.map((tier: { min_quantity?: number; unit_price?: number }, i: number) => (
-                  <div key={i} className="flex justify-between items-center p-4 rounded-xl hover:bg-surface-container-low transition-all">
-                    <span className="font-bold text-sm text-on-surface-variant tracking-tight">{tier.min_quantity}+ units</span>
-                    <span className="text-xl font-black text-on-surface">
-                      {formatPriceINR(tier.unit_price ?? 0)} <span className="text-[10px] text-on-surface-variant font-medium uppercase">/ea</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <Link href="/fabrication">
-                <Button variant="outline" className="w-full mt-8 h-14 rounded-xl border-dashed border-2 hover:border-primary hover:bg-white text-blue-700 font-black text-xs uppercase tracking-widest gap-2">
-                  <span className="material-symbols-outlined text-lg">request_quote</span>
-                  Request Custom Bulk Quote
-                </Button>
-              </Link>
-            </div>
 
-            {/* Actions */}
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4 items-center">
-                <ProductAddToCartWithQuantity productId={product.id} maxStock={product.stock_quantity || 999} />
-                <AddToWishlistButton productId={product.id} variant="outline" className="h-16 px-6 rounded-xl flex-shrink-0" />
+                <div className="flex items-center gap-1.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${product.stock_quantity > 0 ? 'bg-green-600' : 'bg-red-600'}`}></span>
+                  <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">
+                    {product.stock_quantity > 0 ? "In Stock" : "Out of Stock"}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Datasheet Shortcut */}
-            <div className="bg-primary p-6 rounded-2xl text-white flex justify-between items-center group cursor-pointer hover:bg-blue-900 transition-all duration-500 shadow-xl shadow-primary/10 border-b-4 border-blue-950">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] opacity-60 mb-2">Technical Resource</p>
-                <p className="text-xl font-black tracking-tight font-headline uppercase leading-tight">Full Datasheet (PDF)</p>
+            {product.description && (
+              <div className="mb-8">
+                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                  {product.description}
+                </p>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-3xl">download</span>
+            )}
+
+            {/* 4. Actions - Full Width Shopify Style */}
+            <div className="space-y-4">
+              <div className="flex flex-col gap-4">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
+                  Quantity
+                </label>
+                <ProductAddToCartWithQuantity
+                  productId={product.id}
+                  maxStock={product.stock_quantity || 999}
+                />
+              </div>
+
+              {/* SKU & Shipping Meta */}
+              <div className="pt-6 space-y-2 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <span className="font-semibold text-gray-900">SKU:</span>
+                  <span>{product.sku}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <span className="material-symbols-outlined text-sm">local_shipping</span>
+                  <span>Free shipping on orders over ₹500</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Technical Specifications Section */}
-        <section className="mb-24 bg-white rounded-3xl p-10 border border-border/40 shadow-sm">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-            <h2 className="text-3xl font-black tracking-tight font-headline uppercase">Technical Specifications</h2>
-            <div className="relative w-full md:w-80">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-              <Input className="w-full bg-surface rounded-xl pl-12 h-12 text-sm border-none focus:ring-2 focus:ring-primary/20" placeholder="Filter parameters..." />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-2">
-            {product.product_specifications?.map((spec: any, i: number) => (
-              <div key={i} className="flex justify-between py-5 border-b border-border/20 last:md:border-b-0 group">
-                <span className="text-on-surface-variant font-bold text-sm tracking-tight uppercase opacity-60 group-hover:opacity-100 transition-opacity">
-                  {spec.key}
-                </span>
-                <span className="font-black text-on-surface text-sm tracking-tight uppercase">
-                  {spec.value}
-                </span>
-              </div>
-            ))}
-            {specificationRows.length === 0 && (
-              <p className="text-on-surface-variant italic text-sm">No specialized specifications available for this component.</p>
-            )}
-          </div>
-        </section>
 
         {/* Reviews */}
         <section className="bg-surface-container-low rounded-3xl p-10 border border-border/40">
@@ -264,6 +237,97 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             </div>
           </div>
         </section>
+
+        {/* Related Products Section */}
+        <div className="mt-20 pt-16 border-t border-gray-100">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <h2 className="text-2xl font-normal tracking-tight text-gray-900">
+                You may also like
+              </h2>
+              <div className="h-0.5 w-12 bg-black mt-2"></div>
+            </div>
+            <Link href="/shop" className="text-sm font-medium underline underline-offset-4 hover:text-gray-600 transition-colors">
+              View all
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+            {relatedProducts.length > 0 ? relatedProducts.map((item: any) => (
+              <Link key={item.id} href={`/products/${item.id}`} className="group block cursor-pointer">
+                {/* Image Wrapper */}
+                <div className="relative aspect-[4/5] overflow-hidden bg-gray-50 rounded-sm mb-4">
+                  <Image
+                    src={item.images?.[0]}
+                    alt={item.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+
+                  {/* Badge Logic */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-2">
+                    {item.isNew && (
+                      <span className="bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-widest border border-gray-100 shadow-sm">
+                        New
+                      </span>
+                    )}
+                    {item.stock_quantity === 0 && (
+                      <span className="bg-gray-900 text-white px-2 py-1 text-[10px] font-bold uppercase tracking-widest">
+                        Sold Out
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Product Details */}
+                <div className="space-y-1.5">
+                  {/* Brand Name */}
+                  <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">
+                    {item.brands?.name || item.manufacturer}
+                  </p>
+
+                  {/* Product Name */}
+                  <h3 className="text-sm font-normal text-gray-800 group-hover:text-black transition-colors truncate">
+                    {item.name}
+                  </h3>
+
+                  <h3 className="text-sm font-normal text-gray-800 group-hover:text-black transition-colors truncate">
+                    {item.description}
+                  </h3>
+
+                  {/* Mini Stars Rating */}
+                  <div className="flex items-center gap-1">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="material-symbols-outlined text-[14px]"
+                          style={{ fontVariationSettings: i < Math.floor(item.average_rating) ? "'FILL' 1" : "'FILL' 0" }}>
+                          star
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-[11px] text-gray-400">({item.review_count})</span>
+                  </div>
+
+                  {/* Price & Discount */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      {formatPriceINR(item.base_price ?? item.price ?? 0)}
+                    </p>
+                    {item.compare_at_price && (
+                      <p className="text-xs text-gray-400 line-through decoration-gray-300">
+                        {formatPriceINR(item.compare_at_price)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            )) : (
+              <div className="col-span-full py-20 text-center border border-dashed border-gray-200 rounded-lg">
+                <p className="text-gray-400 text-sm">No related products found in this category.</p>
+              </div>
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );

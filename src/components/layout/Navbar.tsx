@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { logout } from "@/lib/actions/auth";
+import Image from "next/image";
 
 interface NavbarProps {
   categories?: any[];
@@ -17,6 +18,8 @@ interface NavbarProps {
 
 export function Navbar({ categories = [], user, userRole = null, cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const isAdmin = userRole === "admin";
+  const isImageValue = (value?: string | null) =>
+    !!value && (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/"));
   return (
     <header className="fixed top-0 w-full z-50 bg-slate-50/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-sm border-b border-border/40 h-20">
       <div className="flex items-center justify-between px-4 md:px-8 h-full w-full max-w-[1920px] mx-auto">
@@ -42,8 +45,12 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
                       href={`/search?category=${cat.slug}`}
                       className="flex items-center gap-4 p-4 rounded-xl hover:bg-primary/5 transition-all group/item"
                     >
-                      <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center text-on-surface-variant group-hover/item:bg-primary group-hover/item:text-white transition-all">
-                        <span className="material-symbols-outlined text-xl">{cat.icon || 'inventory_2'}</span>
+                      <div className="relative w-10 h-10 rounded-lg bg-surface overflow-hidden border border-border/40 flex items-center justify-center text-on-surface-variant group-hover/item:bg-primary group-hover/item:text-white transition-all">
+                        {isImageValue(cat.icon) ? (
+                          <Image src={cat.icon} alt={cat.name} fill className="object-cover" />
+                        ) : (
+                          <span className="material-symbols-outlined text-xl">{cat.icon || "inventory_2"}</span>
+                        )}
                       </div>
                       <div>
                         <p className="font-black text-[11px] uppercase tracking-widest">{cat.name}</p>

@@ -85,7 +85,8 @@ export default async function HomePage() {
             {categories.slice(0, 5).map((cat: any) => (
               <CategoryCard 
                 key={cat.id} 
-                icon={cat.slug === 'microcontrollers' ? 'developer_board' : 'memory'} 
+                icon={cat.slug === 'microcontrollers' ? 'developer_board' : 'memory'}
+                image={cat.icon}
                 title={cat.name} 
                 count="Live Data" 
                 slug={cat.slug}
@@ -207,11 +208,16 @@ export default async function HomePage() {
   );
 }
 
-function CategoryCard({ icon, title, count, slug }: { icon: string; title: string; count: string; slug: string }) {
+function CategoryCard({ icon, image, title, count, slug }: { icon: string; image?: string | null; title: string; count: string; slug: string }) {
+  const hasImage = !!image && (image.startsWith("http://") || image.startsWith("https://") || image.startsWith("/"));
   return (
     <Link href={`/categories/${slug}`} className="bg-white dark:bg-slate-900 p-8 rounded-xl hover:shadow-lg transition-all border border-slate-100 dark:border-slate-800 group cursor-pointer">
-      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-        <span className="material-symbols-outlined text-3xl">{icon}</span>
+      <div className="relative w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors overflow-hidden">
+        {hasImage ? (
+          <Image src={image} alt={title} fill className="object-cover" />
+        ) : (
+          <span className="material-symbols-outlined text-3xl">{icon}</span>
+        )}
       </div>
       <h3 className="font-bold text-lg mb-1">{title}</h3>
       <p className="text-sm text-on-surface-variant">{count}</p>
