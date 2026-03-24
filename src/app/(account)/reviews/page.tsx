@@ -98,7 +98,7 @@ export default function ReviewsHistoryPage() {
                 <Link href="#" className="text-blue-600 font-black text-[10px] uppercase tracking-widest hover:underline decoration-2 underline-offset-4">Quick Manifest</Link>
               </div>
             </div>
-            
+
             <div className="bg-primary/5 p-8 rounded-3xl border border-primary/10 flex flex-col group border-dashed">
               <div className="flex justify-between items-start mb-6">
                 <h3 className="font-black text-lg uppercase tracking-tight text-primary">Heavy-Duty Busbar (800A)</h3>

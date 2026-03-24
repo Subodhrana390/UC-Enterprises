@@ -4,19 +4,30 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function getCategories() {
+export async function getShopCategories() {
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("categories")
-    .select("*")
-    .order("name");
+    .select(`
+      id,
+      name,
+      slug,
+      icon,
+      products (count)
+    `)
+    .order("name", { ascending: true })
+    .limit(5);
 
   if (error) {
     console.error("Error fetching categories:", error);
     return [];
   }
 
-  return data;
+  return data.map(cat => ({
+    ...cat,
+    productCount: cat.products?.[0]?.count || 0
+  }));
 }
 
 export async function getFeaturedProducts() {
@@ -29,6 +40,28 @@ export async function getFeaturedProducts() {
 
   if (error) {
     console.error("Error fetching featured products:", error);
+    return [];
+  }
+
+  return data;
+}
+
+export async function getLatestProducts(limit = 8) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      *,
+      brands (name),
+      categories (name)
+    `)
+    .eq("is_latest", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error fetching latest products:", error);
     return [];
   }
 
@@ -89,6 +122,8 @@ export async function searchProducts({
   manufacturer,
   minPrice,
   maxPrice,
+  minRating,
+  availability,
   sort = "relevant"
 }: {
   query?: string;
@@ -96,6 +131,8 @@ export async function searchProducts({
   manufacturer?: string;
   minPrice?: number;
   maxPrice?: number;
+  minRating?: number;
+  availability?: "in" | "out";
   sort?: string;
 }) {
   const supabase = await createClient();
@@ -123,6 +160,17 @@ export async function searchProducts({
     q = q.lte("base_price", maxPrice);
   }
 
+  if (minRating !== undefined) {
+    q = q.gte("rating", minRating);
+  }
+
+  if (availability === "in") {
+    q = q.gt("stock_quantity", 0);
+  }
+  if (availability === "out") {
+    q = q.lte("stock_quantity", 0);
+  }
+
   // Sorting
   switch (sort) {
     case "price-low":
@@ -133,6 +181,9 @@ export async function searchProducts({
       break;
     case "stock-high":
       q = q.order("stock_quantity", { ascending: false });
+      break;
+    case "newest":
+      q = q.order("created_at", { ascending: false });
       break;
     default:
       q = q.order("is_featured", { ascending: false });
@@ -206,7 +257,6 @@ export async function createProduct(formData: FormData) {
 
   if (error) {
     console.error(error);
-    return { error: "Failed to create product." };
   }
 
   revalidatePath("/admin/products");

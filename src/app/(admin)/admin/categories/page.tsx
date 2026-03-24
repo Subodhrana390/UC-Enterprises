@@ -8,14 +8,13 @@ export default async function CollectionsPage() {
     .from("categories")
     .select("*, products(count)")
     .order("name");
-
+  
   return (
     <div className="space-y-6">
       <header className="flex justify-between items-center">
         <h1 className="text-xl font-semibold text-[#1a1c1d]">Collections</h1>
       </header>
       
-      {/* Pass data to the Client Component */}
       <CollectionsTable initialCategories={categories || []} />
     </div>
   );

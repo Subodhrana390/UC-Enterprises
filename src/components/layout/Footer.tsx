@@ -1,94 +1,126 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 px-8 md:px-12 py-16 w-full max-w-7xl mx-auto font-body text-sm leading-relaxed">
-        <div className="col-span-2">
-          <span className="text-xl font-black text-slate-900 dark:text-slate-50 font-headline tracking-tighter mb-4 block">
-            UCEnterprises
-          </span>
-          <p className="text-slate-500 dark:text-slate-400 max-w-xs mb-6">
-            Empowering innovation through global supply chain excellence. Over 500k components in stock.
-          </p>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-sm">public</span>
+    <footer className="w-full border-t border-slate-200 bg-white dark:bg-slate-950 dark:border-slate-800">
+      <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
+        {/* Main Grid: 4 Columns on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          
+          {/* Column 1: About / Brand */}
+          <div className="space-y-6">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/logo.jpg"
+                alt="UC Enterprises logo"
+                width={180}
+                height={54}
+                className="h-10 w-auto object-contain"
+              />
             </Link>
-            <Link
-              href="#"
-              className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-sm">alternate_email</span>
-            </Link>
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-slate-50">
+              UC ENTERPRISES
+            </h3>
+            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p>
+                Leading industrial supplier of high-quality electronics and fabrication services.
+              </p>
+              <div className="pt-2">
+                <p className="font-semibold text-slate-900 dark:text-slate-200">GSTIN</p>
+                <p>03DYEPD4654N1ZB</p>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-slate-200">UDYAM</p>
+                <p>PB-18-0013501</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Column 2: Quick Links */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-slate-50">
+              Quick Links
+            </h3>
+            <ul className="space-y-4">
+              {["Search Products", "Browse Categories", "Fabrication Services", "Latest Arrivals", "Featured Products"].map((link) => (
+                <li key={link}>
+                  <Link 
+                    href={`/${link.toLowerCase().replace(/ /g, "-")}`} 
+                    className="text-sm text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
+                  >
+                    {link}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Contact Info */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-slate-50">
+              Contact
+            </h3>
+            <div className="space-y-4 text-sm text-slate-600 dark:text-slate-400">
+              <p className="leading-6">
+                Hadhbast No-44, Ambala Delhi Highway,<br />
+                Bisanpur, Zirakpur, Punjab,<br />
+                140603, India
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link href="tel:9888863377" className="hover:text-blue-600 transition-colors flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">call</span>
+                  +91 98888 63377
+                </Link>
+                <Link href="mailto:ucenterprises1@gmail.com" className="hover:text-blue-600 transition-colors flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">mail</span>
+                  ucenterprises1@gmail.com
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Column 4: Newsletter (The Shopify Signature) */}
+          <div className="space-y-6">
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-slate-50">
+              Subscribe
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Get updates on new inventory and industry news.
+            </p>
+            <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
+              <input 
+                type="email" 
+                placeholder="Email address" 
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <button className="bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-widest py-3 rounded-md hover:opacity-90 transition-opacity">
+                Subscribe
+              </button>
+            </form>
           </div>
         </div>
-        <div className="flex flex-col gap-3">
-          <h4 className="font-bold text-on-surface mb-2">Shopping</h4>
-          <Link href="/categories" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Categories
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Line Cards
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            New Products
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Offers
-          </Link>
+
+        {/* Bottom Bar: Payments & Copyright */}
+        <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col items-center md:items-start gap-1">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+              © 2026 UC ENTERPRISES • Zirakpur
+            </p>
+            <p className="text-[10px] text-slate-400">
+              All rights reserved. Secure B2B platform.
+            </p>
+          </div>
+          
+          {/* Generic Payment Icons Placeholder */}
+          <div className="flex items-center gap-4 opacity-40 grayscale hover:grayscale-0 transition-all cursor-default">
+            <span className="material-symbols-outlined text-2xl">payments</span>
+            <span className="material-symbols-outlined text-2xl">account_balance</span>
+            <span className="material-symbols-outlined text-2xl">credit_card</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-3">
-          <h4 className="font-bold text-on-surface mb-2">Services</h4>
-          <Link href="/fabrication" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Fabrication Services
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            BOM Tool
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            API Access
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Custom Quotes
-          </Link>
-        </div>
-        <div className="flex flex-col gap-3">
-          <h4 className="font-bold text-on-surface mb-2">Legal</h4>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Privacy Policy
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Terms of Service
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Compliances
-          </Link>
-        </div>
-        <div className="flex flex-col gap-3">
-          <h4 className="font-bold text-on-surface mb-2">Support</h4>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Contact Support
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Global Distribution
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            Help Center
-          </Link>
-          <Link href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors">
-            FAQs
-          </Link>
-        </div>
-      </div>
-      <div className="border-t border-slate-200 dark:border-slate-800 py-8 px-12 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-        <p>© 2024 UCEnterprises. Engineering Precision.</p>
-        <p className="mt-4 md:mt-0">Headquarters: San Jose, CA | ISO 9001:2015 Certified</p>
       </div>
     </footer>
   );

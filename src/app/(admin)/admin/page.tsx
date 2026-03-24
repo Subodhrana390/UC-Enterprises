@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"; // Assuming you have a Badge component
 import Link from "next/link";
+import { ArrowUpRight, Package, Users, DollarSign, ShoppingBag, IndianRupee } from "lucide-react";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -19,87 +21,87 @@ export default async function AdminDashboard() {
   const { count: totalUsers } = await supabase.from("profiles").select("*", { count: "exact", head: true });
 
   return (
-    <div className="min-h-screen bg-[#f1f1f1] p-4 md:p-8 text-[#1a1c1d]">
-      <div className="max-w-[1200px] mx-auto space-y-6">
-        
-        {/* Simple Header */}
-        <header className="flex justify-between items-center mb-8">
+    <div className="min-h-screen p-6 md:p-10 font-sans text-[#202223]">
+      <div className="max-w-[1024px] mx-auto space-y-5">
+
+        {/* Shopify Style Header */}
+        <header className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-xl font-semibold text-[#1a1c1d]">Home</h1>
-            <p className="text-sm text-[#616161]">Overview of your store's performance</p>
+            <h1 className="text-xl font-bold text-[#202223]">Home</h1>
+            <p className="text-sm text-[#6d7175]">Here's what's happening with your store today.</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="bg-white border-[#d2d2d2] text-sm h-9 rounded-md px-4 shadow-sm">
+          <div className="flex gap-3">
+            <Button variant="outline" className="bg-white border-[#babfc3] text-[#202223] hover:bg-[#f6f6f7] shadow-sm font-semibold h-9">
               Customize
             </Button>
-            <Button className="bg-[#1a1c1d] text-white text-sm h-9 rounded-md px-4 hover:bg-[#303030]">
-              Export Report
+            <Button className="bg-[#008060] hover:bg-[#006e52] text-white shadow-sm font-semibold h-9">
+              Export
             </Button>
           </div>
         </header>
 
-        {/* Stats Grid: Clean & Boxy */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard title="Total Revenue" value={`₹${totalRevenue.toLocaleString()}`} delta="+12%" />
-          <StatsCard title="Total Orders" value={allOrders?.length || 0} delta="+5%" />
-          <StatsCard title="Inventory SKU" value={totalProducts || 0} delta="0%" />
-          <StatsCard title="Total Users" value={totalUsers || 0} delta="+2%" />
+          <StatsCard title="Total Revenue" value={`₹${totalRevenue.toLocaleString()}`} delta="+12%" icon={<IndianRupee size={16} />} />
+          <StatsCard title="Orders" value={allOrders?.length || 0} delta="+5%" icon={<ShoppingBag size={16} />} />
+          <StatsCard title="Products" value={totalProducts || 0} delta="0%" icon={<Package size={16} />} />
+          <StatsCard title="Customers" value={totalUsers || 0} delta="+2%" icon={<Users size={16} />} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Orders Ledger */}
-          <Card className="lg:col-span-2 bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-[#f1f1f1] px-6 py-4">
-              <CardTitle className="text-sm font-semibold">Recent Orders</CardTitle>
-              <Link href="/admin/orders" className="text-xs font-medium text-blue-600 hover:underline">
-                View all orders
-              </Link>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y divide-[#f1f1f1]">
-                {recentOrders?.map((order: any) => (
-                  <div key={order.id} className="flex items-center justify-between px-6 py-4 hover:bg-[#fafafa] transition-colors">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-[#1a1c1d]">#{order.id.toString().substring(0, 5)}</span>
-                      <span className="text-xs text-[#616161]">{order.profiles?.company_name || "Guest Customer"}</span>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-right">
-                        <span className="text-sm font-medium">₹{order.total_amount?.toLocaleString()}</span>
-                        <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                          <div className={`w-1.5 h-1.5 rounded-full ${order.status === 'completed' ? 'bg-emerald-500' : 'bg-amber-400'}`} />
-                          <span className="text-[11px] text-[#616161] capitalize">{order.status}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* System & Marketing Activity */}
-          <div className="space-y-6">
-            <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl">
-              <CardHeader className="px-6 py-4 border-b border-[#f1f1f1]">
-                <CardTitle className="text-sm font-semibold">Store Status</CardTitle>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Main Content Area */}
+          <div className="lg:col-span-2 space-y-5">
+            <Card className="bg-white border-[#ebebed] shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between border-b border-[#f1f1f1] px-5 py-4">
+                <CardTitle className="text-[14px] font-semibold">Recent Orders</CardTitle>
+                <Link href="/admin/orders" className="text-xs font-semibold text-[#005bd3] hover:underline">
+                  View all
+                </Link>
               </CardHeader>
-              <CardContent className="px-6 py-4 space-y-4">
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="text-[12px] text-[#6d7175] border-b border-[#f1f1f1] bg-[#fafafa]">
+                        <th className="px-5 py-3 font-medium">Order</th>
+                        <th className="px-5 py-3 font-medium">Customer</th>
+                        <th className="px-5 py-3 font-medium text-right">Total</th>
+                        <th className="px-5 py-3 font-medium text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f1f1f1]">
+                      {recentOrders?.map((order: any) => (
+                        <tr key={order.id} className="hover:bg-[#f6f6f7] transition-colors cursor-pointer group">
+                          <td className="px-5 py-3 text-sm font-medium text-[#202223]">#{order.id.toString().substring(0, 5)}</td>
+                          <td className="px-5 py-3 text-sm text-[#6d7175]">{order.profiles?.company_name || "Guest"}</td>
+                          <td className="px-5 py-3 text-sm text-right font-medium">₹{order.total_amount?.toLocaleString()}</td>
+                          <td className="px-5 py-3 text-center">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${order.status === 'completed' ? 'bg-[#e3f1df] text-[#005e4d]' : 'bg-[#fff4e5] text-[#8a6116]'
+                              }`}>
+                              {order.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar Area */}
+          <div className="space-y-5">
+            <Card className="bg-white border-[#ebebed] shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-xl">
+              <CardHeader className="px-5 py-4 border-b border-[#f1f1f1]">
+                <CardTitle className="text-[14px] font-semibold">Store Status</CardTitle>
+              </CardHeader>
+              <CardContent className="px-5 py-4 space-y-4">
                 <StatusItem label="Online Store" status="Active" />
                 <StatusItem label="Inventory Sync" status="Pending" />
                 <StatusItem label="API Connections" status="Active" />
               </CardContent>
             </Card>
-
-            <div className="p-6 bg-[#1a1c1d] rounded-xl text-white">
-              <h4 className="text-sm font-semibold mb-2">Inventory Alert</h4>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                45 SKUs in the "Microcontrollers" category are running below threshold.
-              </p>
-              <Button variant="link" className="text-white p-0 h-auto text-xs font-semibold hover:no-underline underline-offset-4 decoration-white/30 underline">
-                Manage Stock →
-              </Button>
-            </div>
           </div>
         </div>
       </div>
@@ -107,16 +109,21 @@ export default async function AdminDashboard() {
   );
 }
 
-function StatsCard({ title, value, delta }: { title: string, value: string | number, delta: string }) {
+function StatsCard({ title, value, delta, icon }: { title: string, value: string | number, delta: string, icon: React.ReactNode }) {
   return (
-    <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl hover:border-[#d2d2d2] transition-colors">
-      <CardContent className="p-5">
-        <p className="text-xs font-medium text-[#616161] mb-2">{title}</p>
-        <div className="flex items-baseline justify-between">
-          <p className="text-xl font-semibold text-[#1a1c1d]">{value}</p>
-          <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+    <Card className="bg-white border-[#ebebed] shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-xl group hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex justify-between items-start mb-2">
+          <div className="p-2 bg-[#f6f6f7] rounded-md text-[#6d7175]">
+            {icon}
+          </div>
+          <span className="text-[11px] font-bold text-[#008060] bg-[#e3f1df] px-1.5 py-0.5 rounded">
             {delta}
           </span>
+        </div>
+        <div>
+          <p className="text-xs font-medium text-[#6d7175]">{title}</p>
+          <p className="text-lg font-bold text-[#202223] mt-0.5">{value}</p>
         </div>
       </CardContent>
     </Card>
@@ -124,12 +131,14 @@ function StatsCard({ title, value, delta }: { title: string, value: string | num
 }
 
 function StatusItem({ label, status }: { label: string, status: string }) {
+  const isActive = status === 'Active';
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-[#616161]">{label}</span>
-      <span className={`text-xs font-medium ${status === 'Active' ? 'text-emerald-600' : 'text-amber-600'}`}>
-        {status}
-      </span>
+      <span className="text-[#6d7175]">{label}</span>
+      <div className="flex items-center gap-2">
+        <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-[#008060]' : 'bg-[#e4b200]'}`} />
+        <span className="text-xs font-medium text-[#202223]">{status}</span>
+      </div>
     </div>
   );
 }

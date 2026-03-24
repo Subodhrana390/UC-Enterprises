@@ -24,7 +24,8 @@ CREATE TABLE brands (
     description TEXT,
     is_featured BOOLEAN DEFAULT FALSE,
     website_url TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 3. Products
@@ -47,15 +48,6 @@ CREATE TABLE products (
     datasheet_url TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 4. Pricing Tiers (Bulk Discounts)
-CREATE TABLE pricing_tiers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    min_quantity INTEGER NOT NULL,
-    unit_price DECIMAL(12, 2) NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 5. User Profiles & Roles
@@ -83,7 +75,7 @@ CREATE TABLE orders (
     tax_amount DECIMAL(12, 2) NOT NULL,
     shipping_amount DECIMAL(12, 2) NOT NULL,
     discount_amount DECIMAL(12, 2) DEFAULT 0,
-    shipping_address_id UUID, -- Links to address_book
+    shipping_address_id UUID REFERENCES addresses(id) ON DELETE SET NULL,
     payment_status TEXT DEFAULT 'unpaid',
     tracking_number TEXT,
     notes TEXT,
@@ -115,28 +107,15 @@ CREATE TABLE fabrication_requests (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 9. Custom Quotes
-CREATE TABLE quote_requests (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
-    subject TEXT,
-    items JSONB DEFAULT '[]', -- List of SKUs and quantities
-    status TEXT DEFAULT 'pending',
-    offered_price DECIMAL(12, 2),
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
 -- 10. Reviews & Q&A
-CREATE TABLE reviews (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
-    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-    comment TEXT,
-    image_urls TEXT[] DEFAULT '{}',
-    is_approved BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+create table reviews (
+  id uuid default uuid_generate_v4() primary key,
+  order_id uuid references orders(id),
+  product_id uuid references products(id),
+  user_id uuid references profiles(id),
+  rating integer check (rating >= 1 and rating <= 5),
+  comment text,
+  created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
 CREATE TABLE product_qa (
@@ -181,32 +160,9 @@ CREATE TABLE addresses (
     pincode TEXT NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 13. Payments
-CREATE TABLE payments (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_id UUID REFERENCES orders(id) ON DELETE SET NULL,
-    payment_method TEXT,
-    transaction_id TEXT,
-    amount DECIMAL(12, 2) NOT NULL,
-    status TEXT, -- success, pending, failed
-    receipt_url TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 14. Notifications
-CREATE TABLE notifications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    title TEXT NOT NULL,
-    message TEXT NOT NULL,
-    type TEXT, -- order, promo, stock
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Add triggers for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -222,7 +178,6 @@ CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXE
 CREATE TRIGGER update_fabrication_requests_updated_at BEFORE UPDATE ON fabrication_requests FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_quote_requests_updated_at BEFORE UPDATE ON quote_requests FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
--- Function to handle new user signups and create a profile
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN

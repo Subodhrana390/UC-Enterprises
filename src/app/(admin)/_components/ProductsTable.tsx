@@ -67,7 +67,7 @@ export function ProductsTable({ products, brands, categories }: { products: any[
                       <Button variant="ghost" size="sm" onClick={() => onEdit(product)} className="text-xs font-medium text-blue-600 hover:text-blue-700 p-0 h-auto">
                         Edit
                       </Button>
-                      <form action={deleteProductForm}>
+                      <form action={async (fd) => deleteProductForm(fd)}>
                         <input type="hidden" name="productId" value={product.id} />
                         <Button type="submit" variant="ghost" size="sm" className="text-xs font-medium text-rose-600 hover:text-rose-700 p-0 h-auto">
                           Delete

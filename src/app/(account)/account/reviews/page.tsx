@@ -4,97 +4,122 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { ChevronLeft, Star, Pencil, Trash2 } from "lucide-react";
 import { ReviewDeleteButton } from "@/components/account/ReviewDeleteButton";
 
 export default async function ReviewsHistoryPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
   const { data: reviews } = await supabase
     .from("reviews")
-    .select("*, products(*)")
+    .select(`
+      id,
+      rating,
+      comment,
+      created_at,
+      product_id,
+      products (
+        id,
+        name,
+        images
+      )
+    `)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   return (
-    <div className="min-h-screen bg-[#f1f1f1] p-4 md:p-8 lg:p-12">
-      <div className="max-w-4xl mx-auto">
-        {/* Page Header */}
-        <header className="mb-8">
-          <h1 className="text-2xl font-semibold text-[#1a1c1d]">My Reviews</h1>
-          <p className="text-sm text-[#616161] mt-1">
-            Manage the feedback you've shared on products.
+    <div className="min-h-screen bg-[#f6f6f7] py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+
+        {/* Navigation & Header */}
+        <header className="mb-10">
+          <Link
+            href="/account"
+            className="inline-flex items-center gap-1.5 text-sm text-[#616161] hover:text-[#1a1c1d] mb-4 font-medium transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back to Account
+          </Link>
+          <h1 className="text-3xl font-bold text-[#1a1c1d] tracking-tight">Product Reviews</h1>
+          <p className="text-[#616161] text-base mt-2">
+            Your honest feedback helps us and other shoppers.
           </p>
         </header>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {reviews && reviews.length > 0 ? (
             reviews.map((review: any) => (
               <div
                 key={review.id}
-                className="bg-white border border-[#ebebeb] rounded-xl shadow-sm overflow-hidden"
+                className="bg-white border border-[#ebebed] rounded-2xl shadow-[0_2px_4px_rgba(0,0,0,0.02)] overflow-hidden transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
               >
-                <div className="p-6 flex flex-col sm:flex-row gap-6">
-                  {/* Product Thumbnail */}
-                  <div className="w-20 h-20 bg-[#f7f7f7] rounded-lg border border-[#f1f1f1] flex-shrink-0 relative overflow-hidden">
-                    <Image
-                      src={review.products?.images?.[0] || "/placeholder.png"}
-                      alt={review.products?.name}
-                      fill
-                      className="object-contain p-2"
-                    />
-                  </div>
+                <div className="p-6">
+                  <div className="flex flex-col md:flex-row gap-6">
 
-                  {/* Content */}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    {/* Product Image Section */}
+                    <div className="relative w-24 h-24 bg-[#f9f9f9] rounded-xl border border-[#f1f1f1] shrink-0 overflow-hidden flex items-center justify-center">
+                      <Image
+                        src={review.products?.images?.[0] || "/placeholder.png"}
+                        alt={review.products?.name || "Product"}
+                        fill
+                        className="object-contain p-2"
+                      />
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        <h2 className="text-sm font-semibold text-[#1a1c1d]">
-                          {review.products?.name}
-                        </h2>
-                        <div className="flex items-center gap-3 mt-1">
-                          <RatingStars rating={review.rating} />
-                          <Badge className="bg-[#eaf4fe] text-[#005bd3] border-none text-[10px] font-medium px-2 py-0">
-                            Verified
-                          </Badge>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h2 className="text-base font-bold text-[#1a1c1d] hover:text-[#008060] transition-colors">
+                              <Link href={`/products/${review.product_id}`}>
+                                {review.products?.name || "Unknown Product"}
+                              </Link>
+                            </h2>
+                            <div className="flex items-center gap-2.5 mt-1.5">
+                              <RatingStars rating={review.rating} />
+                              <Badge variant="secondary" className="bg-[#e3f1df] text-[#008060] hover:bg-[#e3f1df] border-none text-[10px] uppercase tracking-wider h-5 px-2 font-bold">
+                                Verified Buy
+                              </Badge>
+                            </div>
+                          </div>
+                          <time className="text-xs text-[#616161] font-medium bg-[#f6f6f7] px-2 py-1 rounded-md">
+                            {new Date(review.created_at).toLocaleDateString("en-IN", {
+                              month: "short", day: "numeric", year: "numeric"
+                            })}
+                          </time>
+                        </div>
+
+                        <div className="mt-4 relative">
+                          <span className="absolute -left-2 -top-1 text-3xl text-[#e3e3e3] font-serif leading-none">&ldquo;</span>
+                          <p className="text-sm text-[#4a4a4a] leading-relaxed pl-3 italic">
+                            {review.comment || "The customer didn't leave a written note."}
+                          </p>
                         </div>
                       </div>
-                      <span className="text-xs text-[#616161]">
-                        {new Date(review.created_at).toLocaleDateString("en-IN", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
+
+
                     </div>
 
-                    <p className="text-sm text-[#303030] leading-relaxed italic">
-                      "{review.content || review.comment}"
-                    </p>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-3 pt-2">
-                      <Link href={`/reviews/${review.id}/edit`}>
-                        <Button variant="outline" className="h-8 text-xs border-[#d2d2d2] font-medium hover:bg-[#f6f6f6]">
-                          Edit
-                        </Button>
-                      </Link>
-                      <ReviewDeleteButton reviewId={review.id} />
-                    </div>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="bg-white border border-dashed border-[#d2d2d2] rounded-xl py-16 text-center">
-              <span className="material-symbols-outlined text-[#8c8c8c] text-4xl mb-2">
-                rate_review
-              </span>
-              <p className="text-sm text-[#616161]">You haven't written any reviews yet.</p>
+            <div className="bg-white border-2 border-dashed border-[#e3e3e3] rounded-3xl py-24 text-center">
+              <div className="w-16 h-16 bg-[#f6f6f7] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="text-[#d2d2d2] w-8 h-8" />
+              </div>
+              <p className="text-[#1a1c1d] font-semibold">No reviews yet</p>
+              <p className="text-sm text-[#616161] mb-8">Items you review will appear here.</p>
+              <Link href="/account/orders">
+                <Button className="bg-[#008060] hover:bg-[#006e52] text-white rounded-full px-8 h-11 font-bold shadow-md">
+                  Browse Recent Purchases
+                </Button>
+              </Link>
             </div>
           )}
         </div>
@@ -103,18 +128,17 @@ export default async function ReviewsHistoryPage() {
   );
 }
 
-// Shopify style stars (Gold/Yellow)
 function RatingStars({ rating }: { rating: number }) {
   return (
-    <div className="flex text-[#ffb800]">
-      {[...Array(5)].map((_, i) => (
-        <span
-          key={i}
-          className="material-symbols-outlined text-lg"
-          style={{ fontVariationSettings: i < rating ? "'FILL' 1" : "'FILL' 0" }}
-        >
-          star
-        </span>
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={16}
+          fill={star <= rating ? "#ffb800" : "none"}
+          stroke={star <= rating ? "#ffb800" : "#d2d2d2"}
+          strokeWidth={star <= rating ? 0 : 2}
+        />
       ))}
     </div>
   );

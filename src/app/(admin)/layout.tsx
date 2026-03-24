@@ -1,74 +1,67 @@
-import { createClient } from "@/lib/supabase/server";
-import { AdminSidebar } from "./_components/AdminSidebar";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+"use client";
 
-export default async function AdminLayout({
+import { useState } from "react";
+import Link from "next/link";
+import { AdminSidebar } from "./_components/AdminSidebar";
+
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'admin') redirect("/account");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#f1f1f1] overflow-hidden">
-      {/* Sidebar: Fixed and solid */}
-      <aside className="hidden lg:flex flex-col w-60 flex-shrink-0">
+    <div className="flex h-screen bg-[#f1f1f1] overflow-hidden font-sans">
+
+      {/* 1. Sidebar - Fixed on Desktop, Overlay on Mobile */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-60 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+        ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
         <AdminSidebar />
       </aside>
 
-      {/* Main Container */}
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* 2. Main Content Stack */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        
+
         {/* Shopify Universal Top Bar */}
-        <header className="h-12 bg-[#1a1c1d] flex items-center justify-between px-4 flex-shrink-0">
-          <div className="flex items-center gap-4 flex-1">
-            {/* Global Admin Search */}
-            <div className="relative max-w-md w-full">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">
-                search
-              </span>
-              <input 
-                type="text" 
-                placeholder="Search orders, products, or help"
-                className="w-full bg-zinc-800 border-none rounded-md py-1.5 pl-10 pr-4 text-xs text-white placeholder:text-zinc-500 focus:ring-1 focus:ring-zinc-600 transition-all"
-              />
-            </div>
+        <header className="h-12 flex items-center justify-between px-3 md:px-4 flex-shrink-0 z-30">
+          <div className="flex items-center gap-2 md:gap-4 flex-1">
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden text-zinc-400 hover:text-white"
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Quick View Store Link */}
-            <Link 
-              href="/" 
-              className="text-[11px] font-medium text-zinc-300 hover:text-white px-3 py-1 rounded bg-zinc-800 transition-colors"
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Storefront Shortcut */}
+            <Link
+              href="/"
+              target="_blank"
+              className="hidden sm:flex items-center gap-1.5 text-[12px] font-bold text-zinc-300 hover:text-white px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 transition-all"
             >
-              View Storefront
+              <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              View Store
             </Link>
-            
-            {/* Notifications / User */}
-            <button className="text-zinc-400 hover:text-white transition-colors">
-              <span className="material-symbols-outlined text-xl">notifications</span>
-            </button>
-            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white uppercase">
-              {user.email?.slice(0, 2)}
-            </div>
+
           </div>
         </header>
 
-        {/* Scrollable Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
-          <div className="max-w-[1200px] mx-auto">
+        {/* 3. Main Scrollable Canvas */}
+        <main className="flex-1 overflow-y-auto bg-[#f1f1f1] p-4 md:p-8 scroll-smooth custom-scrollbar">
+          <div className="max-w-[1200px] mx-auto animate-in fade-in slide-in-from-bottom-2 duration-500">
             {children}
           </div>
         </main>

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCategories } from "@/lib/actions/products";
+import { getShopCategories } from "@/lib/actions/products";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
@@ -11,7 +11,7 @@ export default async function AuthLayout({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const [categories, profileRow] = await Promise.all([
-    getCategories(),
+    getShopCategories(),
     user ? supabase.from("profiles").select("role").eq("id", user.id).single() : Promise.resolve({ data: null }),
   ]);
   const userRole = profileRow?.data?.role ?? null;

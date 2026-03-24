@@ -1,23 +1,50 @@
 "use client";
 
-import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { addToWishlist } from "@/lib/actions/wishlist";
+import { toggleWishlist, useShopStore } from "@/lib/store/shop-store";
+import { toast } from "sonner";
 
-async function addToWishlistFormAction(formData: FormData) {
-  const productId = formData.get("productId") as string;
-  await addToWishlist(productId);
-}
+export function AddToWishlistButton({
+  productId,
+  className,
+  variant = "outline",
+  productName = "Product",
+  productPrice = 0,
+  productImage = "/placeholder-product.png",
+  stockQuantity,
+  brandName,
+  description,
+}: {
+  productId: string;
+  className?: string;
+  variant?: "default" | "outline";
+  productName?: string;
+  productPrice?: number;
+  productImage?: string;
+  stockQuantity?: number;
+  brandName?: string;
+  description?: string;
+}) {
+  const isWishlisted = useShopStore((s) => Boolean(s.wishlist[productId]));
 
-export function AddToWishlistButton({ productId, className, variant = "outline" }: { productId: string; className?: string; variant?: "default" | "outline" }) {
-  const [pending, startTransition] = useTransition();
+  function onToggle() {
+    toggleWishlist(productId, {
+      productId,
+      name: productName,
+      price: productPrice,
+      image: productImage,
+      stockQuantity,
+      brandName,
+      description,
+    });
+    toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+  }
 
   return (
-    <form action={(fd) => startTransition(() => { addToWishlistFormAction(fd); })}>
-      <input type="hidden" name="productId" value={productId} />
-      <Button type="submit" disabled={pending} variant={variant} className={className}>
-        <span className="material-symbols-outlined">favorite</span>
-      </Button>
-    </form>
+    <Button type="button" onClick={onToggle} variant={variant} className={className} aria-pressed={isWishlisted} aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}>
+      <span className="material-symbols-outlined" style={{ fontVariationSettings: isWishlisted ? "'FILL' 1" : "'FILL' 0" }}>
+        favorite
+      </span>
+    </Button>
   );
 }

@@ -1,24 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { formatPriceINR } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { CartItemActions } from "@/components/shop/CartItemActions";
-import { CartQuantityControls } from "@/components/shop/CartQuantityControls";
+import { addToWishlist, removeFromCart, updateCartQuantity, useShopHydration, useShopStore } from "@/lib/store/shop-store";
+import { toast } from "sonner";
 
-export default async function CartPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const { data: cartItems } = await supabase
-    .from("cart_items")
-    .select("*, products(*)")
-    .eq("user_id", user.id);
-
-  const subtotal = cartItems?.reduce((acc, item: any) => acc + (item.products?.base_price * item.quantity), 0) || 0;
+export default function CartPage() {
+  useShopHydration();
+  const cartItems = useShopStore((s) => Object.values(s.cart));
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <div className="bg-white min-h-screen text-[#1a1c1d]">
@@ -44,38 +36,91 @@ export default async function CartPage() {
               </div>
 
               <div className="divide-y divide-[#ebebeb] border-t border-[#ebebeb]">
-                {cartItems.map((item: any) => (
-                  <div key={item.id} className="py-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                {cartItems.map((item) => (
+                  <div key={item.productId} className="py-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     {/* Product Info */}
                     <div className="col-span-7 flex gap-6">
                       <div className="w-24 h-24 bg-[#f5f5f5] rounded-lg relative flex-shrink-0 border border-[#ebebeb]">
                         <Image 
-                          src={item.products?.images?.[0] || ""} 
-                          alt={item.products?.name} 
+                          src={item.image || "/placeholder-product.png"} 
+                          alt={item.name} 
                           fill 
                           className="object-contain p-2" 
                         />
                       </div>
                       <div className="flex flex-col justify-center gap-1">
-                        <h3 className="font-semibold text-base">{item.products?.name}</h3>
-                        <p className="text-xs text-[#616161]">SKU: {item.products?.sku}</p>
-                        <p className="text-sm font-medium mt-1">{formatPriceINR(item.products?.base_price)}</p>
-                        <CartItemActions cartItemId={item.id} />
+                        <h3 className="font-semibold text-base">{item.name}</h3>
+                        <p className="text-sm font-medium mt-1">{formatPriceINR(item.price)}</p>
+                        <button
+                          type="button"
+                          className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 mt-4 w-fit"
+                          onClick={() => {
+                            removeFromCart(item.productId);
+                            toast.success("Removed from cart");
+                          }}
+                        >
+                          Remove
+                        </button>
+                        <button
+                          type="button"
+                          className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 mt-2 w-fit"
+                          onClick={() => {
+                            addToWishlist({
+                              productId: item.productId,
+                              name: item.name,
+                              price: item.price,
+                              image: item.image,
+                              stockQuantity: item.stockQuantity,
+                            });
+                            removeFromCart(item.productId);
+                            toast.success("Saved for later");
+                          }}
+                        >
+                          Save for later
+                        </button>
                       </div>
                     </div>
 
                     {/* Quantity */}
                     <div className="col-span-3 flex justify-start md:justify-center">
-                      <CartQuantityControls
-                        cartItemId={item.id}
-                        quantity={item.quantity}
-                        maxStock={item.products?.stock_quantity}
-                      />
+                      <div className="flex items-center gap-1 bg-surface rounded-xl p-1 border border-border/40">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-lg font-black"
+                          onClick={() => {
+                            if (item.quantity <= 1) {
+                              removeFromCart(item.productId);
+                              toast.success("Removed from cart");
+                              return;
+                            }
+                            updateCartQuantity(item.productId, item.quantity - 1);
+                            toast.success("Quantity updated");
+                          }}
+                        >
+                          -
+                        </Button>
+                        <span className="min-w-[2.5rem] text-center font-black text-sm tabular-nums">{item.quantity}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-lg font-black"
+                          onClick={() => {
+                            updateCartQuantity(item.productId, item.quantity + 1);
+                            toast.success("Quantity updated");
+                          }}
+                          disabled={Boolean(item.stockQuantity && item.quantity >= item.stockQuantity)}
+                        >
+                          +
+                        </Button>
+                      </div>
                     </div>
 
                     {/* Line Total */}
                     <div className="col-span-2 text-right font-medium text-sm md:text-base">
-                      {formatPriceINR(item.products?.base_price * item.quantity)}
+                      {formatPriceINR(item.price * item.quantity)}
                     </div>
                   </div>
                 ))}

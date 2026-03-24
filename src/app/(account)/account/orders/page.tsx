@@ -27,11 +27,6 @@ export default async function OrdersPage() {
           <h1 className="text-3xl font-semibold text-gray-900 mb-1">My Orders</h1>
           <p className="text-sm text-gray-500">Check the status of your recent orders and track deliveries.</p>
         </div>
-        <Link href="/account/orders/invoice">
-          <Button variant="outline" className="h-11 px-6 rounded-lg border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors">
-            Download Tax Invoice
-          </Button>
-        </Link>
       </header>
 
       {/* Orders Table Container */}
@@ -60,21 +55,20 @@ export default async function OrdersPage() {
                           <div>
                             <p className="font-semibold text-sm text-gray-900">#{order.id.substring(0, 8).toUpperCase()}</p>
                             <p className="text-xs text-gray-500">
-                              {new Date(order.created_at).toLocaleDateString("en-IN", { 
-                                day: "2-digit", 
-                                month: "short", 
-                                year: "numeric" 
+                              {new Date(order.created_at).toLocaleDateString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
                               })}
                             </p>
                           </div>
                         </div>
                       </td>
                       <td className="py-5 px-6">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide ${
-                          order.status === 'delivered' ? 'bg-green-50 text-green-700' : 
-                          order.status === 'processing' ? 'bg-blue-50 text-blue-700' : 
-                          'bg-orange-50 text-orange-700'
-                        }`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide ${order.status === 'delivered' ? 'bg-green-50 text-green-700' :
+                          order.status === 'processing' ? 'bg-blue-50 text-blue-700' :
+                            'bg-orange-50 text-orange-700'
+                          }`}>
                           {order.status}
                         </span>
                       </td>

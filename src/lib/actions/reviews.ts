@@ -16,6 +16,39 @@ export async function createReview(formData: FormData) {
 
   if (!productId || !content) return { error: "Product and content are required." };
 
+  const { data: existingReview, error: existingError } = await supabase
+    .from("reviews")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("product_id", productId)
+    .single();
+
+  if (existingReview) {
+    return { error: "You have already reviewed this product." };
+  }
+
+  // Check if user has purchased the product
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("user_id", user.id);
+  
+  if (!orders || orders.length === 0) {
+    return { error: "You must purchase this product before reviewing it." };
+  }
+  
+  const orderIds = orders.map(o => o.id);
+  const { data: orderItem } = await supabase
+    .from("order_items")
+    .select("id")
+    .eq("product_id", productId)
+    .in("order_id", orderIds)
+    .limit(1);
+
+  if (!orderItem || orderItem.length === 0) {
+    return { error: "You must purchase this product before reviewing it." };
+  }
+
   const { error } = await supabase.from("reviews").insert({
     user_id: user.id,
     product_id: productId,

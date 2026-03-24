@@ -9,13 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getCategories, getProductsByCategory } from "@/lib/actions/products";
+import { getShopCategories, getProductsByCategory } from "@/lib/actions/products";
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
   const [categories, products] = await Promise.all([
-    getCategories(),
+    getShopCategories(),
     getProductsByCategory(slug)
   ]);
 

@@ -3,7 +3,19 @@
 import { useState } from "react";
 import { AddToCartButton } from "./AddToCartButton";
 
-export function ProductAddToCartWithQuantity({ productId, maxStock = 999 }: { productId: string; maxStock?: number }) {
+export function ProductAddToCartWithQuantity({
+  productId,
+  maxStock = 999,
+  productName,
+  productPrice,
+  productImage,
+}: {
+  productId: string;
+  maxStock?: number;
+  productName: string;
+  productPrice: number;
+  productImage: string;
+}) {
   const [quantity, setQuantity] = useState(1);
   const clamped = Math.min(Math.max(1, quantity), maxStock);
 
@@ -38,6 +50,10 @@ export function ProductAddToCartWithQuantity({ productId, maxStock = 999 }: { pr
       <AddToCartButton
         productId={productId}
         quantity={clamped}
+        productName={productName}
+        productPrice={productPrice}
+        productImage={productImage}
+        stockQuantity={maxStock}
         className="flex-1 bg-black text-white rounded-lg font-medium text-sm hover:bg-gray-800 transition-all flex items-center justify-center gap-2 px-6"
       />
     </div>

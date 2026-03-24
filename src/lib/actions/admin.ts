@@ -36,6 +36,13 @@ async function uploadPublicImage(
   return { data: data.publicUrl, error: null };
 }
 
+function getStoragePathFromPublicUrl(url: string, bucket: string) {
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
+
 export async function getAdminBrands() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -52,9 +59,8 @@ export async function getAdminBrands() {
 
 export async function getAdminUsers() {
   const supabase = await createClient();
-  // In a real app, you'd fetch from auth.users via a secure RPC or a public.users table
   const { data, error } = await supabase
-    .from("profiles") // Assuming a profiles table linked to auth.users
+    .from("profiles")
     .select("*")
     .order("created_at", { ascending: false });
 
@@ -101,7 +107,7 @@ export async function createProduct(formData: FormData) {
 
   const uploadedImageUrls: string[] = [];
   for (const image of imageFiles) {
-    const upload = await uploadPublicImage(image, "product-images", "products");
+    const upload = await uploadPublicImage(image, "products", "product-images");
     if (upload.error) return { error: `Product image upload failed: ${upload.error.message}` };
     if (upload.data) uploadedImageUrls.push(upload.data);
   }
@@ -161,20 +167,47 @@ export async function updateProduct(id: string, formData: FormData) {
   const existingImages = formData
     .getAll("existingImages")
     .filter((entry): entry is string => typeof entry === "string" && entry.length > 0);
+  const previousImageUrls: string[] = [];
+  const supabase = await createClient();
+  const { data: existingProduct } = await supabase
+    .from("products")
+    .select("images")
+    .eq("id", id)
+    .single();
+  if (Array.isArray(existingProduct?.images)) {
+    for (const imageUrl of existingProduct.images) {
+      if (typeof imageUrl === "string" && imageUrl.length > 0) previousImageUrls.push(imageUrl);
+    }
+  }
   const imageFiles = formData
     .getAll("productImages")
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
-  if (imageFiles.length > 0 || existingImages.length > 0) {
+  const shouldManageImages = formData.get("manageImages") === "true";
+  if (shouldManageImages || imageFiles.length > 0 || existingImages.length > 0) {
     const uploadedImageUrls: string[] = [];
     for (const image of imageFiles) {
-      const upload = await uploadPublicImage(image, "product-images", "products");
+      const upload = await uploadPublicImage(image, "products", "product-images");
       if (upload.error) return { error: `Product image upload failed: ${upload.error.message}` };
       if (upload.data) uploadedImageUrls.push(upload.data);
     }
-    updates.images = [...existingImages, ...uploadedImageUrls];
+    const finalImages = [...existingImages, ...uploadedImageUrls];
+    updates.images = finalImages;
+
+    // Remove files no longer referenced after update.
+    const removedImages = previousImageUrls.filter((url) => !finalImages.includes(url));
+    if (removedImages.length > 0) {
+      const pathsToRemove = removedImages
+        .map((url) => getStoragePathFromPublicUrl(url, "product-images"))
+        .filter((path): path is string => typeof path === "string" && path.length > 0);
+      if (pathsToRemove.length > 0) {
+        const { error: removeError } = await supabase.storage.from("product-images").remove(pathsToRemove);
+        if (removeError) {
+          console.error("Failed removing old product images:", removeError);
+        }
+      }
+    }
   }
 
-  const supabase = await createClient();
   const { error } = await supabase.from("products").update(updates).eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/admin/products");
@@ -184,11 +217,30 @@ export async function updateProduct(id: string, formData: FormData) {
 
 export async function deleteProductForm(formData: FormData) {
   const id = formData.get("productId") as string;
-  return deleteProduct(id);
+  deleteProduct(id);
 }
 
 export async function deleteProduct(id: string) {
   const supabase = await createClient();
+  const { data: existingProduct } = await supabase
+    .from("products")
+    .select("images")
+    .eq("id", id)
+    .single();
+
+  if (Array.isArray(existingProduct?.images) && existingProduct.images.length > 0) {
+    const pathsToRemove = existingProduct.images
+      .filter((url: unknown): url is string => typeof url === "string" && url.length > 0)
+      .map((url: string) => getStoragePathFromPublicUrl(url, "product-images"))
+      .filter((path: string | null): path is string => typeof path === "string" && path.length > 0);
+    if (pathsToRemove.length > 0) {
+      const { error: removeError } = await supabase.storage.from("product-images").remove(pathsToRemove);
+      if (removeError) {
+        console.error("Failed removing deleted product images:", removeError);
+      }
+    }
+  }
+
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/admin/products");
@@ -201,15 +253,17 @@ export async function createCategory(formData: FormData) {
   const name = formData.get("name") as string;
   const slug = (formData.get("slug") as string) || toSlug(name || "");
   const description = formData.get("description") as string;
-  const parentId = (formData.get("parentId") as string) || null;
-  let icon = (formData.get("icon") as string) || null;
-  const iconFile = formData.get("iconFile");
+  const parentId = ((formData.get("parent_id") ?? formData.get("parentId")) as string) || null;
+  const iconFile = formData.get("iconFile") as File;
+
+  let iconUrl = null;
 
   if (!name) return { error: "Name is required." };
-  if (iconFile instanceof File && iconFile.size > 0) {
-    const upload = await uploadPublicImage(iconFile, "category-icons", "categories");
-    if (upload.error) return { error: `Category icon upload failed: ${upload.error.message}` };
-    icon = upload.data;
+
+  if (iconFile && iconFile.size > 0) {
+    const upload = await uploadPublicImage(iconFile, "categories", "category-icons");
+    if (upload.error) return { error: `Upload failed: ${upload.error.message}` };
+    iconUrl = upload.data;
   }
 
   const supabase = await createClient();
@@ -218,8 +272,9 @@ export async function createCategory(formData: FormData) {
     slug,
     description: description || null,
     parent_id: parentId,
-    icon,
+    icon: iconUrl,
   });
+
   if (error) return { error: error.message };
   revalidatePath("/admin/categories");
   return { success: true };
@@ -227,26 +282,27 @@ export async function createCategory(formData: FormData) {
 
 export async function updateCategory(id: string, formData: FormData) {
   const name = formData.get("name") as string;
-  const slug = (formData.get("slug") as string) || (name ? toSlug(name) : "");
   const description = formData.get("description") as string;
-  const parentId = formData.get("parentId") as string;
-  const icon = formData.get("icon") as string;
-  const iconFile = formData.get("iconFile");
+  const parentId = formData.get("parent_id") ?? formData.get("parentId");
+  const iconFile = formData.get("iconFile") as File;
 
-  const updates: Record<string, unknown> = {};
-  if (name) updates.name = name;
-  if (slug) updates.slug = slug;
-  if (description !== undefined) updates.description = description || null;
-  if (parentId !== null) updates.parent_id = parentId || null;
-  if (icon !== null) updates.icon = icon || null;
-  if (iconFile instanceof File && iconFile.size > 0) {
-    const upload = await uploadPublicImage(iconFile, "category-icons", "categories");
-    if (upload.error) return { error: `Category icon upload failed: ${upload.error.message}` };
+  const updates: Record<string, any> = {};
+  if (name) {
+    updates.name = name;
+    updates.slug = toSlug(name);
+  }
+  updates.description = description || null;
+  if (parentId !== null) updates.parent_id = parentId === "" ? null : parentId;
+
+  if (iconFile && iconFile.size > 0) {
+    const upload = await uploadPublicImage(iconFile, "categories", "category-icons");
+    if (upload.error) return { error: `Upload failed: ${upload.error.message}` };
     updates.icon = upload.data;
   }
 
   const supabase = await createClient();
   const { error } = await supabase.from("categories").update(updates).eq("id", id);
+
   if (error) return { error: error.message };
   revalidatePath("/admin/categories");
   return { success: true };
@@ -258,18 +314,27 @@ export async function saveCategoryForm(formData: FormData) {
   return createCategory(formData);
 }
 
-export async function deleteCategoryForm(formData: FormData) {
-  const id = formData.get("categoryId") as string;
-  return deleteCategory(id);
-}
-
 export async function deleteCategory(id: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from("categories").delete().eq("id", id);
-  if (error) return { error: error.message };
+
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
   revalidatePath("/admin/categories");
-  revalidatePath("/admin/products");
+
   return { success: true };
+}
+
+export async function deleteCategoryForm(formData: FormData) {
+  const id = formData.get("categoryId") as string;
+  if (!id) return { error: "Category ID is required." };
+  return deleteCategory(id);
 }
 
 // Brands CRUD
@@ -288,42 +353,98 @@ export async function createBrand(formData: FormData) {
   return { success: true };
 }
 
-export async function updateBrand(id: string, formData: FormData) {
+export async function saveBrandForm(formData: FormData) {
   const supabase = await createClient();
-  const updates: Record<string, unknown> = {};
+  const id = formData.get("id") as string | null;
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
   const description = formData.get("description") as string;
-  const isFeatured = formData.get("isFeatured");
-  if (name) updates.name = name;
-  if (slug) updates.slug = slug;
-  if (description !== undefined) updates.description = description;
-  if (isFeatured !== undefined) updates.is_featured = isFeatured === "true";
+  const website_url = formData.get("website_url") as string;
+  const is_featured = formData.get("is_featured") === "true";
+  const logoFile = formData.get("logo_file") as File | null;
 
-  const { error } = await supabase.from("brands").update(updates).eq("id", id);
-  if (error) return { error: error.message };
-  revalidatePath("/admin/brands");
-  return { success: true };
+  let logo_url = "";
+
+  try {
+    if (logoFile && logoFile.size > 0) {
+      const fileExt = logoFile.name.split(".").pop();
+      const fileName = `${slug}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `brand-logos/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("brands")
+        .upload(filePath, logoFile, {
+          upsert: true,
+          contentType: logoFile.type,
+        });
+
+      if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
+
+      const { data: publicUrlData } = supabase.storage
+        .from("brands")
+        .getPublicUrl(filePath);
+
+      logo_url = publicUrlData.publicUrl;
+    }
+
+    const brandData: any = {
+      name,
+      slug,
+      description,
+      website_url,
+      is_featured,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (logo_url) {
+      brandData.logo_url = logo_url;
+    }
+
+    if (id) {
+      const { error: updateError } = await supabase
+        .from("brands")
+        .update(brandData)
+        .eq("id", id);
+
+      if (updateError) throw updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from("brands")
+        .insert([{ ...brandData, created_at: new Date().toISOString() }]);
+
+      if (insertError) throw insertError;
+    }
+
+    revalidatePath("/admin/vendors");
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Action Error:", error.message);
+    return { success: false, error: error.message };
+  }
 }
 
-export async function saveBrandForm(formData: FormData) {
-  const id = formData.get("id") as string | null;
-  if (id) return updateBrand(id, formData);
-  return createBrand(formData);
-}
-
+/**
+ * Delete Action
+ */
 export async function deleteBrandForm(formData: FormData) {
-  const id = formData.get("brandId") as string;
-  return deleteBrand(id);
-}
-
-export async function deleteBrand(id: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from("brands").delete().eq("id", id);
-  if (error) return { error: error.message };
-  revalidatePath("/admin/brands");
-  revalidatePath("/admin/products");
-  return { success: true };
+  const brandId = formData.get("brandId") as string;
+
+  try {
+    const { error } = await supabase
+      .from("brands")
+      .delete()
+      .eq("id", brandId);
+
+    if (error) throw error;
+
+    revalidatePath("/admin/vendors");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Delete Error:", error.message);
+    return { success: false, error: error.message };
+  }
 }
 
 // Inventory

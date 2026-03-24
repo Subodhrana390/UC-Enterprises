@@ -129,19 +129,19 @@ export async function setDefaultAddress(id: string) {
   if (!user) return { error: "Unauthorized" };
 
   try {
-  
+
     await supabase
       .from("addresses")
       .update({ is_default: false })
       .eq("user_id", user.id)
       .eq("is_default", true);
 
-  
+
     const { error } = await supabase
       .from("addresses")
       .update({ is_default: true })
       .eq("id", id)
-      .eq("user_id", user.id); 
+      .eq("user_id", user.id);
 
     if (error) throw error;
 
@@ -250,4 +250,55 @@ export async function requestDeactivation() {
   if (error) return { error: error.message };
   revalidatePath("/account/settings");
   return { success: true, message: "Deactivation request submitted." };
+}
+
+
+export async function getUserDashboardData(userId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+    if (profileError) throw profileError;
+
+    // Fetch last 5 orders
+    const { data: orders, error: ordersError } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(5);
+    if (ordersError) throw ordersError;
+
+    // Fetch wishlist count
+    const { count: wishlistCount, error: wishlistError } = await supabase
+      .from("wishlist_items")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId);
+    if (wishlistError) throw wishlistError;
+
+    // Fetch addresses
+    const { data: addresses, error: addressesError } = await supabase
+      .from("addresses")
+      .select("*")
+      .eq("user_id", userId);
+    if (addressesError) throw addressesError;
+
+    return {
+      profile,
+      orders,
+      wishlistCount: wishlistCount || 0,
+      addresses: addresses || [],
+    };
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    return {
+      profile: null,
+      orders: [],
+      wishlistCount: 0,
+      addresses: [],
+    };
+  }
 }

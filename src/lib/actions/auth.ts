@@ -22,7 +22,6 @@ export async function login(formData: FormData) {
     return { error: error.message };
   }
 
-  // Fetch the user's role to determine where to redirect
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')

@@ -5,6 +5,7 @@ import { getProductById, getRelatedProducts } from "@/lib/actions/products";
 import { formatDateINR, formatPriceINR } from "@/lib/utils";
 import { ProductAddToCartWithQuantity } from "@/components/shop/ProductAddToCartWithQuantity";
 import { AddToWishlistButton } from "@/components/shop/AddToWishlistButton";
+import { ProductReviewForm } from "@/components/shop/ProductReviewForm";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,8 +14,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     notFound();
   }
   const relatedProducts = await getRelatedProducts(product.categories?.slug, id);
-
-  console.log(relatedProducts);
 
   const rawImages = product.product_images?.map((img: any) => img.image_url) || (Array.isArray(product.images) ? product.images : product.images ? Object.values(product.images) : []);
   const mainImage = product.product_images?.find((img: any) => img.is_main)?.image_url || product.image_url || rawImages?.[0] || "/placeholder-product.png";
@@ -101,6 +100,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
                 <AddToWishlistButton
                   productId={product.id}
+                  productName={product.name}
+                  productPrice={product.base_price ?? product.price ?? 0}
+                  productImage={mainImage}
+                  stockQuantity={product.stock_quantity}
+                  brandName={product.brands?.name || product.manufacturer}
+                  description={product.description ?? undefined}
                   variant="outline"
                   className="h-10 w-10 p-0 text-gray-400 hover:text-red-500 transition-colors"
                 />
@@ -144,6 +149,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <ProductAddToCartWithQuantity
                   productId={product.id}
                   maxStock={product.stock_quantity || 999}
+                  productName={product.name}
+                  productPrice={product.base_price ?? product.price ?? 0}
+                  productImage={mainImage}
                 />
               </div>
 
@@ -231,9 +239,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </p>
                 </div>
               </div>
-              <Link href="/account/reviews" className="text-xs font-black text-primary uppercase tracking-widest hover:underline">
-                Write a review
-              </Link>
+              <div className="mt-8 flex flex-col gap-4">
+                <Link href="/account/reviews" className="text-xs font-black text-primary uppercase tracking-widest hover:underline text-center">
+                  View all reviews
+                </Link>
+                <ProductReviewForm productId={product.id} />
+              </div>
             </div>
           </div>
         </section>

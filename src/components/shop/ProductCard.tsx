@@ -1,8 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { AddToCartButton } from "./AddToCartButton";
 import { AddToWishlistButton } from "./AddToWishlistButton";
 import { formatPriceINR } from "@/lib/utils";
@@ -13,6 +13,7 @@ interface ProductCardProps {
   description?: string | null;
   brand?: { name: string };
   price: number;
+  compareAtPrice?: number;
   image?: string;
   images?: string[];
   rating?: number;
@@ -27,74 +28,166 @@ export function ProductCard({
   description,
   brand,
   price,
+  compareAtPrice,
   image,
-  images,
+  images = [],
   rating = 0,
   reviewCount = 0,
   sku,
   stock_quantity = 0,
 }: ProductCardProps) {
-  const displayImage = images?.[0] || image || "/placeholder-product.png";
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const allImages = images.length > 0 ? images : [image || "/placeholder-product.png"];
+  const hasMultipleImages = allImages.length > 1;
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isHovered && hasMultipleImages) {
+      interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+      }, 1200); 
+    } else {
+      setCurrentImageIndex(0);
+    }
+    return () => clearInterval(interval);
+  }, [isHovered, hasMultipleImages, allImages.length]);
+
   const inStock = stock_quantity > 0;
+  const discount = compareAtPrice && compareAtPrice > price
+    ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
+    : 0;
+
   return (
-    <div className="group">
-      <Link href={`/products/${id}`} className="block cursor-pointer">
-        <div className="bg-surface-container-low aspect-square rounded-xl mb-4 relative overflow-hidden">
-          <Image
-            src={displayImage}
-            alt={name}
-            width={400}
-            height={400}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-          <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
-            <AddToWishlistButton productId={id} variant="outline" className="h-8 w-8 rounded-full bg-white/80 backdrop-blur shadow-sm hover:bg-white border-0 p-0" />
+    <div 
+      className="group flex flex-col h-full bg-white transition-all duration-300 md:hover:shadow-xl md:p-3 p-2 rounded-xl border border-gray-100 hover:border-blue-100 overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Link href={`/products/${id}`} className="flex flex-col flex-1 cursor-pointer">
+        
+        {/* 1. FIXED IMAGE CONTAINER: Using shrink-0 to prevent height jumping */}
+        <div className="bg-[#f8f9fa] aspect-square rounded-lg mb-2 md:mb-3 relative overflow-hidden border border-gray-50 shrink-0 flex items-center justify-center">
+          <div className="relative w-[85%] h-[85%]"> 
+            <Image
+              src={allImages[currentImageIndex]}
+              alt={`${name} - view ${currentImageIndex + 1}`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-contain transition-opacity duration-500"
+              priority={currentImageIndex === 0}
+            />
           </div>
-          {inStock && (
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold tracking-tighter uppercase text-on-surface flex items-center shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-              In Stock
+
+          {/* Carousel Indicators */}
+          {hasMultipleImages && (
+            <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              {allImages.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    i === currentImageIndex ? "w-4 bg-blue-600" : "w-1 bg-gray-300"
+                  }`} 
+                />
+              ))}
             </div>
           )}
-          <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform" onClick={(e) => e.stopPropagation()}>
-            <AddToCartButton productId={id} className="w-full bg-primary text-white py-3 rounded-lg font-bold text-sm shadow-xl flex items-center justify-center gap-2 h-11">
-              <span className="material-symbols-outlined text-sm">shopping_cart</span>
-              Add to Cart
-            </AddToCartButton>
+
+          {/* Badges */}
+          <div className="absolute top-1.5 left-1.5 md:top-2 md:left-2 flex flex-col gap-1 z-10">
+            {discount > 0 && (
+              <div className="bg-rose-600 text-white text-[9px] md:text-[10px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded shadow-lg">
+                {discount}% OFF
+              </div>
+            )}
+          </div>
+
+          <div className="absolute top-1.5 right-1.5 z-10" onClick={(e) => e.preventDefault()}>
+            <AddToWishlistButton
+              productId={id}
+              productName={name}
+              productPrice={price}
+              productImage={allImages[0]}
+              stockQuantity={stock_quantity}
+              brandName={brand?.name}
+              description={description ?? undefined}
+              variant="outline"
+              className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-white/90 backdrop-blur shadow-sm border-0 p-0"
+            />
+          </div>
+
+          {/* Stock Status */}
+          <div className="absolute bottom-1.5 left-1.5 z-10">
+            <div className={`backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase flex items-center shadow-sm border ${
+              inStock ? "bg-white/90 text-green-700 border-green-100" : "bg-gray-100/90 text-gray-500 border-gray-200"
+            }`}>
+              {inStock && <span className="w-1 h-1 rounded-full bg-green-500 mr-1 animate-pulse"></span>}
+              {inStock ? "In Stock" : "Sold Out"}
+            </div>
+          </div>
+
+          {/* Desktop Hover Add to Cart */}
+          <div className="absolute inset-x-2 bottom-2 hidden md:block translate-y-12 group-hover:translate-y-0 transition-transform duration-300 z-20" onClick={(e) => e.preventDefault()}>
+            <AddToCartButton
+              productId={id}
+              productName={name}
+              productPrice={price}
+              productImage={allImages[0]}
+              stockQuantity={stock_quantity}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold text-xs shadow-xl flex items-center justify-center gap-2 h-9"
+            />
           </div>
         </div>
-        <div className="flex items-center justify-between mb-1">
-        <span className="text-blue-600 text-[10px] font-bold uppercase tracking-wider">{brand?.name}</span>
-        {sku && <span className="text-[9px] text-on-surface-variant font-mono bg-surface-container-low px-1 rounded">{sku}</span>}
-      </div>
-      <h3 className="font-bold text-on-surface group-hover:text-blue-600 transition-colors truncate">
-        {name}
-      </h3>
-      {description ? (
-        <p className="text-xs text-on-surface-variant leading-relaxed mt-1 line-clamp-3">
-          {description}
-        </p>
-      ) : null}
-      <div className="flex items-center gap-1 my-2">
-        <div className="flex text-amber-400">
-          {[...Array(5)].map((_, i) => (
-            <span
-              key={i}
-              className="material-symbols-outlined text-sm"
-              style={{
-                fontVariationSettings: i < Math.floor(rating) ? "'FILL' 1" : "'FILL' 0",
-              }}
-            >
-              star
-            </span>
-          ))}
+
+        {/* 2. FIXED INFO SECTION: Ensuring text height is identical across all cards */}
+        <div className="flex flex-col flex-1 px-1">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-blue-600 text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest truncate">{brand?.name || "Generic"}</span>
+          </div>
+
+          {/* Fixed height for title (2 lines) */}
+          <h3 className="font-bold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1 h-8 md:h-10">
+            {name}
+          </h3>
+          
+          {/* Fixed height for description (1 line) */}
+          <p className="font-normal text-[10px] md:text-xs text-slate-500 line-clamp-1 mb-2 h-4">
+            {description}
+          </p>
+
+          {/* Fixed height for Rating */}
+          <div className="flex items-center gap-1 mb-2 h-5">
+            <div className="flex items-center px-1.5 py-0.5 rounded bg-green-600 text-white">
+              <span className="text-[9px] md:text-[10px] font-black">{rating.toFixed(1)}</span>
+              <span className="material-symbols-outlined text-[9px] md:text-[10px] ml-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+            </div>
+            <span className="text-[10px] md:text-[11px] text-gray-400 font-medium">({reviewCount})</span>
+          </div>
+
+          {/* Price pushed to bottom */}
+          <div className="mt-auto">
+            <div className="flex items-baseline flex-wrap gap-1 md:gap-2">
+              <span className="text-sm md:text-lg font-black text-slate-900">{formatPriceINR(price)}</span>
+              {compareAtPrice && compareAtPrice > price && (
+                <span className="text-[10px] md:text-xs text-gray-400 line-through">{formatPriceINR(compareAtPrice)}</span>
+              )}
+            </div>
+            <p className="text-[8px] md:text-[10px] text-gray-500 font-medium leading-none">Inc. GST</p>
+          </div>
         </div>
-        <span className="text-xs text-on-surface-variant">({reviewCount})</span>
-      </div>
-        <p className="text-xl font-black text-on-surface">
-          {formatPriceINR(price)} <span className="text-sm font-normal text-on-surface-variant">/ unit</span>
-        </p>
       </Link>
+
+      <div className="mt-3 md:hidden">
+        <AddToCartButton
+          productId={id}
+          productName={name}
+          productPrice={price}
+          productImage={allImages[0]}
+          stockQuantity={stock_quantity}
+          className="w-full bg-slate-900 text-white py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider flex items-center justify-center h-9"
+        />
+      </div>
     </div>
   );
 }

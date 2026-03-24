@@ -1,32 +1,37 @@
-import { searchProducts } from "@/lib/actions/products";
+import { getShopCategories, searchProducts } from "@/lib/actions/products";
 import { SearchClient } from "@/components/shop/SearchClient";
 
 // Shopify standard: Ensure the page is dynamic to reflect filter changes instantly
 export const dynamic = "force-dynamic";
 
-export default async function SearchPage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
+export default async function SearchPage({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams;
-  
+
   // Clean up params for Shopify-style filtering
   const query = (params.q as string) || "";
   const category = (params.category as string) || "";
   const manufacturer = (params.manufacturer as string) || "";
   const minPrice = params.minPrice ? parseFloat(params.minPrice as string) : undefined;
   const maxPrice = params.maxPrice ? parseFloat(params.maxPrice as string) : undefined;
-  const sort = (params.sort as string) || "relevance"; // Shopify default is usually 'featuerd' or 'relevance'
+  const minRating = params.minRating ? parseFloat(params.minRating as string) : undefined;
+  const availability = (params.availability as "in" | "out" | undefined) || undefined;
+  const sort = (params.sort as string) || "relevance";
 
-  const products = await searchProducts({
+  const [products, categories] = await Promise.all([searchProducts({
     query,
     category,
     manufacturer,
     minPrice,
     maxPrice,
+    minRating,
+    availability,
     sort
-  });
+  }), getShopCategories()]);
+  const highestPrice = Math.max(1000, ...products.map((p: { base_price?: number }) => Number(p.base_price) || 0));
 
   return (
     <div className="bg-white min-h-screen text-[#1a1c1d]">
@@ -42,17 +47,12 @@ export default async function SearchPage({
             </p>
           </div>
         </header>
-        <SearchClient 
-          initialProducts={products} 
-          totalCount={products.length} 
-          query={query} 
-          activeFilters={{
-            category,
-            manufacturer,
-            minPrice,
-            maxPrice,
-            sort
-          }}
+        <SearchClient
+          initialProducts={products}
+          totalCount={products.length}
+          query={query}
+          categories={categories}
+          maxPrice={highestPrice}
         />
       </main>
     </div>

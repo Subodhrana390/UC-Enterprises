@@ -47,15 +47,15 @@ export default function SignupPage() {
           <div>
             <div className="flex items-center gap-2 mb-10">
               <span className="material-symbols-outlined text-primary text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                settings_input_component
+                storefront
               </span>
               <span className="font-headline font-black text-2xl tracking-tighter text-on-surface">UCEnterprises</span>
             </div>
             
             <div className="space-y-2 mb-8">
-              <h1 className="font-headline font-black text-3xl tracking-tight text-on-surface">Join the Network</h1>
-              <p className="text-on-surface-variant leading-relaxed text-sm">
-                Create your engineering account to unlock global distribution and fabrication tools.
+              <h1 className="font-headline font-black text-3xl tracking-tight text-on-surface">Create Account</h1>
+              <p className="text-on-surface-variant leading-relaxed text-sm font-medium">
+                Join our B2B marketplace to access wholesale pricing, industrial fabrication, and bulk procurement tools.
               </p>
             </div>
 
@@ -69,22 +69,22 @@ export default function SignupPage() {
             {/* Signup Form */}
             <form action={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Account Category</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Account Type</Label>
                 <div className="flex gap-1 p-1 bg-surface-container-low rounded-lg h-11">
                   <button 
                     onClick={() => setAccountType("individual")}
-                    className={`flex-1 text-xs font-bold rounded-md transition-all ${accountType === 'individual' ? 'bg-white shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+                    className={`flex-1 text-xs font-bold rounded-md transition-all ${accountType === 'individual' ? 'bg-white shadow-sm text-[#008060]' : 'text-on-surface-variant hover:text-on-surface'}`}
                     type="button"
                   >
-                    Individual
+                    Personal
                   </button>
                   <button 
                     onClick={() => setAccountType("business")}
-                    className={`flex-1 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${accountType === 'business' ? 'bg-white shadow-sm text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+                    className={`flex-1 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${accountType === 'business' ? 'bg-white shadow-sm text-[#008060]' : 'text-on-surface-variant hover:text-on-surface'}`}
                     type="button"
                   >
                     <span className="material-symbols-outlined text-sm">business</span>
-                    Business
+                    Business / GST
                   </button>
                 </div>
               </div>
@@ -110,7 +110,7 @@ export default function SignupPage() {
                   name="email"
                   required
                   className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
-                  placeholder={accountType === 'business' ? "Work Email Address" : "Personal Email Address"} 
+                  placeholder={accountType === 'business' ? "Work Email Address" : "Email Address"} 
                   type="email" 
                 />
 
@@ -120,7 +120,7 @@ export default function SignupPage() {
                     required
                     minLength={6}
                     className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all pr-12" 
-                    placeholder="Create Password (min 6 characters)" 
+                    placeholder="Password (min. 6 characters)" 
                     type="password" 
                   />
                   <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-40 text-lg">
@@ -129,19 +129,27 @@ export default function SignupPage() {
                 </div>
                 
                 {accountType === 'business' && (
-                  <Input 
-                    name="companyName"
-                    required
-                    className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
-                    placeholder="Company Name" 
-                    type="text" 
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input 
+                      name="companyName"
+                      required
+                      className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
+                      placeholder="Company Legal Name" 
+                      type="text" 
+                    />
+                    <Input 
+                      name="gstNumber"
+                      className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all uppercase" 
+                      placeholder="GSTIN (Optional)" 
+                      type="text" 
+                    />
+                  </div>
                 )}
 
-                <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg border border-primary/10">
-                  <span className="material-symbols-outlined text-primary text-xl">info</span>
-                  <p className="text-[10px] leading-relaxed text-on-surface">
-                    By creating an account, you agree to our <Link href="#" className="underline font-bold">Technical Licensing Terms</Link> and our global data privacy standards.
+                <div className="flex items-start gap-3 p-4 bg-[#008060]/5 rounded-lg border border-[#008060]/10">
+                  <span className="material-symbols-outlined text-[#008060] text-xl">verified</span>
+                  <p className="text-[10px] leading-relaxed text-on-surface font-medium">
+                    By registering, you agree to the <Link href="#" className="underline font-bold text-[#008060]">Merchant Terms of Service</Link> and acknowledge our B2B Privacy Policy.
                   </p>
                 </div>
               </div>
@@ -149,64 +157,63 @@ export default function SignupPage() {
               <Button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-white h-14 rounded-lg font-bold tracking-tight shadow-xl shadow-primary/10 hover:opacity-90 transition-all text-sm"
+                className="w-full bg-[#008060] text-white h-14 rounded-lg font-bold tracking-tight shadow-xl shadow-green-900/10 hover:bg-[#006e52] transition-all text-sm"
               >
-                {loading ? "Creating Account..." : "Create Master Account"}
+                {loading ? "Processing..." : "Create an Account"}
               </Button>
             </form>
 
             <p className="text-center text-xs text-on-surface-variant mt-6 font-medium">
-              Already standardized? <Link href="/login" className="text-blue-600 font-bold hover:underline ml-1">Initialize Session</Link>
+              Already have a store account? <Link href="/login" className="text-blue-600 font-bold hover:underline ml-1">Log in</Link>
             </p>
           </div>
 
           <div className="mt-12 flex items-center gap-8 text-[9px] text-on-surface-variant/50 uppercase tracking-[0.2em] font-bold">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">verified_user</span>
-              <span>AES-256</span>
+              <span className="material-symbols-outlined text-sm">security</span>
+              <span>Secure Checkout</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">shield</span>
-              <span>SOC2</span>
+              <span className="material-symbols-outlined text-sm">verified</span>
+              <span>Merchant Verified</span>
             </div>
           </div>
         </div>
 
         {/* Right Side: Visual Context */}
         <div className="relative bg-surface-container-low p-8 md:p-12 lg:p-16 flex flex-col justify-center items-center text-center">
-          {/* Abstract Technical Visuals */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
             <span className="material-symbols-outlined absolute top-10 left-10 text-9xl text-primary rotate-12 opacity-5">
-              layers
+              local_shipping
             </span>
             <span className="material-symbols-outlined absolute bottom-10 right-10 text-8xl text-primary -rotate-12 opacity-5">
-              hub
+              receipt_long
             </span>
             <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent"></div>
           </div>
 
           <div className="relative z-10 max-w-xs space-y-6">
-            <h2 className="font-headline font-black text-2xl tracking-tight">Enterprise Scale</h2>
-            <p className="text-on-surface-variant text-sm leading-relaxed">
-              Standardize your procurement. Access real-time inventory for over 500,000 components with global shipping.
+            <h2 className="font-headline font-black text-2xl tracking-tight">Merchant Perks</h2>
+            <p className="text-on-surface-variant text-sm leading-relaxed font-medium">
+              Registered businesses get access to tax-exempt purchasing and dedicated account managers for large-scale fabrication.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white/80 p-4 rounded-xl border border-border/40 shadow-sm">
-                <p className="text-xl font-bold text-primary">24h</p>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Rapid Dispatch</p>
+                <p className="text-xl font-bold text-[#008060]">GST</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Input Credit</p>
               </div>
               <div className="bg-white/80 p-4 rounded-xl border border-border/40 shadow-sm">
-                <p className="text-xl font-bold text-primary">500k+</p>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Live SKUs</p>
+                <p className="text-xl font-bold text-[#008060]">Bulk</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant">Tier Pricing</p>
               </div>
             </div>
           </div>
 
           {/* Trust Badges */}
           <div className="absolute bottom-12 flex items-center gap-6 opacity-30 grayscale text-[10px] font-black tracking-widest uppercase">
-            <span>ISO 9001</span>
-            <span>RoHS</span>
-            <span>REACH</span>
+            <span>GST Ready</span>
+            <span>B2B Verified</span>
+            <span>ISO Certified</span>
           </div>
         </div>
 

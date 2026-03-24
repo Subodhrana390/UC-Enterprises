@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/components/account/ProfileForm";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -20,98 +21,164 @@ export default async function ProfilePage() {
     .eq("id", user.id)
     .single();
 
-  // Helper to handle name splitting
   const fullName = profile?.full_name || "";
   const firstName = profile?.first_name || fullName.split(" ")[0] || "";
   const lastName = profile?.last_name || fullName.split(" ").slice(1).join(" ") || "";
-  const companyName = profile?.company_name || "";
 
   return (
-    <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
-      {/* Header */}
-      <header>
-        <h1 className="text-3xl font-semibold text-gray-900 mb-1">Account Settings</h1>
-        <p className="text-sm text-gray-500">Update your personal details and manage your account security.</p>
+    <div className=" min-h-screen max-w-6xl mx-auto p-4 md:p-10 space-y-8">
+
+      {/* BREADCRUMB - Standard for Indian UX */}
+      <nav className="flex items-center gap-2 text-[12px] text-gray-500">
+        <Link href="/" className="hover:text-blue-600">Home</Link>
+        <span>/</span>
+        <Link href="/account" className="hover:text-blue-600">My Account</Link>
+        <span>/</span>
+        <span className="text-gray-900 font-medium">Profile Details</span>
+      </nav>
+
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#1a1c1d]">Profile Details</h1>
+          <p className="text-sm text-gray-600 mt-1">Manage your personal information and GST details</p>
+        </div>
+        <Badge variant="outline" className="w-fit bg-white border-green-200 text-green-700 px-3 py-1">
+          <span className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+          Active Account
+        </Badge>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Side: Profile Form */}
-        <Card className="lg:col-span-2 rounded-xl border-gray-100 bg-white shadow-sm">
-          <CardHeader className="p-6 border-b border-gray-50">
-            <CardTitle className="text-lg font-medium">Personal Information</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email Address</Label>
-              <Input 
-                defaultValue={user.email} 
-                disabled 
-                className="h-11 rounded-lg bg-gray-50 border-gray-200 font-medium text-gray-500 cursor-not-allowed" 
+
+        {/* MAIN FORM AREA */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="rounded-xl border-[#ebebeb] bg-white shadow-sm overflow-hidden">
+            <CardHeader className="p-6 border-b border-[#f1f1f1] bg-white">
+              <CardTitle className="text-lg font-semibold text-[#1a1c1d]">Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+
+              {/* READ ONLY SECTION */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-gray-50">
+                <div className="space-y-2">
+                  <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Registered Email</Label>
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <span className="material-symbols-outlined text-lg">mail</span>
+                    {user.email}
+                  </div>
+                </div>
+
+                {
+                  profile.mobile_number && (
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Mobile Number</Label>
+                      <div className="flex items-center gap-2 text-sm font-medium text-gray-900 bg-white p-3 rounded-lg border border-gray-200">
+                        <span className="font-semibold text-gray-400">+91</span>
+                        {profile?.phone || "Not linked"}
+                        <Badge className="ml-auto bg-blue-50 text-blue-600 hover:bg-blue-50 border-none text-[10px]">VERIFIED</Badge>
+                      </div>
+                    </div>)
+                }
+
+              </div>
+
+              {/* EDITABLE FORM */}
+              <ProfileForm
+                defaultFirstName={firstName}
+                defaultLastName={lastName}
               />
-              <p className="text-[11px] text-gray-400 italic">Email cannot be changed. Contact support for assistance.</p>
-            </div>
-            
-            <ProfileForm 
-              defaultFirstName={firstName} 
-              defaultLastName={lastName} 
-              defaultCompanyName={companyName} 
-            />
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Right Side: Account Perks/Status */}
+          {profile?.role === "business" && (
+            /* GST & BUSINESS SECTION - High value for Indian Users */
+            <Card className="rounded-xl border-[#ebebeb] bg-white shadow-sm overflow-hidden">
+              <CardHeader className="p-6 border-b border-[#f1f1f1]">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold text-[#1a1c1d]">
+                    GST & Tax Information
+                  </CardTitle>
+                  <span className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                    OPTIONAL
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {/* Informational Banner */}
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-blue-50 border border-blue-100 mb-6">
+                  <span className="material-symbols-outlined text-blue-600">
+                    business_center
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">Buying for work?</p>
+                    <p className="text-xs text-blue-700 leading-relaxed">
+                      Add your GSTIN to claim Input Tax Credit on your eligible purchases.
+                      Ensure the Business Name matches your GST certificate.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-[#1a1c1d]">
+                      GST Identification Number (GSTIN)
+                    </Label>
+                    <Input
+                      placeholder="e.g. 07AAAAA0000A1Z5"
+                      className="uppercase h-10 border-[#d2d2d2] focus:border-[#005bd3] transition-all"
+                      maxLength={15}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-[#1a1c1d]">
+                      Business Name
+                    </Label>
+                    <Input
+                      placeholder="As per GST certificate"
+                      className="h-10 border-[#d2d2d2] focus:border-[#005bd3] transition-all"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+        </div>
+
+        {/* SIDEBAR: LOYALTY & SECURITY */}
         <div className="space-y-6">
-          <Card className="rounded-xl border-none bg-black text-white p-8 shadow-lg relative overflow-hidden">
-            {/* Subtle background icon */}
-            <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10">
-              verified
-            </span>
 
-            <div className="relative z-10 space-y-6">
-              <div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-600 font-bold uppercase tracking-wider mb-3 inline-block">
-                  Verified Member
-                </span>
-                <h3 className="text-xl font-semibold leading-tight">Privilege Account</h3>
-                <p className="text-xs text-gray-400 mt-1">Member since {new Date(user.created_at).getFullYear()}</p>
-              </div>
+          {/* INDIAN LOYALTY CARD (Flipkart Plus/Gold style) */}
+          <Card className="rounded-2xl border-none bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] text-white p-6 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-20">
+              <span className="material-symbols-outlined text-6xl">military_tech</span>
+            </div>
 
-              <div className="space-y-4">
+            <div className="relative z-10 space-y-4">
+              <p className="text-xs text-blue-100 leading-relaxed">
+                You are saving an average of <span className="font-bold text-yellow-300">₹2,400</span> per year with exclusive member prices.
+              </p>
+
+              <div className="space-y-3 pt-2">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-blue-400 text-xl">check_circle</span>
-                  <p className="text-xs font-medium text-gray-200">Exclusive bulk pricing active</p>
+                  <span className="material-symbols-outlined text-yellow-400 text-sm">local_shipping</span>
+                  <p className="text-[11px] font-medium">Free Express Delivery on all orders</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-blue-400 text-xl">check_circle</span>
-                  <p className="text-xs font-medium text-gray-200">GST billing enabled</p>
+                  <span className="material-symbols-outlined text-yellow-400 text-sm">support_agent</span>
+                  <p className="text-[11px] font-medium">24/7 Priority Support Access</p>
                 </div>
-                <div className="flex items-center gap-3 text-gray-500">
-                  <span className="material-symbols-outlined text-xl">lock</span>
-                  <p className="text-xs font-medium">Priority support (Pro only)</p>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-white/10">
-                <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2">Account Security</p>
-                <p className="text-[10px] text-gray-400 leading-relaxed uppercase tracking-wide">
-                  Your account is secured with Two-Factor Authentication.
-                </p>
               </div>
             </div>
           </Card>
 
-          {/* Quick Support Link */}
-          <div className="p-6 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-gray-900">Need help?</p>
-              <p className="text-xs text-gray-500">Chat with our team</p>
+          <Link href="/account/settings" className="flex items-center justify-between p-4 rounded-xl border border-red-100 bg-red-50 text-red-700 hover:bg-red-100 transition-all">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-xl">settings</span>
+              <span className="text-xs font-bold uppercase tracking-wide">Settings</span>
             </div>
-            <Link href="/support">
-              <span className="material-symbols-outlined text-gray-400 hover:text-black transition-colors cursor-pointer">
-                arrow_forward_ios
-              </span>
-            </Link>
-          </div>
+            <span className="material-symbols-outlined text-sm">arrow_forward_ios</span>
+          </Link>
         </div>
       </div>
     </div>

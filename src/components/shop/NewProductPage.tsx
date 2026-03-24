@@ -1,11 +1,11 @@
-import { getCategories, getBrands } from "@/lib/actions/products";
+import { getShopCategories, getBrands } from "@/lib/actions/products";
 import { createProduct } from "@/lib/actions/products";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default async function NewProductPage() {
-    const [categories, brands] = await Promise.all([getCategories(), getBrands()]);
+    const [categories, brands] = await Promise.all([getShopCategories(), getBrands()]);
 
     return (
         <form action={createProduct} className="space-y-8 pb-20">

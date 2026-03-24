@@ -9,11 +9,10 @@ import { updateProfile } from "@/lib/actions/account";
 export function ProfileForm({
   defaultFirstName,
   defaultLastName,
-  defaultCompanyName,
 }: {
   defaultFirstName?: string;
   defaultLastName?: string;
-  defaultCompanyName?: string;
+
 }) {
   const [state, formAction] = useActionState(
     async (_: { error?: string; success?: boolean } | null, formData: FormData) => {
@@ -35,14 +34,10 @@ export function ProfileForm({
           <Input name="lastName" defaultValue={defaultLastName} className="h-14 rounded-xl bg-surface border-border/10 font-bold" />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant opacity-40">Enterprise/Company Identity</Label>
-        <Input name="companyName" defaultValue={defaultCompanyName} className="h-14 rounded-xl bg-surface border-border/10 font-bold" />
-      </div>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state?.success && <p className="text-sm text-emerald-600">Profile updated successfully.</p>}
       <Button type="submit" className="h-14 px-10 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20">
-        Update Security Manifest
+        Update Profile
       </Button>
     </form>
   );
