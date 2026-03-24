@@ -70,34 +70,53 @@ export async function getLatestProducts(limit = 8) {
 
 export async function getProductById(id: string) {
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("products")
     .select(`
       *,
-      categories(*),
-      brands(*),
-      pricing_tiers(*)
+      brands (name, slug),
+      categories (name, slug)
     `)
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    console.error(`Error fetching product ${id}:`, error);
+  if (error) {
+    console.error(`Error fetching product ${id}:`, error.message);
     return null;
   }
 
-  const { data: reviewRows } = await supabase
+  if (!data) return null;
+
+  const { data: reviewRows, error: reviewError } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, is_approved, profiles(full_name)")
+    .select(`
+      id, 
+      rating, 
+      comment, 
+      created_at, 
+      profiles (
+        full_name,
+        avatar_url
+      )
+    `)
     .eq("product_id", id)
     .order("created_at", { ascending: false });
 
-  const all = reviewRows ?? [];
-  const productReviews = all.filter((r) => r.is_approved === true);
+  if (reviewError) {
+    console.error(`Error fetching reviews for ${id}:`, reviewError.message);
+  }
+
+  const reviews = reviewRows ?? [];
+
+  const totalRating = reviews.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
+  const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
 
   return {
     ...data,
-    productReviews,
+    productReviews: reviews,
+    avgRating: parseFloat(avgRating.toFixed(1)),
+    reviewCount: reviews.length
   };
 }
 

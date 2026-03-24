@@ -51,7 +51,7 @@ export function ProductReviewForm({ productId }: { productId: string }) {
             {error}
           </div>
         )}
-        
+
         <div>
           <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Rating</label>
           <div className="flex gap-1 text-amber-400">
@@ -79,8 +79,19 @@ export function ProductReviewForm({ productId }: { productId: string }) {
           />
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full md:w-auto uppercase tracking-widest text-xs font-bold">
-          {loading ? "Submitting..." : "Submit Review"}
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-black hover:bg-zinc-800 text-white md:w-auto uppercase tracking-widest text-xs font-bold transition-all py-6"
+        >
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Submitting...
+            </div>
+          ) : (
+            "Submit Review"
+          )}
         </Button>
       </form>
     </div>

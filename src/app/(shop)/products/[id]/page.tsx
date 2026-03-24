@@ -10,6 +10,7 @@ import { ProductReviewForm } from "@/components/shop/ProductReviewForm";
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const product = await getProductById(id);
+
   if (!product) {
     notFound();
   }
@@ -25,7 +26,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     reviewCount > 0 ? productReviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount : Number(product.rating) || 0;
   const displayRating = reviewCount > 0 ? Math.round(avgRating * 10) / 10 : Number(product.rating) || 0;
 
-  const bulkTiers = product.bulk_pricing || product.pricing_tiers || [];
   const specSource = product.product_specifications;
   const specsFromJson = product.specifications && typeof product.specifications === "object" && !Array.isArray(product.specifications)
     ? Object.entries(product.specifications as Record<string, string>).map(([key, value]) => ({ key, value: String(value) }))
