@@ -31,11 +31,11 @@ export function ProductAddToCartWithQuantity({
         >
           <span className="material-symbols-outlined text-sm">remove</span>
         </button>
-        
+
         <span className="w-10 text-center font-semibold text-sm text-gray-900">
           {clamped}
         </span>
-        
+
         <button
           type="button"
           disabled={clamped >= maxStock}
@@ -46,7 +46,6 @@ export function ProductAddToCartWithQuantity({
         </button>
       </div>
 
-      {/* Add To Cart Button */}
       <AddToCartButton
         productId={productId}
         quantity={clamped}

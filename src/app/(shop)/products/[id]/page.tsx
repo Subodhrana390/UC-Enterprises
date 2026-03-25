@@ -99,14 +99,36 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
               <div className="flex items-center gap-4">
                 <div className="flex items-center text-sm">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className={`material-symbols-outlined text-base ${i < Math.floor(displayRating) ? 'text-black' : 'text-gray-200'}`}>
-                      star
+                  {[...Array(5)].map((_, i) => {
+                    const starValue = i + 1;
+                    let iconName = 'star';
+                    let iconClass = 'text-yellow-500';
+
+                    if (displayRating >= starValue) {
+                      iconName = 'star';
+                    } else if (displayRating >= starValue - 0.5) {
+                      iconName = 'star_half';
+                    } else {
+                      iconName = 'star';
+                      iconClass = 'text-yellow-200';
+                    }
+
+                    return (
+                      <span
+                        key={i}
+                        className={`material-symbols-outlined text-base ${iconClass}`}
+                        style={{ fontVariationSettings: "'FILL' 1" }}
+                      >
+                        {iconName}
+                      </span>
+                    );
+                  })}
+
+                  {reviewCount > 0 && (
+                    <span className="ml-2 text-gray-500 underline underline-offset-4 cursor-pointer hover:text-black transition-colors">
+                      {reviewCount} reviews
                     </span>
-                  ))}
-                  <span className="ml-2 text-gray-500 underline underline-offset-4 cursor-pointer">
-                    {reviewCount} reviews
-                  </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-1.5">
@@ -146,39 +168,55 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {/* 4. Actions - Full Width Shopify Style */}
             <div className="space-y-4">
-              <div className="flex flex-col gap-4">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                  Quantity
-                </label>
-                <ProductAddToCartWithQuantity
-                  productId={product.id}
-                  maxStock={product.stock_quantity || 999}
-                  productName={product.name}
-                  productPrice={product.base_price ?? product.price ?? 0}
-                  productImage={mainImage}
-                />
-              </div>
+              {product.stock_quantity > 0 ? (
+                <>
+                  <div className="flex flex-col gap-4">
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
+                      Quantity
+                    </label>
 
-              {/* Request Quote Button */}
-              <Link href="/quote" className="block">
-                <Button
-                  variant="outline"
-                  className="w-full h-12 text-sm font-semibold border-2 border-gray-300 hover:border-black hover:bg-gray-50 transition-all"
-                >
-                  <span className="material-symbols-outlined text-lg mr-2">request_quote</span>
-                  Request Bulk Quote
-                </Button>
-              </Link>
+                    <ProductAddToCartWithQuantity
+                      productId={product.id}
+                      maxStock={product.stock_quantity || 999}
+                      productName={product.name}
+                      productPrice={product.base_price ?? product.price ?? 0}
+                      productImage={mainImage}
+                    />
+                  </div>
+
+                  {/* Request Quote Button */}
+                  <Link href="/quote" className="block">
+                    <Button
+                      variant="outline"
+                      className="w-full h-12 text-sm font-semibold border-2 border-gray-300 hover:border-black hover:bg-gray-50 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-lg mr-2">request_quote</span>
+                      Request Bulk Quote
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                /* Out of Stock State */
+                <div className="p-4 bg-red-50 border border-red-100 rounded-md">
+                  <p className="text-sm font-medium text-red-800 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base">error</span>
+                    Currently Out of Stock
+                  </p>
+                </div>
+              )}
 
               {/* SKU & Shipping Meta */}
-              <div className="pt-6 space-y-2 border-t border-gray-100">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span className="font-semibold text-gray-900">SKU:</span>
-                  <span>{product.sku}</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span className="material-symbols-outlined text-sm">local_shipping</span>
-                  <span>Free shipping on orders over ₹500</span>
+              <div className="pt-6 space-y-3 border-t border-gray-100">
+                {product.sku && (
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <span className="font-semibold text-gray-900">SKU:</span>
+                    <span className="tabular-nums">{product.sku}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <span className="material-symbols-outlined text-sm text-blue-600">local_shipping</span>
+                  <span>Free shipping on orders over <span className="font-medium text-gray-900">₹500</span></span>
                 </div>
               </div>
             </div>

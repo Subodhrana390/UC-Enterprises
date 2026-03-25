@@ -60,7 +60,7 @@ export function FabricationActions({ request }: { request: any }) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
             <span className="material-symbols-outlined text-lg">more_vert</span>
           </Button>

@@ -8,7 +8,8 @@ import { subscribeNewsletter } from "@/lib/actions/support";
 export function SupportNewsletterForm() {
   const [state, formAction] = useActionState(
     async (_: { error?: string; success?: boolean } | null, formData: FormData) => {
-      const result = await subscribeNewsletter(formData);
+      const email = formData.get("email") as string;
+      const result = await subscribeNewsletter(email);
       return result.error ? { error: result.error } : { success: true };
     },
     null

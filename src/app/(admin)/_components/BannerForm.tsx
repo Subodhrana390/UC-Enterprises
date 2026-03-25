@@ -1,46 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { createBanner } from "@/lib/actions/admin/banners";
-import { Plus, X } from "lucide-react";
+import { createBanner, updateBanner } from "@/lib/actions/admin/banners";
+import { Plus, X, Edit, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-export function BannerForm() {
+interface BannerFormProps {
+  banner?: any;
+}
+
+export function BannerForm({ banner }: BannerFormProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   if (!isOpen) {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="bg-[#1a1c1d] text-white h-9 text-xs font-medium px-4 hover:bg-[#303030]"
+        variant={banner ? "secondary" : "default"}
+        size={banner ? "sm" : "default"}
+        className={banner ? "h-8 w-8 p-0" : "bg-[#1a1c1d] text-white h-9 text-xs font-medium px-4 hover:bg-[#303030]"}
       >
-        <Plus className="w-4 h-4 mr-2" />
-        Add Banner
+        {banner ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4 mr-2" />}
+        {!banner && "Add Banner"}
       </Button>
     );
   }
 
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      const result = banner 
+        ? await updateBanner(banner.id, formData)
+        : await createBanner(formData);
+
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(banner ? "Banner updated successfully" : "Banner created successfully");
+        setIsOpen(false);
+      }
+    });
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+      <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-center p-4 border-b border-[#f1f1f1]">
-          <h2 className="text-lg font-semibold">Create Banner</h2>
-          <button onClick={() => setIsOpen(false)} className="text-[#616161] hover:text-black">
+          <h2 className="text-lg font-semibold">{banner ? "Edit Banner" : "Create Banner"}</h2>
+          <button 
+            onClick={() => setIsOpen(false)} 
+            disabled={isPending}
+            className="text-[#616161] hover:text-black disabled:opacity-50"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form action={async (formData) => {
-          await createBanner(formData);
-          setIsOpen(false);
-        }} className="p-4 space-y-4">
+        <form action={handleSubmit} className="p-4 space-y-4">
           <div>
             <label className="block text-xs font-medium text-[#616161] mb-1">Title</label>
             <input
               name="title"
               required
-              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+              defaultValue={banner?.title}
+              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
               placeholder="Summer Sale"
+              disabled={isPending}
             />
           </div>
 
@@ -48,8 +74,10 @@ export function BannerForm() {
             <label className="block text-xs font-medium text-[#616161] mb-1">Subtitle</label>
             <input
               name="subtitle"
-              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+              defaultValue={banner?.subtitle}
+              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
               placeholder="Up to 50% off"
+              disabled={isPending}
             />
           </div>
 
@@ -58,8 +86,10 @@ export function BannerForm() {
             <input
               name="image_url"
               required
-              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+              defaultValue={banner?.image_url}
+              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
               placeholder="https://example.com/banner.jpg"
+              disabled={isPending}
             />
           </div>
 
@@ -67,8 +97,10 @@ export function BannerForm() {
             <label className="block text-xs font-medium text-[#616161] mb-1">Link URL (optional)</label>
             <input
               name="link_url"
-              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+              defaultValue={banner?.link_url}
+              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
               placeholder="/products"
+              disabled={isPending}
             />
           </div>
 
@@ -76,7 +108,9 @@ export function BannerForm() {
             <label className="block text-xs font-medium text-[#616161] mb-1">Position</label>
             <select
               name="position"
-              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+              defaultValue={banner?.position || "homepage"}
+              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
+              disabled={isPending}
             >
               <option value="homepage">Homepage</option>
               <option value="category">Category</option>
@@ -90,7 +124,9 @@ export function BannerForm() {
               <input
                 type="datetime-local"
                 name="start_date"
-                className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+                defaultValue={banner?.start_date ? new Date(banner.start_date).toISOString().slice(0, 16) : ""}
+                className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
+                disabled={isPending}
               />
             </div>
             <div>
@@ -98,7 +134,9 @@ export function BannerForm() {
               <input
                 type="datetime-local"
                 name="end_date"
-                className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+                defaultValue={banner?.end_date ? new Date(banner.end_date).toISOString().slice(0, 16) : ""}
+                className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
+                disabled={isPending}
               />
             </div>
           </div>
@@ -108,26 +146,43 @@ export function BannerForm() {
             <input
               type="number"
               name="sort_order"
-              defaultValue={0}
-              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black"
+              defaultValue={banner?.sort_order || 0}
+              className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
+              disabled={isPending}
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <input type="checkbox" name="is_active" id="is_active" defaultChecked />
+            <input 
+              type="checkbox" 
+              name="is_active" 
+              id="is_active" 
+              defaultChecked={banner ? banner.is_active : true} 
+              disabled={isPending}
+            />
             <label htmlFor="is_active" className="text-xs">Active</label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setIsOpen(false)}
+              disabled={isPending}
+            >
               Cancel
             </Button>
-            <Button type="submit" className="bg-[#1a1c1d] text-white">
-              Create Banner
+            <Button 
+              type="submit" 
+              className="bg-[#1a1c1d] text-white"
+              disabled={isPending}
+            >
+              {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {banner ? "Update Banner" : "Create Banner"}
             </Button>
           </div>
         </form>
       </div>
     </div>
   );
-}
+}

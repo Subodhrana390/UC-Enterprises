@@ -141,7 +141,7 @@ export function ProductCard({
             <span className="text-blue-600 text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest truncate">{brand?.name || "Generic"}</span>
           </div>
 
-          <h3 className="font-bold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1 h-8 md:h-10">
+          <h3 className="font-semibold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1 h-4 md:h-6">
             {name}
           </h3>
 
@@ -151,13 +151,27 @@ export function ProductCard({
             </p>
           )}
 
-          {/* Fixed height for Rating */}
-          <div className="flex items-center gap-1 mb-2 h-5">
-            <div className="flex items-center px-1.5 py-0.5 rounded bg-green-600 text-white">
-              <span className="text-[9px] md:text-[10px] font-black">{rating.toFixed(1)}</span>
-              <span className="material-symbols-outlined text-[9px] md:text-[10px] ml-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+          <div className="flex items-center gap-1.5 mb-2 h-5 select-none">
+            {/* Rating Section */}
+            <div className="flex items-center gap-0.5 shrink-0">
+              <span
+                className="material-symbols-outlined text-[14px] text-yellow-400 leading-none"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                star
+              </span>
+              <span className="text-[11px] font-bold text-gray-900 leading-none pt-[1px]">
+                {rating > 0 ? rating.toFixed(1) : "—"}
+              </span>
             </div>
-            <span className="text-[10px] md:text-[11px] text-gray-400 font-medium">({reviewCount})</span>
+
+            {/* Separator Dot (Optional but adds a nice touch) */}
+            <span className="text-gray-300 text-[10px]">•</span>
+
+            {/* Review Count */}
+            <span className="text-[10px] md:text-[11px] text-gray-500 font-medium tabular-nums hover:text-blue-600 cursor-pointer transition-colors">
+              {reviewCount.toLocaleString()} reviews
+            </span>
           </div>
 
           {/* Price pushed to bottom */}

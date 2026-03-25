@@ -2,9 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { formatPriceINR } from "@/lib/utils";
 
-const MIN_ORDER_AMOUNT = 200; // ₹200 minimum order
+const MIN_ORDER_AMOUNT = 200;
 
 export async function addToCart(productId: string, quantity: number = 1) {
   const supabase = await createClient();

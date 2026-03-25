@@ -1,14 +1,15 @@
 "use client";
 
 import { useTransition } from "react";
-import { removeFromCartForm, saveForLaterForm } from "@/lib/actions/cart";
+import { addToWishlist } from "@/lib/actions/wishlist";
+import { removeFromCart } from "@/lib/actions/cart";
 
 export function CartItemActions({ cartItemId }: { cartItemId: string }) {
   const [pending, startTransition] = useTransition();
 
   return (
     <div className="flex gap-6 mt-6">
-      <form action={(fd) => startTransition(() => { saveForLaterForm(fd); })}>
+      <form action={(fd) => startTransition(() => { addToWishlist(fd.get("cartItemId") as string); })}>
         <input type="hidden" name="cartItemId" value={cartItemId} />
         <button
           type="submit"
@@ -18,7 +19,7 @@ export function CartItemActions({ cartItemId }: { cartItemId: string }) {
           <span className="material-symbols-outlined text-sm">bookmark</span> Save for Later
         </button>
       </form>
-      <form action={(fd) => startTransition(() => { removeFromCartForm(fd); })}>
+      <form action={(fd) => startTransition(() => { removeFromCart(fd.get("cartItemId") as string); })}>
         <input type="hidden" name="cartItemId" value={cartItemId} />
         <button
           type="submit"

@@ -34,7 +34,7 @@ export async function getFeaturedProducts() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
-    .select("*, categories(*), brands(*)")
+    .select("*, categories(*), brands(*), reviews(rating)")
     .eq("is_featured", true)
     .limit(8);
 
@@ -43,7 +43,18 @@ export async function getFeaturedProducts() {
     return [];
   }
 
-  return data;
+  return (data || []).map((product) => {
+    const reviews = (product as any).reviews || [];
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount > 0
+      ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviewCount
+      : 0;
+    return {
+      ...product,
+      rating: parseFloat(avgRating.toFixed(1)),
+      reviewCount
+    };
+  });
 }
 
 export async function getLatestProducts(limit = 8) {
@@ -54,7 +65,8 @@ export async function getLatestProducts(limit = 8) {
     .select(`
       *,
       brands (name),
-      categories (name)
+      categories (name),
+      reviews (rating)
     `)
     .eq("is_latest", true)
     .order("created_at", { ascending: false })
@@ -65,7 +77,18 @@ export async function getLatestProducts(limit = 8) {
     return [];
   }
 
-  return data;
+  return (data || []).map((product) => {
+    const reviews = (product as any).reviews || [];
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount > 0
+      ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviewCount
+      : 0;
+    return {
+      ...product,
+      rating: parseFloat(avgRating.toFixed(1)),
+      reviewCount
+    };
+  });
 }
 
 export async function getProductById(id: string) {
@@ -115,20 +138,20 @@ export async function getProductById(id: string) {
   return {
     ...data,
     productReviews: reviews,
-    avgRating: parseFloat(avgRating.toFixed(1)),
+    rating: parseFloat(avgRating.toFixed(1)),
     reviewCount: reviews.length
   };
 }
 
 export async function getProductsByCategory(categorySlug: string, page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("products")
-    .select("*, categories!inner(*), brands(*)", { count: "exact" })
+    .select("*, categories!inner(*), brands(*), reviews(rating)", { count: "exact" })
     .eq("categories.slug", categorySlug)
     .range(from, to);
 
@@ -137,8 +160,21 @@ export async function getProductsByCategory(categorySlug: string, page = 1, page
     return { products: [], total: 0, totalPages: 0 };
   }
 
+  const productsWithMeta = (data || []).map((product) => {
+    const reviews = (product as any).reviews || [];
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount > 0
+      ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviewCount
+      : 0;
+    return {
+      ...product,
+      rating: parseFloat(avgRating.toFixed(1)),
+      reviewCount
+    };
+  });
+
   return {
-    products: data || [],
+    products: productsWithMeta,
     total: count || 0,
     totalPages: Math.ceil((count || 0) / pageSize)
   };
@@ -170,7 +206,7 @@ export async function searchProducts({
   const supabase = await createClient();
   let q = supabase
     .from("products")
-    .select("*, categories!inner(*), brands!inner(*)", { count: "exact" });
+    .select("*, categories!inner(*), brands!inner(*), reviews(rating)", { count: "exact" });
 
   if (query) {
     q = q.ilike("name", `%${query}%`);
@@ -192,9 +228,11 @@ export async function searchProducts({
     q = q.lte("base_price", maxPrice);
   }
 
+  /* 
   if (minRating !== undefined) {
     q = q.gte("rating", minRating);
   }
+  */
 
   if (availability === "in") {
     q = q.gt("stock_quantity", 0);
@@ -223,7 +261,7 @@ export async function searchProducts({
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await q.range(from, to);
 
   if (error) {
@@ -231,8 +269,21 @@ export async function searchProducts({
     return { products: [], total: 0, totalPages: 0 };
   }
 
+  const productsWithMeta = (data || []).map((product) => {
+    const reviews = (product as any).reviews || [];
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount > 0
+      ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviewCount
+      : 0;
+    return {
+      ...product,
+      rating: parseFloat(avgRating.toFixed(1)),
+      reviewCount
+    };
+  });
+
   return {
-    products: data || [],
+    products: productsWithMeta,
     total: count || 0,
     totalPages: Math.ceil((count || 0) / pageSize)
   };
@@ -270,8 +321,8 @@ export async function getRelatedProducts(categorySlug: string, currentProductId:
 
     return {
       ...product,
-      review_count: reviewCount,
-      average_rating: averageRating.toFixed(1)
+      reviewCount,
+      rating: parseFloat(averageRating.toFixed(1))
     };
   });
 

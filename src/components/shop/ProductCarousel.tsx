@@ -15,7 +15,7 @@ export type ProductCarouselItem = {
   sku?: string;
   stock_quantity?: number;
   rating?: number;
-  review_count?: number;
+  reviewCount?: number;
 };
 
 export function ProductCarousel({
@@ -35,7 +35,6 @@ export function ProductCarousel({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Calculate how many slides we have based on viewport
   const getVisibleItems = () => {
     if (typeof window === 'undefined') return 4;
     if (window.innerWidth < 640) return 1;
@@ -54,11 +53,11 @@ export function ProductCarousel({
 
   useEffect(() => {
     if (!autoplay || isPaused || products.length <= visibleItems) return;
-    
+
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, 4000);
-    
+
     return () => clearInterval(interval);
   }, [autoplay, isPaused, products.length, visibleItems, totalSlides]);
 
@@ -98,9 +97,9 @@ export function ProductCarousel({
   }
 
   return (
-    <section 
-      className="space-y-5" 
-      onMouseEnter={() => setIsPaused(true)} 
+    <section
+      className="space-y-5"
+      onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -110,20 +109,20 @@ export function ProductCarousel({
         </div>
         {products.length > visibleItems && (
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-9 w-9" 
-              onClick={() => scrollTo('prev')} 
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full h-9 w-9"
+              onClick={() => scrollTo('prev')}
               aria-label="Previous products"
             >
               <span className="material-symbols-outlined text-lg">chevron_left</span>
             </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full h-9 w-9" 
-              onClick={() => scrollTo('next')} 
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full h-9 w-9"
+              onClick={() => scrollTo('next')}
               aria-label="Next products"
             >
               <span className="material-symbols-outlined text-lg">chevron_right</span>
@@ -132,7 +131,7 @@ export function ProductCarousel({
         )}
       </div>
 
-      <div 
+      <div
         ref={scrollContainerRef}
         className="overflow-x-hidden scrollbar-hide"
       >
@@ -150,7 +149,7 @@ export function ProductCarousel({
               sku={p.sku}
               stock_quantity={p.stock_quantity}
               rating={p.rating}
-              reviewCount={p.review_count}
+              reviewCount={p.reviewCount}
             />
           ))}
         </div>
@@ -163,9 +162,8 @@ export function ProductCarousel({
               key={i}
               type="button"
               onClick={() => setCurrentSlide(i)}
-              className={`h-2 rounded-full transition-all ${
-                i === currentSlide ? "w-8 bg-blue-600" : "w-2 bg-gray-300"
-              }`}
+              className={`h-2 rounded-full transition-all ${i === currentSlide ? "w-8 bg-blue-600" : "w-2 bg-gray-300"
+                }`}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}

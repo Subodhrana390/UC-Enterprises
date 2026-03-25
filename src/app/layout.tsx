@@ -16,41 +16,62 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: {
-    default: "UC Enterprises | Engineering Precision",
-    template: "%s | UC Enterprises",
+    default: "UC Enterprises | India's Leading Electronic Component Distributor",
+    template: "%s | UC Enterprises India",
   },
-  description: "Global distributor of semiconductors and electronic components. Trusted by engineers for over 25 years with high-quality parts and fast shipping.",
-  keywords: ["semiconductors", "electronic components", "microcontrollers", "engineering parts", "UC Enterprises"],
+  description: "UC Enterprises is a premier global distributor of semiconductors and electronic components in India. Expert PCB fabrication, SMT assembly, and IoT solutions. Fastest shipping on Arduino, Raspberry Pi, and industrial parts.",
+  keywords: [
+    "semiconductors India",
+    "electronic components distributor",
+    "Arduino India",
+    "Raspberry Pi distributor India",
+    "PCB fabrication India",
+    "SMT assembly services",
+    "IoT prototyping",
+    "microcontrollers",
+    "industrial electronic parts",
+    "UC Enterprises"
+  ],
   authors: [{ name: "UC Enterprises" }],
   creator: "UC Enterprises",
-  metadataBase: new URL("https://ucenterprises.com"), // Replace with your real domain
+  metadataBase: new URL("https://ucenterprises.co.in"),
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/logo.jpg",
     apple: "/logo.jpg",
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: "https://ucenterprises.com",
-    title: "UC Enterprises | Engineering Precision",
-    description: "Global distributor of semiconductors and electronic components.",
+    locale: "en_IN",
+    url: "https://ucenterprises.co.in",
+    title: "UC Enterprises | Leading Electronic Component Distributor in India",
+    description: "Expert distributor of semiconductors, Arduino, Raspberry Pi, and industrial parts. Professional PCB & SMT services.",
     siteName: "UC Enterprises",
     images: [{
       url: "/logo.jpg",
       width: 1200,
       height: 630,
-      alt: "UC Enterprises Logo",
+      alt: "UC Enterprises - Electronics & Engineering",
     }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "UC Enterprises | Engineering Precision",
-    description: "Global distributor of semiconductors and electronic components.",
+    title: "UC Enterprises | India's Trusted Component Partner",
+    description: "Global quality semiconductors and components, distributed in India. PCB fabrication and assembly services.",
     images: ["/logo.jpg"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   }
 };
 
@@ -73,14 +94,21 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "UC Enterprises",
-              "url": "https://ucenterprises.com",
-              "logo": "https://ucenterprises.com/logo.jpg",
-              "description": "Global distributor of semiconductors and electronic components.",
+              "url": "https://ucenterprises.co.in",
+              "logo": "https://ucenterprises.co.in/logo.jpg",
+              "description": "Premium distributor of semiconductors, electronic components, and industrial fabrication services in India.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "IN"
+              },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+1-xxx-xxx-xxxx",
-                "contactType": "customer service"
-              }
+                "contactType": "customer service",
+                "availableLanguage": ["English", "Hindi"]
+              },
+              "sameAs": [
+                "https://www.linkedin.com/company/uc-enterprises"
+              ]
             })
           }}
         />

@@ -84,8 +84,16 @@ export function addToCart(item: CartPayload, quantity = 1) {
     const existing = prev.cart[item.productId];
     const max = item.stockQuantity && item.stockQuantity > 0 ? item.stockQuantity : 9999;
     const nextQty = Math.min(max, (existing?.quantity ?? 0) + safeQty);
+
+    // Mutual Exclusivity: Remove from wishlist if added to cart
+    const nextWishlist = { ...prev.wishlist };
+    if (nextWishlist[item.productId]) {
+      delete nextWishlist[item.productId];
+    }
+
     return {
       ...prev,
+      wishlist: nextWishlist,
       cart: {
         ...prev.cart,
         [item.productId]: {
@@ -137,24 +145,44 @@ export function toggleWishlist(productId: string, payload?: WishlistPayload) {
       delete rest[productId];
       return { ...prev, wishlist: rest };
     }
+
+    // Mutual Exclusivity: Remove from cart if added to wishlist
+    const nextCart = { ...prev.cart };
+    if (nextCart[productId]) {
+      delete nextCart[productId];
+    }
+
     const nextItem: WishlistItem = payload ?? {
       productId,
       name: "Product",
       price: 0,
       image: "/placeholder-product.png",
     };
-    return { ...prev, wishlist: { ...prev.wishlist, [productId]: nextItem } };
+    return {
+      ...prev,
+      cart: nextCart,
+      wishlist: { ...prev.wishlist, [productId]: nextItem }
+    };
   });
 }
 
 export function addToWishlist(item: WishlistPayload) {
-  setState((prev) => ({
-    ...prev,
-    wishlist: {
-      ...prev.wishlist,
-      [item.productId]: item,
-    },
-  }));
+  setState((prev) => {
+    // Mutual Exclusivity: Remove from cart if added to wishlist
+    const nextCart = { ...prev.cart };
+    if (nextCart[item.productId]) {
+      delete nextCart[item.productId];
+    }
+
+    return {
+      ...prev,
+      cart: nextCart,
+      wishlist: {
+        ...prev.wishlist,
+        [item.productId]: item,
+      },
+    };
+  });
 }
 
 export function removeFromWishlist(productId: string) {

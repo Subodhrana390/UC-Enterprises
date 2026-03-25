@@ -105,7 +105,6 @@ export default function WishlistPage() {
                         },
                         1,
                       );
-                      removeFromWishlist(item.productId);
                       toast.success("Moved to cart");
                     }}
                     disabled={Boolean(item.stockQuantity !== undefined && item.stockQuantity <= 0)}
