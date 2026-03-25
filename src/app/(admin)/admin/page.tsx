@@ -35,14 +35,6 @@ export default async function AdminDashboard() {
             <h1 className="text-xl font-bold text-[#202223]">Home</h1>
             <p className="text-sm text-[#6d7175]">Here's what's happening with your store today.</p>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" className="bg-white border-[#babfc3] text-[#202223] hover:bg-[#f6f6f7] shadow-sm font-semibold h-9">
-              Customize
-            </Button>
-            <Button className="bg-[#008060] hover:bg-[#006e52] text-white shadow-sm font-semibold h-9">
-              Export
-            </Button>
-          </div>
         </header>
 
         {/* Stats Grid */}

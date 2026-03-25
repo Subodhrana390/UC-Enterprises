@@ -63,7 +63,13 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                             })}
                         </p>
                     </div>
-                    <Badge className="bg-[#e3f1df] text-[#005e4d] border-[#bbe5b3] hover:bg-[#e3f1df]">
+                    <Badge className={`bg-[#e3f1df] text-[#005e4d] 
+                    ${order.status === "cancelled" ? "bg-rose-600 text-white" : ""}
+                    ${order.status === "delivered" ? "bg-green-600 text-white" : ""}
+                    ${order.status === "shipped" ? "bg-blue-600 text-white" : ""}
+                    ${order.status === "processing" ? "bg-yellow-600 text-white" : ""}
+                    ${order.status === "returned" ? "bg-red-600 text-white" : ""}
+                    border-[#bbe5b3] hover:bg-[#e3f1df]`}>
                         {order.status.toUpperCase()}
                     </Badge>
                 </div>
@@ -105,8 +111,8 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                     </Select>
 
                     <p className="mt-3 text-[11px] text-[#6d7175]">
-                        Current status: <strong>{order.status}</strong>. 
-                        {allowedStatuses.length > 0 
+                        Current status: <strong>{order.status}</strong>.
+                        {allowedStatuses.length > 0
                             ? ` Allowed transitions: ${allowedStatuses.join(", ")}`
                             : " No more status changes allowed."}
                     </p>
@@ -172,11 +178,11 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                         </div>
                         <div className="flex justify-between text-xs">
                             <span className="text-[#6d7175]">Method</span>
-                            <span className="font-medium capitalize">{metadata.method || "N/A"}</span>
+                            <span className="font-medium capitalize">{metadata.method || order.payment_method || "N/A"}</span>
                         </div>
                         <div className="flex justify-between text-xs">
                             <span className="text-[#6d7175]">Razorpay ID</span>
-                            <code className="bg-[#f1f1f1] px-1 rounded text-[10px] font-mono">{metadata.razorpay_payment_id}</code>
+                            <code className="bg-[#f1f1f1] px-1 rounded text-[10px] font-mono">{metadata.razorpay_payment_id || "N/A"}</code>
                         </div>
                     </div>
                 </div>
@@ -187,24 +193,22 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                         <MapPin className="w-4 h-4 text-[#6d7175]" />
                         <h3 className="text-sm font-semibold text-[#202223]">Customer & Shipping</h3>
                     </div>
-                    
+
                     {/* Customer Info */}
                     <div className="mb-4">
                         <p className="text-sm font-medium text-[#005bd3] mb-1">{order.profiles?.full_name}</p>
-                        <p className="text-xs text-[#6d7175]">{order.profiles?.email}</p>
-                        {order.profiles?.phone && <p className="text-xs text-[#6d7175]">{order.profiles?.phone}</p>}
                     </div>
 
                     {/* Shipping Address */}
-                    {order.addresses && (
+                    {order.shipping_address && (
                         <div className="mt-3 pt-3 border-t border-[#f1f1f1]">
                             <p className="text-[10px] font-bold text-[#6d7175] uppercase tracking-wider mb-2">Shipping Address</p>
                             <div className="text-xs text-[#202223] space-y-0.5">
-                                <p className="font-medium">{order.addresses.full_name}</p>
-                                <p>{order.addresses.address_line1}</p>
-                                {order.addresses.address_line2 && <p>{order.addresses.address_line2}</p>}
-                                <p>{order.addresses.city}, {order.addresses.state} - {order.addresses.pincode}</p>
-                                <p className="text-[#6d7175]">Phone: {order.addresses.phone_number}</p>
+                                <p className="font-medium">{order.shipping_address.full_name}</p>
+                                <p>{order.shipping_address.address_line1}</p>
+                                {order.shipping_address.address_line2 && <p>{order.shipping_address.address_line2}</p>}
+                                <p>{order.shipping_address.city}, {order.shipping_address.state} - {order.shipping_address.pincode}</p>
+                                <p className="text-[#6d7175]">Phone: {order.shipping_address.phone_number}</p>
                             </div>
                         </div>
                     )}

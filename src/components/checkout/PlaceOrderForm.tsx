@@ -9,6 +9,7 @@ import {
   placeOrder,
   verifyRazorpayAndPlaceOrder,
 } from "@/lib/actions/checkout";
+import { clearCart as clearLocalCart } from "@/lib/store/shop-store";
 
 type RazorpaySuccess = {
   razorpay_payment_id: string;
@@ -103,6 +104,8 @@ export function PlaceOrderForm({
             return;
           }
           if ("success" in result && result.success && result.orderId) {
+            toast.success("Payment verified! Order placed.");
+            clearLocalCart();
             router.push(`/checkout/success/${result.orderId}`);
             return;
           }
@@ -136,11 +139,27 @@ export function PlaceOrderForm({
       return;
     }
     if (result && "success" in result && result.success && result.orderId) {
+      toast.success("Order placed successfully!");
+      // Sync with local shop-store
+      clearLocalCart();
       router.push(`/checkout/success/${result.orderId}`);
     }
   }
 
-  if (!razorpayEnabled) {
+  const isRazorpayMethod = paymentMethod !== "cod" && paymentMethod !== "bank_transfer";
+
+  if (!razorpayEnabled || !isRazorpayMethod) {
+    let buttonText = "Place order";
+    if (loading) {
+      buttonText = "Processing…";
+    } else if (paymentMethod === "cod") {
+      buttonText = "Confirm Order - Pay Cash";
+    } else if (paymentMethod === "bank_transfer") {
+      buttonText = "Confirm Order - Bank Transfer";
+    } else if (!razorpayEnabled && isRazorpayMethod) {
+      buttonText = "Place order (Demo)";
+    }
+
     return (
       <form onSubmit={(e) => void handleDemoOrder(e)}>
         <input type="hidden" name="addressId" value={addressId || ""} />
@@ -151,11 +170,18 @@ export function PlaceOrderForm({
           disabled={loading}
           className="w-full h-14 bg-primary text-white font-black text-sm rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest"
         >
-          {loading ? "Processing…" : "Place order (dev — no gateway)"}
+          {buttonText}
         </Button>
-        <p className="text-[10px] text-on-surface-variant text-center mt-3 uppercase tracking-widest">
-          Add Razorpay keys in env for live payments
-        </p>
+        {!razorpayEnabled && isRazorpayMethod && (
+          <p className="text-[10px] text-on-surface-variant text-center mt-3 uppercase tracking-widest">
+            Add Razorpay keys in env for live payments
+          </p>
+        )}
+        {paymentMethod === "cod" && (
+          <p className="text-[10px] text-on-surface-variant text-center mt-3 uppercase tracking-widest">
+            Payment will be collected at delivery
+          </p>
+        )}
       </form>
     );
   }

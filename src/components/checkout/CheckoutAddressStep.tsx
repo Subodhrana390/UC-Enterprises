@@ -96,11 +96,10 @@ export function CheckoutAddressStep({
               key={addr.id}
               type="button"
               onClick={() => setSelectedId(addr.id)}
-              className={`text-left h-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${
-                selected
+              className={`text-left h-full p-6 md:p-8 rounded-2xl border-2 transition-all duration-300 shadow-sm hover:shadow-md ${selected
                   ? "border-primary bg-blue-50/40 shadow-primary/5"
                   : "border-transparent bg-white border-border/30 hover:border-primary/30"
-              }`}
+                }`}
             >
               <div className="flex justify-between items-start mb-6">
                 <div
@@ -109,9 +108,8 @@ export function CheckoutAddressStep({
                   <span className="material-symbols-outlined">{icon}</span>
                 </div>
                 <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                    selected ? "border-primary bg-primary" : "border-border"
-                  }`}
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? "border-primary bg-primary" : "border-border"
+                    }`}
                 >
                   {selected && <div className="w-2 h-2 rounded-full bg-white" />}
                 </div>
@@ -164,7 +162,7 @@ export function CheckoutAddressStep({
           type="button"
           onClick={proceed}
           disabled={!selectedId}
-          className="w-full lg:w-auto px-10 py-6 h-auto text-base font-black rounded-xl shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+          className="w-full lg:w-auto px-10 py-6 h-auto text-base bg-white font-black rounded-xl shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
         >
           Proceed to payment
           <span className="material-symbols-outlined">arrow_forward</span>

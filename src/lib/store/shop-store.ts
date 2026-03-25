@@ -138,6 +138,10 @@ export function removeFromCart(productId: string) {
   });
 }
 
+export function clearCart() {
+  setState((prev) => ({ ...prev, cart: {} }));
+}
+
 export function toggleWishlist(productId: string, payload?: WishlistPayload) {
   setState((prev) => {
     if (prev.wishlist[productId]) {
@@ -146,7 +150,6 @@ export function toggleWishlist(productId: string, payload?: WishlistPayload) {
       return { ...prev, wishlist: rest };
     }
 
-    // Mutual Exclusivity: Remove from cart if added to wishlist
     const nextCart = { ...prev.cart };
     if (nextCart[productId]) {
       delete nextCart[productId];

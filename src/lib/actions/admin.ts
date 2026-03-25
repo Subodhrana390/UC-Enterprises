@@ -497,10 +497,10 @@ export async function updateOrderStatus(orderId: string, status: string) {
 // Paginated data fetching for admin
 export async function getAdminProducts(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("products")
     .select("*, brands(name), categories(name)", { count: "exact" })
@@ -521,10 +521,10 @@ export async function getAdminProducts(page = 1, pageSize = 20) {
 
 export async function getAdminOrders(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("orders")
     .select(`
@@ -534,7 +534,7 @@ export async function getAdminOrders(page = 1, pageSize = 20) {
         full_name,
         phone_number
       ),
-      addresses:shipping_address_id (
+      shipping_address:addresses!shipping_address_id (
         *
       ),
       order_items (
@@ -542,7 +542,7 @@ export async function getAdminOrders(page = 1, pageSize = 20) {
         quantity,
         unit_price,
         total_price,
-        products (
+        products:product_id (
           name,
           images
         )
@@ -565,10 +565,10 @@ export async function getAdminOrders(page = 1, pageSize = 20) {
 
 export async function getAdminUsersPaginated(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("profiles")
     .select("*", { count: "exact" })
@@ -589,10 +589,10 @@ export async function getAdminUsersPaginated(page = 1, pageSize = 20) {
 
 export async function getAdminInventory(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("products")
     .select("*, brands(name)", { count: "exact" })
@@ -613,10 +613,10 @@ export async function getAdminInventory(page = 1, pageSize = 20) {
 
 export async function getAdminBrandsPaginated(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("brands")
     .select("*, products(count)", { count: "exact" })
@@ -637,10 +637,10 @@ export async function getAdminBrandsPaginated(page = 1, pageSize = 20) {
 
 export async function getAdminCategories(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("categories")
     .select("*, products(count)", { count: "exact" })
@@ -661,10 +661,10 @@ export async function getAdminCategories(page = 1, pageSize = 20) {
 
 export async function getAdminQuotes(page = 1, pageSize = 20) {
   const supabase = await createClient();
-  
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  
+
   const { data, error, count } = await supabase
     .from("orders")
     .select("*, profiles(first_name, last_name, company_name)", { count: "exact" })

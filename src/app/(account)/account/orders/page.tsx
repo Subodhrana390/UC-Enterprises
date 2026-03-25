@@ -14,7 +14,7 @@ export default async function OrdersPage({
   const params = await searchParams;
   const page = params.page ? parseInt(params.page as string) : 1;
   const pageSize = 10;
-  
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -27,7 +27,10 @@ export default async function OrdersPage({
 
   const { data: orders, count } = await supabase
     .from("orders")
-    .select("*", { count: "exact" })
+    .select(`
+      *,
+      shipping_address:addresses!shipping_address_id(*)
+    `, { count: "exact" })
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .range(from, to);
@@ -90,8 +93,12 @@ export default async function OrdersPage({
                       <td className="py-5 px-6 text-sm font-medium text-gray-900">
                         {formatPriceINR(order.total_amount ?? 0)}
                       </td>
-                      <td className="py-5 px-6 text-xs text-gray-500 font-medium">
-                        Standard Delivery
+                      <td className="py-5 px-6 text-xs text-gray-500 font-medium capitalize">
+                        {order.shipping_address ? (
+                          `${(order.shipping_address as any).address_line1}, ${(order.shipping_address as any).city}, ${(order.shipping_address as any).pincode}`
+                        ) : (
+                          "Standard Delivery"
+                        )}
                       </td>
                       <td className="py-5 px-6 text-right">
                         <div className="flex justify-end gap-2">
@@ -129,7 +136,7 @@ export default async function OrdersPage({
           </div>
         </CardContent>
       </Card>
-      
+
       <PaginationControls currentPage={page} totalPages={totalPages} basePath="/account/orders" />
     </div>
   );

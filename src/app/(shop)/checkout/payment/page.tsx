@@ -34,8 +34,6 @@ export default async function PaymentPage() {
         <div className="lg:col-span-8">
           <CheckoutPaymentStep
             totalAmount={totalAmount}
-            onPaymentMethodSelect={() => {}}
-            selectedMethod=""
             minimumRequired={minimumRequired}
             subtotal={subtotal}
           />

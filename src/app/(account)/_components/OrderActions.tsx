@@ -87,17 +87,6 @@ export function OrderActions({ status, orderId, items, userId }: OrderActionsPro
         )
     }
     return (
-        <div className="flex gap-2 w-full">
-            <Button variant="outline" size="sm" className="flex-1 text-xs border-[#babfc3] font-semibold h-9">
-                Print Invoice
-            </Button>
-            <Button
-                size="sm"
-                disabled={status === 'cancelled'}
-                className="flex-1 text-xs bg-[#202223] text-white hover:bg-[#303030] font-semibold h-9"
-            >
-                {status === 'shipped' ? 'Mark Delivered' : 'Fulfill Item'}
-            </Button>
-        </div>
+        <div></div>
     );
-}
+}   

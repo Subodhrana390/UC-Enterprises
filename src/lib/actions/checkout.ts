@@ -198,7 +198,17 @@ export async function createOrder(
   return { success: true, orderId: order.id };
 }
 
-export async function createRazorpayPaymentOrder(userId: string) {
+export async function createRazorpayPaymentOrder() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be logged in to create a payment order." };
+  }
+
+  const userId = user.id;
   const { error, cartItems, totalAmount } = await getCartAndTotals(userId);
   if (error || !cartItems) {
     return { error };
@@ -235,7 +245,16 @@ export async function validateCartMinimum(userId: string) {
 
 // Legacy exports for PlaceOrderForm compatibility
 export async function createRazorpayOrderAction(formData: FormData) {
-  const userId = "";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be logged in to create an order." };
+  }
+
+  const userId = user.id;
   const addressId = formData.get("addressId") as string;
   const { error, cartItems, totalAmount } = await getCartAndTotals(userId);
   if (error || !cartItems) {
@@ -260,14 +279,23 @@ export async function createRazorpayOrderAction(formData: FormData) {
     currency: result.currency,
     keyId: getPublicRazorpayKeyId(),
     prefill: {
-      email: "",
-      name: "",
+      email: user.email || "",
+      name: user.user_metadata?.full_name || "",
     },
   };
 }
 
 export async function placeOrder(formData: FormData) {
-  const userId = "";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be logged in to place an order." };
+  }
+
+  const userId = user.id;
   const addressId = formData.get("addressId") as string;
   const paymentMethod = formData.get("paymentMethod") as "razorpay" | "cod" | "bank_transfer";
   const requestGst = formData.get("gstInvoice") === "true";
@@ -280,7 +308,16 @@ export async function placeOrder(formData: FormData) {
 }
 
 export async function verifyRazorpayAndPlaceOrder(formData: FormData) {
-  const userId = "";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be logged in to verify payment." };
+  }
+
+  const userId = user.id;
   const addressId = formData.get("addressId") as string;
   const paymentMethod = formData.get("paymentMethod") as "razorpay" | "cod" | "bank_transfer";
   const razorpayOrderId = formData.get("razorpay_order_id") as string;

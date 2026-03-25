@@ -6,7 +6,7 @@ import { CheckoutOrderSummaryCard } from "@/components/checkout/CheckoutOrderSum
 import { PlaceOrderForm } from "@/components/checkout/PlaceOrderForm";
 import { Badge } from "@/components/ui/badge";
 import { isRazorpayConfigured } from "@/lib/payments/razorpay";
-const VALID_PAYMENT = new Set(["card", "upi", "netbanking", "wallet"]);
+const VALID_PAYMENT = new Set(["card", "upi", "netbanking", "wallet", "razorpay", "cod", "bank_transfer"]);
 
 type Props = {
   searchParams: Promise<{ addressId?: string; gst?: string; paymentMethod?: string }>;
@@ -14,7 +14,7 @@ type Props = {
 
 export default async function CheckoutReviewPage({ searchParams }: Props) {
   const { addressId, gst, paymentMethod: pmRaw } = await searchParams;
-  const paymentMethod = VALID_PAYMENT.has(pmRaw || "") ? pmRaw! : "card";
+  const paymentMethod = VALID_PAYMENT.has(pmRaw || "") ? (pmRaw as "razorpay" | "cod" | "bank_transfer" | "card") : "razorpay";
 
   const supabase = await createClient();
   const {
@@ -79,10 +79,9 @@ export default async function CheckoutReviewPage({ searchParams }: Props) {
             <h2 className="font-headline text-lg font-black mb-4 uppercase tracking-tight">Payment</h2>
             <div className="flex items-center gap-3 flex-wrap">
               <Badge variant="outline" className="font-mono text-[10px] uppercase">
-                {paymentMethod === "card" && "Credit / Debit Card"}
-                {paymentMethod === "upi" && "UPI"}
-                {paymentMethod === "netbanking" && "Net Banking"}
-                {paymentMethod === "wallet" && "Digital Wallet"}
+                {paymentMethod === "razorpay" && "Razorpay Secure"}
+                {paymentMethod === "cod" && "Cash on Delivery"}
+                {paymentMethod === "bank_transfer" && "Bank Transfer / NEFT"}
               </Badge>
               <span className="text-xs text-on-surface-variant">
                 {isRazorpayConfigured() ? "You will pay securely on the next step via Razorpay." : "Configure Razorpay in production for live payments."}

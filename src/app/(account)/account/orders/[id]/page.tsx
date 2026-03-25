@@ -21,7 +21,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
     const address = order.shipping_address;
 
     return (
-        <div className="min-h-screen bg-[#f6f6f7] p-4 md:p-10 font-sans antialiased">
+        <div className="min-h-screen p-4 md:p-10 font-sans antialiased">
             <div className="max-w-6xl mx-auto space-y-8">
 
                 {/* HEADER & TOP NAV */}
@@ -164,16 +164,19 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                                 <h3 className="text-[10px] font-bold text-[#1a1c1d] uppercase tracking-widest">Payment Method</h3>
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-5 bg-[#f6f6f7] border border-[#ebebeb] rounded-sm flex items-center justify-center">
-                                        <span className="text-[8px] font-black italic">UPI</span>
+                                        <span className="text-[8px] font-black italic uppercase">
+                                            {order.payment_method === 'razorpay' ? 'RZP' : order.payment_method === 'cod' ? 'COD' : 'BNK'}
+                                        </span>
                                     </div>
-                                    <p className="text-xs font-medium text-[#1a1c1d]">Google Pay / PhonePe</p>
+                                    <p className="text-xs font-medium text-[#1a1c1d] capitalize">
+                                        {order.payment_method === 'bank_transfer' ? 'Bank Transfer' : order.payment_method === 'razorpay' ? 'Cards / UPI (Razorpay)' : order.payment_method?.toUpperCase() || 'N/A'}
+                                    </p>
                                 </div>
                             </section>
                         </div>
 
                         {/* 5. Quick Actions Footer */}
-                        {/* 5. Quick Actions Footer */}
-                        <div className="mt-auto p-4 bg-white border-t border-[#ebebed] flex gap-2 shrink-0">
+                        <div className="mt-auto p-4 border-t border-[#ebebed] flex gap-2 shrink-0">
                             <OrderActions
                                 status={order.status}
                                 orderId={order.id}

@@ -93,6 +93,7 @@ CREATE TABLE orders (
     discount_amount DECIMAL(12, 2) DEFAULT 0,
     shipping_address_id UUID REFERENCES addresses(id) ON DELETE SET NULL,
     payment_status TEXT DEFAULT 'unpaid',
+    payment_method TEXT,
     tracking_number TEXT,
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -129,7 +130,19 @@ CREATE TABLE wishlist_items (
     UNIQUE(user_id, product_id)
 );
 
--- 10. Reviews
+-- 10. Payment Records
+CREATE TABLE payment_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+    payment_method TEXT NOT NULL,
+    transaction_id TEXT,
+    amount DECIMAL(12, 2) NOT NULL,
+    status TEXT DEFAULT 'pending',
+    metadata JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 11. Reviews
 CREATE TABLE reviews (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id UUID REFERENCES orders(id) ON DELETE SET NULL,
@@ -224,6 +237,7 @@ CREATE INDEX idx_products_slug ON products(slug);
 CREATE INDEX idx_orders_user ON orders(user_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_order_items_order ON order_items(order_id);
+CREATE INDEX idx_payment_records_order ON payment_records(order_id);
 CREATE INDEX idx_cart_items_user ON cart_items(user_id);
 CREATE INDEX idx_wishlist_user ON wishlist_items(user_id);
 CREATE INDEX idx_reviews_product ON reviews(product_id);
@@ -234,6 +248,7 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payment_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wishlist_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
@@ -249,6 +264,16 @@ CREATE POLICY "Users can delete own addresses" ON addresses FOR DELETE USING (au
 
 -- Orders: Users can view their own orders
 CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (auth.uid() = user_id);
+
+-- Payment Records: Users can view their own payment records
+CREATE POLICY "Users can view own payment records" ON payment_records
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM orders
+            WHERE orders.id = payment_records.order_id
+            AND orders.user_id = auth.uid()
+        )
+    );
 
 -- Cart: Users can manage their own cart
 CREATE POLICY "Users can view own cart" ON cart_items FOR SELECT USING (auth.uid() = user_id);

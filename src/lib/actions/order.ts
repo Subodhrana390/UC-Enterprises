@@ -25,7 +25,7 @@ export async function getOrderById(orderId: string) {
           base_price
         )
       ),
-      shipping_address:addresses(
+      shipping_address:addresses!shipping_address_id(
         *
       )
     `)

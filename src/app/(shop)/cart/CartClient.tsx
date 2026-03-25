@@ -9,7 +9,8 @@ import {
   removeFromCart as removeLocal,
   toggleWishlist as toggleLocal,
   addToWishlist as addLocalWishlist,
-  addToCart as addLocalCart
+  addToCart as addLocalCart,
+  clearCart as clearLocal
 } from "@/lib/store/shop-store";
 import { formatPriceINR } from "@/lib/utils";
 import { Trash2, Minus, Plus, ArrowRight, ShoppingBag, Heart, Loader2 } from "lucide-react";
@@ -114,21 +115,26 @@ export function CartClient({
 
 
   const handleClearCart = async () => {
-    if (!confirm("Are you sure you want to clear your cart?")) return;
-
-    setLoadingId("clear");
     startTransition(async () => {
       const result = await clearCart(userId);
-      setLoadingId(null);
-
       if (result.error) {
         toast.error(result.error);
       } else {
         setItems([]);
+        clearLocal();
         toast.success("Cart cleared");
       }
     });
   };
+
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const handleCheckout = () => {
+    setIsRedirecting(true);
+    router.push("/checkout");
+  };
+
+  const isAnyLoading = isPending || isRedirecting || !!loadingId;
 
   const currentSubtotal = items.reduce(
     (acc, item) => acc + (item.products?.base_price || 0) * item.quantity,
@@ -175,7 +181,7 @@ export function CartClient({
                   variant="ghost"
                   size="sm"
                   onClick={handleClearCart}
-                  disabled={isPending}
+                  disabled={isAnyLoading}
                   className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
@@ -220,7 +226,7 @@ export function CartClient({
                             size="icon"
                             className="h-8 w-8 hover:bg-white"
                             onClick={() => handleQuantityChange(item.id, item.product_id, item.quantity - 1)}
-                            disabled={isPending}
+                            disabled={isAnyLoading}
                           >
                             <Minus className="w-3 h-3" />
                           </Button>
@@ -230,7 +236,7 @@ export function CartClient({
                             size="icon"
                             className="h-8 w-8 hover:bg-white"
                             onClick={() => handleQuantityChange(item.id, item.product_id, item.quantity + 1)}
-                            disabled={isPending || item.quantity >= (item.products?.stock_quantity || 999)}
+                            disabled={isAnyLoading || item.quantity >= (item.products?.stock_quantity || 999)}
                           >
                             <Plus className="w-3 h-3" />
                           </Button>
@@ -239,7 +245,7 @@ export function CartClient({
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleSaveForLater(item.id, item.product_id)}
-                            disabled={isPending}
+                            disabled={isAnyLoading}
                             className="text-[#616161] hover:text-blue-600 transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
                           >
                             <Heart className="w-3.5 h-3.5" />
@@ -248,7 +254,7 @@ export function CartClient({
                           <div className="w-px h-3 bg-[#ebebeb]" />
                           <button
                             onClick={() => handleRemove(item.id, item.product_id)}
-                            disabled={isPending}
+                            disabled={isAnyLoading}
                             className="text-[#919191] hover:text-rose-600 transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -329,11 +335,11 @@ export function CartClient({
 
             <Button
               className="w-full bg-[#1a1c1d] hover:bg-black text-white h-14 rounded-xl font-bold transition-all active:scale-[0.98] disabled:opacity-50"
-              onClick={() => router.push("/checkout")}
-              disabled={isBelowMinimum || isPending || items.length === 0}
+              onClick={handleCheckout}
+              disabled={isBelowMinimum || isAnyLoading || items.length === 0}
             >
-              {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Proceed to Checkout"}
-              {!isPending && <ArrowRight className="w-4 h-4 ml-2" />}
+              {isAnyLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Proceed to Checkout"}
+              {!isAnyLoading && <ArrowRight className="w-4 h-4 ml-2" />}
             </Button>
 
             <Link href="/" className="block text-center text-sm text-[#616161] mt-6 hover:text-black font-medium">
