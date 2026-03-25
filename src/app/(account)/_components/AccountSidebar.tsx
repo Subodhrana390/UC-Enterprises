@@ -2,8 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { logout } from "@/lib/actions/auth";
 
-export function AccountSidebar() {
+interface AccountSidebarProps {
+  onNavigate?: () => void;
+}
+
+export function AccountSidebar({ onNavigate }: AccountSidebarProps) {
   const pathname = usePathname();
 
   const menuItems = [
@@ -15,51 +23,71 @@ export function AccountSidebar() {
     { name: "Settings", icon: "settings", href: "/account/settings" },
   ];
 
+  const handleLogout = async () => {
+    if (onNavigate) onNavigate(); // Close mobile sheet before logging out
+    await logout();
+  };
+
   return (
-    <div className="flex flex-col md:h-full">
-      {/* Sidebar Header - Only for Desktop */}
-      <div className="hidden lg:block mb-6 px-3">
-        <h2 className="text-xs font-semibold text-[#616161] uppercase tracking-wider">
+    <div className="flex flex-col h-full bg-white">
+      {/* 1. Header: Smaller & Wider Spacing */}
+      <div className="px-6 py-8">
+        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
           Account Center
         </h2>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="
-        flex flex-row lg:flex-col 
-        items-center lg:items-stretch 
-        gap-2 lg:space-y-1 
-        overflow-x-auto lg:overflow-visible 
-        no-scrollbar 
-        py-3 px-4 lg:p-0 /* Added padding for mobile touch */
-      ">
-        {menuItems.map((item) => {
-          const isActive = item.href === "/account" ? pathname === "/account" : pathname.startsWith(item.href);
-          
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-2 lg:gap-3 px-4 py-2 lg:px-3 rounded-full lg:rounded-lg text-sm font-medium transition-all shrink-0 whitespace-nowrap ${
-                isActive
-                  ? "bg-[#1a1c1d] lg:bg-[#ebebeb] text-white lg:text-[#1a1c1d]" 
-                  : "text-[#616161] lg:text-[#1a1c1d] hover:bg-[#f1f1f1]"
-              }`}
-            >
-              <span className="material-symbols-outlined text-[18px] lg:text-[20px]">
-                {item.icon}
-              </span>
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* 2. Navigation: Tighter text, more whitespace */}
+      <ScrollArea className="flex-1 px-4">
+        <nav className="flex flex-col gap-1">
+          {menuItems.map((item) => {
+            const isActive = item.href === "/account"
+              ? pathname === "/account"
+              : pathname.startsWith(item.href);
 
-      {/* Desktop Footer Branding */}
-      <div className="hidden lg:block mt-auto pt-6 border-t border-[#ebebeb]">
-        <p className="text-[10px] text-[#8c8c8c] font-medium text-center">
-          UC Enterprises &copy; 2026
-        </p>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-center gap-3.5 px-3 py-2 rounded-lg text-sm transition-all duration-200",
+                  isActive
+                    ? "bg-gray-900 text-white shadow-sm"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                )}
+              >
+                <span 
+                  className="material-symbols-outlined text-[18px]"
+                  style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
+                >
+                  {item.icon}
+                </span>
+                <span className={isActive ? "font-semibold" : "font-medium"}>
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+      </ScrollArea>
+
+      {/* 3. Footer Actions: Integrated Logout */}
+      <div className="p-4 mt-auto">
+        <Separator className="mb-4 opacity-50" />
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3.5 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+        >
+          <span className="material-symbols-outlined text-[18px]">logout</span>
+          <span>Logout</span>
+        </button>
+        
+        <div className="mt-6 px-3">
+          <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
+            UC Enterprises &copy; 2026
+          </p>
+        </div>
       </div>
     </div>
   );

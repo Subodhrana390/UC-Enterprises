@@ -8,9 +8,10 @@ import { logout } from "@/lib/actions/auth";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useShopHydration, useShopStore } from "@/lib/store/shop-store";
+import { getParentCategories } from "@/lib/utils/categories";
 
 interface NavbarProps {
-  categories?: Array<{ id: string; name: string; slug: string; icon?: string | null }>;
+  categories?: Array<{ id: string; name: string; slug: string; icon?: string | null; parent_id?: string | null }>;
   user?: { id: string } | null;
   userRole?: string | null;
   cartCount?: number;
@@ -26,6 +27,12 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
   const liveWishlistCount = useShopStore((s) => Object.keys(s.wishlist).length);
   const displayCartCount = useMemo(() => Math.max(cartCount, liveCartCount), [cartCount, liveCartCount]);
   const displayWishlistCount = useMemo(() => Math.max(wishlistCount, liveWishlistCount), [wishlistCount, liveWishlistCount]);
+
+  // Get only parent categories for the menu, or all if none are parents
+  const parentCategories = useMemo(() => {
+    const parents = getParentCategories(categories);
+    return parents.length > 0 ? parents : categories;
+  }, [categories]);
 
   const isImageValue = (value?: string | null) =>
     !!value && (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/"));
@@ -55,20 +62,24 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6 font-headline tracking-tight text-sm font-medium">
+              <Link href="/" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-all font-black uppercase text-[10px] tracking-widest">
+                Home
+              </Link>
+              
               <div className="relative group">
                 <button className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-all font-black uppercase text-[10px] tracking-widest">
                   Categories
                   <span className="material-symbols-outlined text-sm group-hover:rotate-180 transition-transform">keyboard_arrow_down</span>
                 </button>
 
-                {/* Mega Menu */}
+                {/* Mega Menu - Only Main Categories */}
                 <div className="absolute top-full left-[-100px] pt-4 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-[100]">
                   <div className="bg-white dark:bg-slate-900 border border-border/40 rounded-2xl shadow-2xl p-6 min-w-[600px] max-h-[80vh] overflow-y-auto">
                     <div className="grid grid-cols-2 gap-2">
-                      {categories.map((cat) => (
+                      {parentCategories.map((cat) => (
                         <Link
                           key={cat.id}
-                          href={`/search?category=${cat.slug}`}
+                          href={`/categories/${cat.slug}`}
                           className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group/item border border-transparent hover:border-blue-100"
                         >
                           <div className="relative w-10 h-10 rounded-lg bg-gray-50 dark:bg-slate-800 flex items-center justify-center group-hover/item:bg-blue-600 group-hover/item:text-white transition-all overflow-hidden">

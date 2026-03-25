@@ -86,6 +86,8 @@ export default async function ProfilePage() {
               <ProfileForm
                 defaultFirstName={firstName}
                 defaultLastName={lastName}
+                defaultPhone={profile?.phone || ""}
+                defaultAvatar={profile?.avatar_url || ""}
               />
             </CardContent>
           </Card>

@@ -1,103 +1,72 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { CheckoutProgress, CheckoutProgressCircles } from "@/components/checkout/CheckoutProgress";
-import { PaymentMethodStep } from "@/components/checkout/PaymentMethodStep";
-import { CheckoutOrderSummaryCard } from "@/components/checkout/CheckoutOrderSummaryCard";
+import { getCartAndTotals } from "@/lib/actions/checkout";
+import { CheckoutPaymentStep } from "@/components/checkout/CheckoutPaymentStep";
+import { CheckoutProgress } from "@/components/checkout/CheckoutProgress";
+import { formatPriceINR } from "@/lib/utils";
 
-type Props = { 
-  searchParams: Promise<{ addressId?: string; gst?: string }> 
-};
-
-export default async function CheckoutPaymentPage({ searchParams }: Props) {
-  const { addressId, gst } = await searchParams;
+export default async function PaymentPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect("/login");
+  }
 
-  const [{ data: rawCartItems }, { data: addrRow }] = await Promise.all([
-    supabase.from("cart_items").select("*, products(*)").eq("user_id", user.id),
-    addressId
-      ? supabase.from("addresses").select("id").eq("user_id", user.id).eq("id", addressId).maybeSingle()
-      : Promise.resolve({ data: null }),
-  ]);
+  const { error, cartItems, totalAmount, subtotal, minimumRequired } = await getCartAndTotals(user.id);
 
-  const cartItems = rawCartItems || [];
-  if (cartItems.length === 0) redirect("/cart");
-  if (!addressId || !addrRow) redirect("/checkout");
-
-  const subtotal = cartItems.reduce(
-    (acc, item: any) => acc + (item.products?.base_price ?? 0) * item.quantity,
-    0
-  );
-  const gstAmount = subtotal * 0.18;
-  const totalAmount = subtotal + gstAmount;
-  const gstBool = gst === "1" || gst === "true";
+  if (error || !cartItems || cartItems.length === 0) {
+    redirect("/cart");
+  }
 
   return (
-    <div className="bg-white min-h-screen text-[#1a1c1d]">
-      <main className="max-w-[1100px] mx-auto px-4 py-8 md:py-16">
-        
-        {/* Step Indicator - Subdued and Professional */}
-        <div className="mb-10">
-          <div className="hidden md:block">
-            <CheckoutProgressCircles step={2} />
-          </div>
-          <div className="md:hidden">
-            <CheckoutProgress step={2} />
-          </div>
+    <main className="pt-10 pb-24 px-4 md:px-8 lg:px-12 max-w-[1440px] mx-auto">
+      <CheckoutProgress step={2} />
+
+      <header className="mb-8 text-center md:text-left">
+        <h1 className="font-headline text-3xl md:text-4xl font-black tracking-tighter text-on-surface mb-2">Payment</h1>
+        <p className="text-on-surface-variant font-medium text-sm">Choose your payment method.</p>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+        <div className="lg:col-span-8">
+          <CheckoutPaymentStep
+            totalAmount={totalAmount}
+            onPaymentMethodSelect={() => {}}
+            selectedMethod=""
+            minimumRequired={minimumRequired}
+            subtotal={subtotal}
+          />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
-          {/* Main Column: Payment Selection */}
-          <div className="lg:col-span-7 space-y-8">
-            <header className="mb-6">
-              <h1 className="text-2xl font-semibold tracking-tight">Payment</h1>
-              <p className="text-sm text-[#616161] mt-1">All transactions are secure and encrypted.</p>
-            </header>
-
-            {/* Component should handle the Shopify-style radio list */}
-            <div className="border border-[#ebebeb] rounded-xl overflow-hidden shadow-sm">
-              <PaymentMethodStep addressId={addressId} gst={gstBool} />
-            </div>
-
-            {/* Shopify-style Footer Navigation */}
-            <div className="flex justify-between items-center pt-6 border-t border-[#ebebeb]">
-              <Link 
-                href="/checkout" 
-                className="text-sm font-medium text-[#005bd3] hover:text-blue-800 flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-sm">chevron_left</span>
-                Return to shipping
-              </Link>
-            </div>
-          </div>
-
-          {/* Sidebar: Order Summary (Subtle background) */}
-          <aside className="lg:col-span-5">
-            <div className="bg-[#f7f7f7] rounded-xl p-6 md:p-8 sticky top-10 border border-[#ebebeb]">
-              <h2 className="text-lg font-semibold mb-6">Order summary</h2>
-              
-              <CheckoutOrderSummaryCard 
-                cartItems={cartItems} 
-                subtotal={subtotal} 
-                gst={gstAmount} 
-                totalAmount={totalAmount} 
-              />
-              
-              {/* Trust Badge / Security Micro-copy */}
-              <div className="mt-8 flex items-center gap-3 text-[#616161] bg-white p-4 rounded-lg border border-[#ebebeb]">
-                <span className="material-symbols-outlined text-green-600">lock</span>
-                <p className="text-[11px] leading-tight">
-                  Your payment is processed through secure protocols. We never store your full card details.
-                </p>
+        <aside className="lg:col-span-4">
+          <div className="sticky top-28 space-y-6">
+            <div className="bg-white border border-[#ebebeb] rounded-xl p-6">
+              <h3 className="font-semibold mb-4">Order Summary</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-[#616161]">Subtotal</span>
+                  <span>{formatPriceINR(subtotal || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#616161]">Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#616161]">GST (18%)</span>
+                  <span>{formatPriceINR((subtotal || 0) * 0.18)}</span>
+                </div>
+                <div className="border-t pt-2 flex justify-between font-semibold">
+                  <span>Total</span>
+                  <span>{formatPriceINR(totalAmount)}</span>
+                </div>
               </div>
             </div>
-          </aside>
-        </div>
-      </main>
-    </div>
+          </div>
+        </aside>
+      </div>
+    </main>
   );
 }

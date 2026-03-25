@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
+import { X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ProductCard } from "./ProductCard";
 import { ProductCardSkeleton } from "./ProductCardSkeleton";
+import { SearchFilters } from "./SearchFilters";
 
 export function SearchClient({
   initialProducts,
@@ -35,7 +37,6 @@ export function SearchClient({
   const currentAvailability = searchParams.get("availability") ?? "";
   const currentRating = searchParams.get("minRating") ?? "0";
 
-  // FIX 1: Explicitly handle string | null | undefined for applyFilters
   const applyFilters = useCallback((updates: Record<string, string | null | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
     for (const [key, value] of Object.entries(updates)) {
@@ -79,157 +80,205 @@ export function SearchClient({
     [],
   );
 
+  // Build active filter chips
+  const activeFilters = useMemo(() => {
+    const filters: Array<{ key: string; label: string; value: string }> = [];
+    
+    if (searchText && searchText !== query) {
+      filters.push({ key: "q", label: "Search", value: searchText });
+    }
+    
+    if (currentCategory) {
+      const cat = categories.find(c => c.slug === currentCategory);
+      if (cat) {
+        filters.push({ key: "category", label: "Category", value: cat.name });
+      }
+    }
+    
+    if (currentAvailability) {
+      filters.push({ 
+        key: "availability", 
+        label: "Availability", 
+        value: currentAvailability === "in" ? "In Stock" : "Out of Stock" 
+      });
+    }
+    
+    if (priceRange[0] > 0 || priceRange[1] < maxPrice) {
+      filters.push({ 
+        key: "price", 
+        label: "Price", 
+        value: `₹${priceRange[0]} - ₹${priceRange[1]}` 
+      });
+    }
+    
+    if (currentRating !== "0") {
+      filters.push({ 
+        key: "minRating", 
+        label: "Rating", 
+        value: `${currentRating}★ and up` 
+      });
+    }
+    
+    return filters;
+  }, [searchText, query, currentCategory, categories, currentAvailability, priceRange, maxPrice, currentRating]);
+
+  const handleRemoveFilter = (key: string) => {
+    switch (key) {
+      case "q":
+        setSearchText("");
+        applyFilters({ q: undefined });
+        break;
+      case "category":
+        applyFilters({ category: undefined });
+        break;
+      case "availability":
+        applyFilters({ availability: undefined });
+        break;
+      case "price":
+        setPriceRange([0, maxPrice]);
+        applyFilters({ minPrice: undefined, maxPrice: undefined });
+        break;
+      case "minRating":
+        applyFilters({ minRating: undefined });
+        break;
+    }
+  };
+
+  const handleClearAll = () => {
+    setSearchText("");
+    setPriceRange([0, maxPrice]);
+    applyFilters({ 
+      q: undefined, 
+      category: undefined, 
+      availability: undefined, 
+      minPrice: undefined, 
+      maxPrice: undefined, 
+      minRating: undefined 
+    });
+  };
+
   return (
-    <div className="bg-white min-h-screen text-[#1a1c1d]">
-      <main className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-12">
-        <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
-          <div className="pb-4 border-b border-[#ebebeb]">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-[#1a1c1d]">Filters</h2>
-          </div>
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+      <SearchFilters
+        searchText={searchText}
+        onSearchChange={setSearchText}
+        categories={categories}
+        currentCategory={currentCategory}
+        onCategoryChange={(v) => applyFilters({ category: v })}
+        currentAvailability={currentAvailability}
+        onAvailabilityChange={(v) => applyFilters({ availability: v })}
+        priceRange={priceRange}
+        onPriceRangeChange={setPriceRange}
+        maxPrice={maxPrice}
+        currentRating={currentRating}
+        onRatingChange={(v) => applyFilters({ minRating: v })}
+        activeFilters={activeFilters}
+        onRemoveFilter={handleRemoveFilter}
+        onClearAll={handleClearAll}
+      />
 
-          <FilterSection title="Search">
-            <Input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Search by name..." />
-          </FilterSection>
-
-          <FilterSection title="Category">
-            {/* FIX 2: Ensure the value is string | undefined, avoiding null */}
-            <Select
-              value={currentCategory || "all"}
-              onValueChange={(v) => applyFilters({ category: v === "all" ? undefined : v })}
+      <div className="flex-1 min-w-0">
+        {/* Active Filter Chips - Desktop only, at top of content */}
+        {activeFilters.length > 0 && (
+          <div className="hidden lg:flex flex-wrap gap-2 mb-6 pb-4 border-b">
+            {activeFilters.map((filter) => (
+              <Badge 
+                key={filter.key} 
+                variant="secondary" 
+                className="pl-3 pr-2 py-1.5 text-sm gap-1.5 hover:bg-secondary/80"
+              >
+                <span className="font-medium">{filter.label}:</span>
+                <span>{filter.value}</span>
+                <button
+                  onClick={() => handleRemoveFilter(filter.key)}
+                  className="ml-1 hover:bg-background/20 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleClearAll}
+              className="h-7 text-xs"
             >
-              <SelectTrigger><SelectValue placeholder="All categories" /></SelectTrigger>
+              Clear all
+            </Button>
+          </div>
+        )}
+
+        {/* Toolbar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 pb-4 border-b">
+          <p className="text-sm text-muted-foreground">
+            {totalCount} {totalCount === 1 ? 'product' : 'products'} found
+          </p>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <span className="text-sm font-medium whitespace-nowrap">Sort by:</span>
+            <Select value={currentSort} onValueChange={(v) => applyFilters({ sort: v || undefined })}>
+              <SelectTrigger className="w-full sm:w-[180px] h-10">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All categories</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </FilterSection>
-
-          <FilterSection title="Availability">
-            <Select
-              value={currentAvailability || "all"}
-              onValueChange={(v) => applyFilters({ availability: v === "all" ? undefined : v })}
-            >
-              <SelectTrigger><SelectValue placeholder="Any availability" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="in">In Stock</SelectItem>
-                <SelectItem value="out">Out of Stock</SelectItem>
-              </SelectContent>
-            </Select>
-          </FilterSection>
-
-          <FilterSection title="Price Range">
-            <div className="space-y-3">
-              <FilterSection title="Price Range">
-                <div className="space-y-3">
-                  <Slider
-                    value={priceRange}
-                    min={0}
-                    max={Math.ceil(maxPrice)}
-                    step={50}
-                    onValueChange={(v) => {
-                      if (Array.isArray(v)) {
-                        setPriceRange([v[0], v[1]]);
-                      }
-                    }}
-                  />
-                  <div className="text-xs text-gray-600 flex justify-between">
-                    <span>Rs {priceRange[0]}</span>
-                    <span>Rs {priceRange[1]}</span>
-                  </div>
-                </div>
-              </FilterSection>
-              <div className="text-xs text-gray-600 flex justify-between">
-                <span>Rs {priceRange[0]}</span>
-                <span>Rs {priceRange[1]}</span>
-              </div>
-            </div>
-          </FilterSection>
-
-          <FilterSection title="Minimum Rating">
-            <Select
-              value={currentRating}
-              onValueChange={(v) => applyFilters({ minRating: v === "0" ? undefined : v })}
-            >
-              <SelectTrigger><SelectValue placeholder="Any rating" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">Any rating</SelectItem>
-                <SelectItem value="3">3 stars and up</SelectItem>
-                <SelectItem value="4">4 stars and up</SelectItem>
-                <SelectItem value="4.5">4.5 stars and up</SelectItem>
-              </SelectContent>
-            </Select>
-          </FilterSection>
-        </aside>
-
-        <div className="flex-grow">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-[#ebebeb] gap-4">
-            <p className="text-sm text-[#616161]">{totalCount} products found</p>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-[#1a1c1d]">Sort by:</span>
-              <Select value={currentSort} onValueChange={(v) => applyFilters({ sort: v || undefined })}>
-                <SelectTrigger className="w-48 h-10 border-[#ebebeb] rounded-sm text-sm focus:ring-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {sortOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
-
-          {isPending ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
-              {Array.from({ length: 8 }).map((_, idx) => (
-                <ProductCardSkeleton key={idx} />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
-              {initialProducts.map((item) => {
-                const productImages = Array.isArray(item.images) ? (item.images as string[]) : [];
-                return (
-                  <ProductCard
-                    key={String(item.id)}
-                    id={String(item.id)}
-                    name={String(item.name ?? "")}
-                    description={typeof item.description === "string" ? item.description : undefined}
-                    brand={{
-                      name: (item as { brands?: { name: string } }).brands?.name || "Generic",
-                    }}
-                    price={Number(item.base_price ?? 0)}
-                    image={productImages[0] || undefined}
-                    images={productImages}
-                    stock_quantity={Number(item.stock_quantity ?? 0)}
-                    rating={Number(item.avg_rating ?? item.rating ?? 0)}
-                    reviewCount={Number(item.review_count ?? 0)}
-                    sku={typeof item.sku === "string" ? item.sku : undefined}
-                    compareAtPrice={
-                      Number(item.mrp_price) > Number(item.base_price)
-                        ? Number(item.mrp_price)
-                        : undefined
-                    }
-                  />
-                );
-              })}
-            </div>
-          )}
         </div>
-      </main>
-    </div>
-  );
-}
 
-function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-medium border-b border-[#f5f5f5] pb-2">{title}</h3>
-      {children}
+        {/* Products Grid */}
+        {isPending ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <ProductCardSkeleton key={idx} />
+            ))}
+          </div>
+        ) : initialProducts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {initialProducts.map((item) => {
+              const productImages = Array.isArray(item.images) ? (item.images as string[]) : [];
+              return (
+                <ProductCard
+                  key={String(item.id)}
+                  id={String(item.id)}
+                  name={String(item.name ?? "")}
+                  description={typeof item.description === "string" ? item.description : undefined}
+                  brand={{
+                    name: (item as { brands?: { name: string } }).brands?.name || "Generic",
+                  }}
+                  price={Number(item.base_price ?? 0)}
+                  image={productImages[0] || undefined}
+                  images={productImages}
+                  stock_quantity={Number(item.stock_quantity ?? 0)}
+                  rating={Number(item.avg_rating ?? item.rating ?? 0)}
+                  reviewCount={Number(item.review_count ?? 0)}
+                  sku={typeof item.sku === "string" ? item.sku : undefined}
+                  compareAtPrice={
+                    Number(item.mrp_price) > Number(item.base_price)
+                      ? Number(item.mrp_price)
+                      : undefined
+                  }
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No products found</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Try adjusting your filters or search terms
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+  

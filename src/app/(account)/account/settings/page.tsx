@@ -14,7 +14,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f1f1f1] p-4 md:p-8 lg:p-12">
+    <div className="min-h-screen p-4 md:p-8 lg:p-12">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Page Header */}
         <header className="mb-6">
@@ -49,8 +49,8 @@ export default async function SettingsPage() {
                 { label: "Price alerts", desc: "Notify when prices change", icon: "trending_down" },
                 { label: "Newsletter", desc: "Weekly engineering insights", icon: "mail" },
               ].map((item, idx, arr) => (
-                <div 
-                  key={item.label} 
+                <div
+                  key={item.label}
                   className={`flex items-center justify-between p-4 ${idx !== arr.length - 1 ? 'border-b border-[#f1f1f1]' : ''}`}
                 >
                   <div>

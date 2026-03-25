@@ -1,15 +1,60 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { subscribeNewsletter } from "@/lib/actions/support";
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!email || !email.includes("@")) {
+      setMessage({ type: "error", text: "Please enter a valid email address." });
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage(null);
+
+    try {
+      const res = await subscribeNewsletter(email);
+      if (res.error) {
+        setMessage({ type: "error", text: res.error });
+      } else {
+        setMessage({ type: "success", text: "Thank you for subscribing!" });
+        setEmail("");
+      }
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      setMessage({ type: "error", text: "Something went wrong. Please try again." });
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const quickLinks = [
+    { title: "Search Products", href: "/search" },
+    { title: "Browse Categories", href: "/categories" },
+    { title: "Fabrication Services", href: "/fabrication" },
+    { title: "Request Quote", href: "/quote" },
+    { title: "My Orders", href: "/account/orders" },
+    { title: "Support", href: "/support" }
+  ];
+
   return (
     <footer className="w-full border-t border-slate-200 bg-white dark:bg-slate-950 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
         {/* Main Grid: 4 Columns on desktop */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          
           {/* Column 1: About / Brand */}
           <div className="space-y-6">
             <Link href="/" className="inline-block">
@@ -45,13 +90,13 @@ export function Footer() {
               Quick Links
             </h3>
             <ul className="space-y-4">
-              {["Search Products", "Browse Categories", "Fabrication Services", "Latest Arrivals", "Featured Products"].map((link) => (
-                <li key={link}>
-                  <Link 
-                    href={`/${link.toLowerCase().replace(/ /g, "-")}`} 
+              {quickLinks.map((link) => (
+                <li key={link.title}>
+                  <Link
+                    href={link.href}
                     className="text-sm text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
                   >
-                    {link}
+                    {link.title}
                   </Link>
                 </li>
               ))}
@@ -82,7 +127,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Column 4: Newsletter (The Shopify Signature) */}
+          {/* Column 4: Newsletter */}
           <div className="space-y-6">
             <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-slate-50">
               Subscribe
@@ -90,15 +135,27 @@ export function Footer() {
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Get updates on new inventory and industry news.
             </p>
-            <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Email address" 
-                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            <form className="flex flex-col gap-3" onSubmit={handleSubscribe}>
+              <Input
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+                className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 h-11"
               />
-              <button className="bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-widest py-3 rounded-md hover:opacity-90 transition-opacity">
-                Subscribe
-              </button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900 text-xs font-bold uppercase tracking-widest h-11 hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isSubmitting ? "Subscribing..." : "Subscribe"}
+              </Button>
+              {message && (
+                <p className={`text-xs ${message.type === "success" ? "text-green-600" : "text-red-600"}`}>
+                  {message.text}
+                </p>
+              )}
             </form>
           </div>
         </div>
@@ -113,7 +170,7 @@ export function Footer() {
               All rights reserved. Secure B2B platform.
             </p>
           </div>
-          
+
           {/* Generic Payment Icons Placeholder */}
           <div className="flex items-center gap-4 opacity-40 grayscale hover:grayscale-0 transition-all cursor-default">
             <span className="material-symbols-outlined text-2xl">payments</span>

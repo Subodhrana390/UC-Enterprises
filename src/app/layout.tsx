@@ -17,7 +17,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: {
     default: "UC Enterprises | Engineering Precision",
-    template: "%s | UC Enterprises" // Allows subpages like "Resistors | UC Enterprises"
+    template: "%s | UC Enterprises",
   },
   description: "Global distributor of semiconductors and electronic components. Trusted by engineers for over 25 years with high-quality parts and fast shipping.",
   keywords: ["semiconductors", "electronic components", "microcontrollers", "engineering parts", "UC Enterprises"],
@@ -66,6 +66,24 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "UC Enterprises",
+              "url": "https://ucenterprises.com",
+              "logo": "https://ucenterprises.com/logo.jpg",
+              "description": "Global distributor of semiconductors and electronic components.",
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+1-xxx-xxx-xxxx",
+                "contactType": "customer service"
+              }
+            })
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col font-sans bg-surface text-on-surface" suppressHydrationWarning>
         <TooltipProvider>
@@ -73,25 +91,6 @@ export default function RootLayout({
           <Toaster />
         </TooltipProvider>
       </body>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "UC Enterprises",
-            "url": "https://ucenterprises.com",
-            "logo": "https://ucenterprises.com/logo.jpg",
-            "description": "Global distributor of semiconductors and electronic components.",
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+1-xxx-xxx-xxxx",
-              "contactType": "customer service"
-            }
-          })
-        }}
-      />
     </html>
   );
 }

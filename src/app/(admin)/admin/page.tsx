@@ -1,17 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge"; // Assuming you have a Badge component
 import Link from "next/link";
-import { ArrowUpRight, Package, Users, DollarSign, ShoppingBag, IndianRupee } from "lucide-react";
+import { Package, Users, ShoppingBag, IndianRupee } from "lucide-react";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
 
-  // Data Fetching
   const { data: recentOrders } = await supabase
     .from("orders")
-    .select("*, profiles(first_name, last_name, company_name)")
+    .select(`
+      id, 
+      status,
+      total_amount,
+      profiles:user_id (
+        full_name
+      )
+    `)
     .order("created_at", { ascending: false })
     .limit(5);
 
@@ -73,12 +78,12 @@ export default async function AdminDashboard() {
                       {recentOrders?.map((order: any) => (
                         <tr key={order.id} className="hover:bg-[#f6f6f7] transition-colors cursor-pointer group">
                           <td className="px-5 py-3 text-sm font-medium text-[#202223]">#{order.id.toString().substring(0, 5)}</td>
-                          <td className="px-5 py-3 text-sm text-[#6d7175]">{order.profiles?.company_name || "Guest"}</td>
+                          <td className="px-5 py-3 text-sm text-[#6d7175]">{order.profiles?.full_name || "Guest"}</td>
                           <td className="px-5 py-3 text-sm text-right font-medium">₹{order.total_amount?.toLocaleString()}</td>
                           <td className="px-5 py-3 text-center">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${order.status === 'completed' ? 'bg-[#e3f1df] text-[#005e4d]' : 'bg-[#fff4e5] text-[#8a6116]'
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${order.status === 'delivered' ? 'bg-[#e3f1df] text-[#005e4d]' : 'bg-[#fff4e5] text-[#8a6116]'
                               }`}>
-                              {order.status}
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </span>
                           </td>
                         </tr>

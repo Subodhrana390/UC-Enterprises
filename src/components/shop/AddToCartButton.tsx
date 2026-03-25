@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { addToCart, useShopStore } from "@/lib/store/shop-store";
+import { addToCart, removeFromCart, useShopStore } from "@/lib/store/shop-store";
 import { toast } from "sonner";
 
 export function AddToCartButton({
@@ -24,7 +24,7 @@ export function AddToCartButton({
   productImage?: string;
   stockQuantity?: number;
 }) {
-  // 1. Add mounting state to prevent hydration mismatch
+
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -32,13 +32,10 @@ export function AddToCartButton({
   }, []);
 
   const isDisabled = useMemo(() => stockQuantity !== undefined && stockQuantity <= 0, [stockQuantity]);
-
-  // 2. Only check the store value if we are on the client (mounted)
   const cartQuantity = useShopStore((s) => s.cart[productId]?.quantity ?? 0);
   const isAdded = isMounted && cartQuantity > 0;
 
   function onAdd(e: React.MouseEvent) {
-    // 3. Prevent event bubbling if this button is inside a Link or Card
     e.preventDefault();
     e.stopPropagation();
 
@@ -62,7 +59,7 @@ export function AddToCartButton({
       type="button"
       disabled={isDisabled}
       className={className}
-      onClick={onAdd}
+      onClick={(e) => isAdded ? removeFromCart(productId) : onAdd(e)}
     >
       {children ?? (
         <div className="flex items-center gap-2">

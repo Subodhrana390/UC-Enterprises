@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getShopCategories } from "@/lib/actions/products";
 import { ShopSyncBridge } from "@/components/shop/ShopSyncBridge";
+import { RealtimeOrderUpdates } from "@/components/shop/RealtimeOrderUpdates";
 
 export default async function ShopLayout({
   children,
@@ -27,6 +28,7 @@ export default async function ShopLayout({
     <>
       <Navbar categories={categories} user={user} userRole={userRole} cartCount={cartCount} wishlistCount={wishlistCount} />
       {user ? <ShopSyncBridge userId={user.id} /> : null}
+      {user ? <RealtimeOrderUpdates userId={user.id} /> : null}
       <main className="flex-1">{children}</main>
       <Footer />
       {/* Floating WhatsApp Button */}

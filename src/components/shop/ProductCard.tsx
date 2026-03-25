@@ -38,7 +38,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const allImages = images.length > 0 ? images : [image || "/placeholder-product.png"];
   const hasMultipleImages = allImages.length > 1;
 
@@ -47,7 +47,7 @@ export function ProductCard({
     if (isHovered && hasMultipleImages) {
       interval = setInterval(() => {
         setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
-      }, 1200); 
+      }, 1200);
     } else {
       setCurrentImageIndex(0);
     }
@@ -60,16 +60,14 @@ export function ProductCard({
     : 0;
 
   return (
-    <div 
+    <div
       className="group flex flex-col h-full bg-white transition-all duration-300 md:hover:shadow-xl md:p-3 p-2 rounded-xl border border-gray-100 hover:border-blue-100 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/products/${id}`} className="flex flex-col flex-1 cursor-pointer">
-        
-        {/* 1. FIXED IMAGE CONTAINER: Using shrink-0 to prevent height jumping */}
         <div className="bg-[#f8f9fa] aspect-square rounded-lg mb-2 md:mb-3 relative overflow-hidden border border-gray-50 shrink-0 flex items-center justify-center">
-          <div className="relative w-[85%] h-[85%]"> 
+          <div className="relative w-[85%] h-[85%]">
             <Image
               src={allImages[currentImageIndex]}
               alt={`${name} - view ${currentImageIndex + 1}`}
@@ -84,11 +82,10 @@ export function ProductCard({
           {hasMultipleImages && (
             <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
               {allImages.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    i === currentImageIndex ? "w-4 bg-blue-600" : "w-1 bg-gray-300"
-                  }`} 
+                <div
+                  key={i}
+                  className={`h-1 rounded-full transition-all duration-300 ${i === currentImageIndex ? "w-4 bg-blue-600" : "w-1 bg-gray-300"
+                    }`}
                 />
               ))}
             </div>
@@ -119,9 +116,8 @@ export function ProductCard({
 
           {/* Stock Status */}
           <div className="absolute bottom-1.5 left-1.5 z-10">
-            <div className={`backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase flex items-center shadow-sm border ${
-              inStock ? "bg-white/90 text-green-700 border-green-100" : "bg-gray-100/90 text-gray-500 border-gray-200"
-            }`}>
+            <div className={`backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase flex items-center shadow-sm border ${inStock ? "bg-white/90 text-green-700 border-green-100" : "bg-gray-100/90 text-gray-500 border-gray-200"
+              }`}>
               {inStock && <span className="w-1 h-1 rounded-full bg-green-500 mr-1 animate-pulse"></span>}
               {inStock ? "In Stock" : "Sold Out"}
             </div>
@@ -140,21 +136,20 @@ export function ProductCard({
           </div>
         </div>
 
-        {/* 2. FIXED INFO SECTION: Ensuring text height is identical across all cards */}
-        <div className="flex flex-col flex-1 px-1">
+        <div className="flex flex-col flex-1">
           <div className="flex items-center justify-between mb-1">
             <span className="text-blue-600 text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest truncate">{brand?.name || "Generic"}</span>
           </div>
 
-          {/* Fixed height for title (2 lines) */}
           <h3 className="font-bold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1 h-8 md:h-10">
             {name}
           </h3>
-          
-          {/* Fixed height for description (1 line) */}
-          <p className="font-normal text-[10px] md:text-xs text-slate-500 line-clamp-1 mb-2 h-4">
-            {description}
-          </p>
+
+          {description && (
+            <p className="font-normal text-[10px] md:text-xs text-slate-500 line-clamp-2 mb-2">
+              {description}
+            </p>
+          )}
 
           {/* Fixed height for Rating */}
           <div className="flex items-center gap-1 mb-2 h-5">

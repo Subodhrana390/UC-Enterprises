@@ -47,6 +47,7 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
               <tr className="bg-[#fafafa] border-b border-[#f1f1f1] text-[11px] font-semibold text-[#616161] uppercase tracking-wider">
                 <th className="px-6 py-3 w-10"><input type="checkbox" className="rounded border-[#d2d2d2]" /></th>
                 <th className="px-4 py-3">Title</th>
+                <th className="px-4 py-3">Parent Category</th>
                 <th className="px-4 py-3">Icon</th>
                 <th className="px-4 py-3">Products</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -55,12 +56,24 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
             <tbody className="divide-y divide-[#f1f1f1]">
               {initialCategories.map((category) => {
                 const productCount = category.products?.[0]?.count ?? 0;
+                const parentCategory = category.parent_id 
+                  ? initialCategories.find(c => c.id === category.parent_id)
+                  : null;
 
                 return (
                   <tr key={category.id} className="group hover:bg-[#fafafa] transition-colors">
                     <td className="px-6 py-4"><input type="checkbox" className="rounded border-[#d2d2d2]" /></td>
                     <td className="px-4 py-4">
-                      <span className="text-xs font-semibold text-[#1a1c1d]">{category.name}</span>
+                      <span className="text-xs font-semibold text-[#1a1c1d]">
+                        {category.parent_id ? '↳ ' : ''}{category.name}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      {parentCategory ? (
+                        <span className="text-xs text-[#616161]">{parentCategory.name}</span>
+                      ) : (
+                        <span className="text-xs text-[#9e9e9e] italic">Top Level</span>
+                      )}
                     </td>
                     <td className="px-4 py-4">
                       <div className="relative h-9 w-9 rounded-md overflow-hidden border border-[#ebebeb] bg-[#f5f5f5]">
@@ -121,6 +134,7 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
         onClose={handleClose}
         isEdit={!!selectedCategory}
         category={selectedCategory}
+        allCategories={initialCategories}
       />
     </>
   );

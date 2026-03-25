@@ -10,15 +10,17 @@ export async function updateProfile(formData: FormData) {
 
   const firstName = formData.get("firstName") as string;
   const lastName = formData.get("lastName") as string;
-  const companyName = formData.get("companyName") as string;
+  const phone = formData.get("phone") as string;
+  const avatarUrl = formData.get("avatarUrl") as string;
 
   const { error } = await supabase
     .from("profiles")
     .update({
       first_name: firstName,
       last_name: lastName,
-      company_name: companyName || null,
       full_name: `${firstName || ""} ${lastName || ""}`.trim() || null,
+      phone: phone || null,
+      avatar_url: avatarUrl || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

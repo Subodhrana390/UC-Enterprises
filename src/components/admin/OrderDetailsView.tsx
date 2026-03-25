@@ -6,18 +6,21 @@ import {
     Package,
     CreditCard,
     MapPin,
-    FileText,
-    ExternalLink,
-    ShieldCheck
+    FileText
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { useState } from "react";
-import { OrderStatus, updateOrderStatus } from "@/lib/actions/order";
+import { useState, useEffect } from "react";
+import { updateOrderStatus, getAllowedStatuses } from "@/lib/actions/admin/orders";
 import { toast } from "sonner";
 
 export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s: string) => void }) {
     const [isUpdating, setIsUpdating] = useState(false);
+    const [allowedStatuses, setAllowedStatuses] = useState<string[]>([]);
+
+    useEffect(() => {
+        getAllowedStatuses(order.status).then(setAllowedStatuses);
+    }, [order.status]);
 
     const parseNotes = (notes: string) => {
         if (!notes) return {};
@@ -26,14 +29,18 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
         );
     };
 
-    const metadata = parseNotes(order.notes);
+    const metadata = parseNotes(order.notes || "");
 
     const handleStatusChange = async (newStatus: string) => {
         setIsUpdating(true);
         try {
-            await updateOrderStatus(order.id, newStatus as OrderStatus);
-            onUpdate(newStatus);
-            toast.success(`Order marked as ${newStatus}`);
+            const result = await updateOrderStatus(order.id, newStatus);
+            if (result.error) {
+                toast.error(result.error);
+            } else {
+                onUpdate(newStatus);
+                toast.success(`Order marked as ${newStatus}`);
+            }
         } catch (e) {
             toast.error("Failed to update status");
         } finally {
@@ -42,10 +49,8 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
     };
 
     return (
-        // The container is h-full and flex-col
         <div className="flex flex-col h-full bg-[#f6f6f7]">
 
-            {/* 1. FIXED HEADER */}
             <div className="p-6 bg-white border-b border-[#ebebed] shrink-0">
                 <div className="flex justify-between items-start">
                     <div>
@@ -64,10 +69,8 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                 </div>
             </div>
 
-            {/* 2. SCROLLABLE BODY (flex-1 and overflow-y-auto) */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-                {/* Fulfillment Section */}
                 <section className="bg-white rounded-xl border border-[#ebebed] shadow-sm p-4">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-sm font-semibold text-[#202223]">Update Fulfillment</h3>
@@ -83,17 +86,29 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                             <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="processing">Processing</SelectItem>
-                            <SelectItem value="shipped">Shipped</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="cancelled" className="text-rose-600 font-medium">Cancelled</SelectItem>
-                            <SelectItem value="returned">Returned</SelectItem>
+                            {allowedStatuses.includes("processing") && (
+                                <SelectItem value="processing">Processing</SelectItem>
+                            )}
+                            {allowedStatuses.includes("shipped") && (
+                                <SelectItem value="shipped">Shipped</SelectItem>
+                            )}
+                            {allowedStatuses.includes("delivered") && (
+                                <SelectItem value="delivered">Delivered</SelectItem>
+                            )}
+                            {allowedStatuses.includes("cancelled") && (
+                                <SelectItem value="cancelled" className="text-rose-600 font-medium">Cancelled</SelectItem>
+                            )}
+                            {allowedStatuses.includes("returned") && (
+                                <SelectItem value="returned">Returned</SelectItem>
+                            )}
                         </SelectContent>
                     </Select>
 
                     <p className="mt-3 text-[11px] text-[#6d7175]">
-                        Changing status to <strong>Shipped</strong> will notify the customer if automated emails are enabled.
+                        Current status: <strong>{order.status}</strong>. 
+                        {allowedStatuses.length > 0 
+                            ? ` Allowed transitions: ${allowedStatuses.join(", ")}`
+                            : " No more status changes allowed."}
                     </p>
                 </section>
 
@@ -170,9 +185,30 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                 <div className="bg-white rounded-lg border border-[#ebebed] p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-3">
                         <MapPin className="w-4 h-4 text-[#6d7175]" />
-                        <h3 className="text-sm font-semibold text-[#202223]">Customer</h3>
+                        <h3 className="text-sm font-semibold text-[#202223]">Customer & Shipping</h3>
                     </div>
-                    <p className="text-sm font-medium text-[#005bd3]">{order.profiles?.full_name}</p>
+                    
+                    {/* Customer Info */}
+                    <div className="mb-4">
+                        <p className="text-sm font-medium text-[#005bd3] mb-1">{order.profiles?.full_name}</p>
+                        <p className="text-xs text-[#6d7175]">{order.profiles?.email}</p>
+                        {order.profiles?.phone && <p className="text-xs text-[#6d7175]">{order.profiles?.phone}</p>}
+                    </div>
+
+                    {/* Shipping Address */}
+                    {order.addresses && (
+                        <div className="mt-3 pt-3 border-t border-[#f1f1f1]">
+                            <p className="text-[10px] font-bold text-[#6d7175] uppercase tracking-wider mb-2">Shipping Address</p>
+                            <div className="text-xs text-[#202223] space-y-0.5">
+                                <p className="font-medium">{order.addresses.full_name}</p>
+                                <p>{order.addresses.address_line1}</p>
+                                {order.addresses.address_line2 && <p>{order.addresses.address_line2}</p>}
+                                <p>{order.addresses.city}, {order.addresses.state} - {order.addresses.pincode}</p>
+                                <p className="text-[#6d7175]">Phone: {order.addresses.phone_number}</p>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mt-3 pt-3 border-t border-[#f1f1f1]">
                         <div className="flex items-center justify-between">
                             <span className="text-[11px] font-bold text-[#6d7175] uppercase">GST Invoice</span>

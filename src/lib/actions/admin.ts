@@ -484,7 +484,6 @@ export async function saveInventoryForm(formData: FormData) {
   return updateProduct(id, updateData);
 }
 
-// Orders/Quotes
 export async function updateOrderStatus(orderId: string, status: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("orders").update({ status, updated_at: new Date().toISOString() }).eq("id", orderId);
@@ -494,3 +493,193 @@ export async function updateOrderStatus(orderId: string, status: string) {
   return { success: true };
 }
 
+
+// Paginated data fetching for admin
+export async function getAdminProducts(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("products")
+    .select("*, brands(name), categories(name)", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching admin products:", error);
+    return { products: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    products: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}
+
+export async function getAdminOrders(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("orders")
+    .select(`
+      *,
+      profiles:user_id (
+        role,
+        full_name,
+        phone_number
+      ),
+      addresses:shipping_address_id (
+        *
+      ),
+      order_items (
+        id,
+        quantity,
+        unit_price,
+        total_price,
+        products (
+          name,
+          images
+        )
+      )
+    `, { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching admin orders:", error);
+    return { orders: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    orders: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}
+
+export async function getAdminUsersPaginated(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching admin users:", error);
+    return { users: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    users: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}
+
+export async function getAdminInventory(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("products")
+    .select("*, brands(name)", { count: "exact" })
+    .order("stock_quantity", { ascending: true })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching inventory:", error);
+    return { products: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    products: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}
+
+export async function getAdminBrandsPaginated(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("brands")
+    .select("*, products(count)", { count: "exact" })
+    .order("name")
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching admin brands:", error);
+    return { brands: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    brands: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}
+
+export async function getAdminCategories(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("categories")
+    .select("*, products(count)", { count: "exact" })
+    .order("name")
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching admin categories:", error);
+    return { categories: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    categories: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}
+
+export async function getAdminQuotes(page = 1, pageSize = 20) {
+  const supabase = await createClient();
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
+    .from("orders")
+    .select("*, profiles(first_name, last_name, company_name)", { count: "exact" })
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("Error fetching admin quotes:", error);
+    return { quotes: [], total: 0, totalPages: 0 };
+  }
+
+  return {
+    quotes: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
+}

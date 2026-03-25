@@ -4,8 +4,17 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatPriceINR } from "@/lib/utils";
+import { PaginationControls } from "@/components/shared/PaginationControls";
 
-export default async function OrdersPage() {
+export default async function OrdersPage({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const page = params.page ? parseInt(params.page as string) : 1;
+  const pageSize = 10;
+  
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -13,11 +22,17 @@ export default async function OrdersPage() {
     redirect("/login");
   }
 
-  const { data: orders } = await supabase
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data: orders, count } = await supabase
     .from("orders")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const totalPages = Math.ceil((count || 0) / pageSize);
 
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
@@ -114,6 +129,8 @@ export default async function OrdersPage() {
           </div>
         </CardContent>
       </Card>
+      
+      <PaginationControls currentPage={page} totalPages={totalPages} basePath="/account/orders" />
     </div>
   );
 }

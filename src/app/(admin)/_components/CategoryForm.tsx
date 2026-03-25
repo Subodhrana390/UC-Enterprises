@@ -11,21 +11,31 @@ interface CategoryFormProps {
   onClose: () => void;
   isEdit: boolean;
   category?: any;
+  allCategories?: any[];
 }
 
-export function CategoryForm({ isOpen, onClose, isEdit, category }: CategoryFormProps) {
+export function CategoryForm({ isOpen, onClose, isEdit, category, allCategories = [] }: CategoryFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [parentId, setParentId] = useState<string>("");
   const formId = "category-form";
+
+  // Filter out current category and its descendants to prevent circular references
+  const availableParentCategories = allCategories.filter(cat => {
+    if (!isEdit) return true;
+    return cat.id !== category?.id && cat.parent_id !== category?.id;
+  });
 
   useEffect(() => {
     if (category) {
       setName(category.name || "");
       setDescription(category.description || "");
+      setParentId(category.parent_id || "");
     } else {
       setName("");
       setDescription("");
+      setParentId("");
     }
   }, [category, isOpen]);
 
@@ -90,6 +100,24 @@ export function CategoryForm({ isOpen, onClose, isEdit, category }: CategoryForm
             placeholder="Collection description"
             className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-sm focus:ring-1 focus:ring-black outline-none transition-all"
           />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-[#1a1c1d]">Parent Category</label>
+          <select
+            name="parent_id"
+            value={parentId}
+            onChange={(e) => setParentId(e.target.value)}
+            className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-sm focus:ring-1 focus:ring-black outline-none transition-all bg-white"
+          >
+            <option value="">None (Top Level Category)</option>
+            {availableParentCategories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.parent_id ? `↳ ${cat.name}` : cat.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-[10px] text-gray-500">Select a parent category to create a subcategory</p>
         </div>
 
         <div className="space-y-1.5">

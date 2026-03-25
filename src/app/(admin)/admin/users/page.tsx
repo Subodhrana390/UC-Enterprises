@@ -2,16 +2,25 @@ import { createClient } from "@/lib/supabase/server";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getAdminUsersPaginated } from "@/lib/actions/admin";
+import { PaginationControls } from "@/components/shared/PaginationControls";
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const page = params.page ? parseInt(params.page as string) : 1;
+  
   const supabase = await createClient();
+  const { users, total, totalPages } = await getAdminUsersPaginated(page, 20);
 
-  const { data: users } = await supabase
-    .from("profiles")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { data: authUsers } = await supabase
+    .from("auth.users")
+    .select("id, email");
 
-  console.log(users)
+  const emailMap = new Map(authUsers?.map(u => [u.id, u.email]) || []);
 
   return (
     <div className="space-y-6">
@@ -79,9 +88,9 @@ export default async function UsersPage() {
                 <TableCell>
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold text-[#1a1c1d] group-hover:underline">
-                      {user.full_name}
+                      {user.full_name || "Unknown"}
                     </span>
-                    <span className="text-[11px] text-[#616161]">{user.email}</span>
+                    <span className="text-[11px] text-[#616161]">{emailMap.get(user.id) || "No email"}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -89,7 +98,7 @@ export default async function UsersPage() {
                     <span className="text-xs font-semibold text-[#1a1c1d] group-hover:underline">
                       {user.role}
                     </span>
-                    <span className="text-[11px] text-[#616161]">{user.email}</span>
+                    <span className="text-[11px] text-[#616161]">{emailMap.get(user.id) || "No email"}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -98,16 +107,18 @@ export default async function UsersPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-xs text-[#1a1c1d]">
-                  {user.order_count || 0}
+                  -
                 </TableCell>
                 <TableCell className="text-xs text-[#1a1c1d] text-right font-medium">
-                  ₹ 0.00
+                  -
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+      
+      <PaginationControls currentPage={page} totalPages={totalPages} basePath="/admin/users" />
     </div>
   );
 }

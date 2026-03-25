@@ -14,10 +14,10 @@ export async function getShopCategories() {
       name,
       slug,
       icon,
+      parent_id,
       products (count)
     `)
-    .order("name", { ascending: true })
-    .limit(5);
+    .order("name", { ascending: true });
 
   if (error) {
     console.error("Error fetching categories:", error);
@@ -120,19 +120,28 @@ export async function getProductById(id: string) {
   };
 }
 
-export async function getProductsByCategory(categorySlug: string) {
+export async function getProductsByCategory(categorySlug: string, page = 1, pageSize = 20) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await supabase
     .from("products")
-    .select("*, categories!inner(*), brands(*)")
-    .eq("categories.slug", categorySlug);
+    .select("*, categories!inner(*), brands(*)", { count: "exact" })
+    .eq("categories.slug", categorySlug)
+    .range(from, to);
 
   if (error) {
     console.error(`Error fetching products for category ${categorySlug}:`, error);
-    return [];
+    return { products: [], total: 0, totalPages: 0 };
   }
 
-  return data;
+  return {
+    products: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
 }
 
 export async function searchProducts({
@@ -143,7 +152,9 @@ export async function searchProducts({
   maxPrice,
   minRating,
   availability,
-  sort = "relevant"
+  sort = "relevant",
+  page = 1,
+  pageSize = 20
 }: {
   query?: string;
   category?: string;
@@ -153,11 +164,13 @@ export async function searchProducts({
   minRating?: number;
   availability?: "in" | "out";
   sort?: string;
+  page?: number;
+  pageSize?: number;
 }) {
   const supabase = await createClient();
   let q = supabase
     .from("products")
-    .select("*, categories!inner(*), brands!inner(*)");
+    .select("*, categories!inner(*), brands!inner(*)", { count: "exact" });
 
   if (query) {
     q = q.ilike("name", `%${query}%`);
@@ -208,14 +221,21 @@ export async function searchProducts({
       q = q.order("is_featured", { ascending: false });
   }
 
-  const { data, error } = await q;
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  const { data, error, count } = await q.range(from, to);
 
   if (error) {
     console.error("Search error:", error);
-    return [];
+    return { products: [], total: 0, totalPages: 0 };
   }
 
-  return data;
+  return {
+    products: data || [],
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize)
+  };
 }
 
 export async function getRelatedProducts(categorySlug: string, currentProductId: string, limit = 4) {

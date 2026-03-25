@@ -5,13 +5,23 @@ import { ProductCarousel } from "@/components/shop/ProductCarousel";
 import type { ProductCarouselItem } from "@/components/shop/ProductCarousel";
 import { getShopCategories, getFeaturedProducts, getLatestProducts } from "@/lib/actions/products";
 import { Badge } from "@/components/ui/badge";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
+  const supabase = await createClient();
+
+  // Fetch real product count
+  const { count: productCount } = await supabase
+    .from("products")
+    .select("*", { count: "exact", head: true });
+
   const [categories, featuredProducts, latestProducts] = await Promise.all([
     getShopCategories(),
     getFeaturedProducts(),
     getLatestProducts()
   ]);
+
+  const skuCount = productCount || 0;
 
   return (
     <div className="flex-1">
@@ -51,7 +61,7 @@ export default async function HomePage() {
                   Browse Components
                 </Button>
               </Link>
-              <Link href="/fabrication">
+              <Link href="/quote">
                 <Button
                   variant="link"
                   className="text-white px-8 h-14 rounded-lg font-bold text-sm hover:underline flex items-center gap-2"
@@ -73,7 +83,7 @@ export default async function HomePage() {
                 Shop by Category
               </h2>
               <p className="text-gray-600 text-sm md:text-base">
-                Over 500,000 SKUs available in stock.
+                Over {skuCount.toLocaleString()} SKUs available in stock.
               </p>
             </div>
             <Link
@@ -103,11 +113,11 @@ export default async function HomePage() {
 
       {/* Featured Products */}
       {featuredProducts.length > 0 ? (
-        <section className="px-4 md:px-8 py-10">
+        <section className="px-4 md:px-8 py-10" id="featured">
           <div className="max-w-[1920px] mx-auto">
             <ProductCarousel title="Featured Products" subtitle="Hand-picked products with top demand." products={featuredProducts as ProductCarouselItem[]} autoplay />
           </div>
-        </section>) : (<div className="max-w-[1920px] mx-auto">
+        </section>) : (<div className="max-w-[1920px] mx-auto" id="featured">
           <div className="flex justify-center items-center h-full">
             <p className="text-on-surface-variant text-sm font-bold uppercase tracking-widest mb-12">
               No featured products found
@@ -119,13 +129,13 @@ export default async function HomePage() {
 
       {/* Latest Products */}
       {latestProducts.length > 0 ? (
-        <section className="px-4 md:px-8 py-12 md:py-20 bg-surface">
+        <section className="px-4 md:px-8 py-12 md:py-20 bg-surface" id="latest">
           <div className="max-w-[1920px] mx-auto">
             <ProductCarousel title="Latest Arrivals" subtitle="Check out our newest additions" products={latestProducts as ProductCarouselItem[]} autoplay />
           </div>
         </section>
       ) : (<div className="max-w-[1920px] mx-auto">
-        <div className="flex justify-center items-center h-full">
+        <div className="flex justify-center items-center h-full" id="latest">
           <p className="text-on-surface-variant text-sm font-bold uppercase tracking-widest mb-12">
             No latest products found
           </p>
@@ -235,30 +245,46 @@ export default async function HomePage() {
   );
 }
 
-function CategoryCard({ icon, title, count, slug }: { icon: string; image?: string | null; title: string; count: string; slug: string }) {
+function CategoryCard({ icon, title, count, slug }: { icon?: string | null; title: string; count: string; slug: string }) {
   return (
     <Link
       href={`/categories/${slug}`}
-      className="relative bg-white dark:bg-slate-900 h-40 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group overflow-hidden p-5 flex flex-col justify-between"
+      className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 overflow-hidden"
     >
+      {/* Image Section */}
+      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+        {icon ? (
+          <Image
+            src={icon}
+            alt={title}
+            fill
+            className="object-cover p-6 transition-transform duration-500 group-hover:scale-110"
+            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="material-symbols-outlined text-6xl text-gray-300">
+              category
+            </span>
+          </div>
+        )}
 
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-colors duration-500" />
-
-      <div className="absolute right-2 bottom-2 text-gray-100 dark:text-slate-800 group-hover:text-blue-50 dark:group-hover:text-blue-900/20 transition-colors duration-500">
-        <span className="material-symbols-outlined text-[100px] leading-none rotate-12 select-none pointer-events-none">
-          <Image src={icon} alt={title} width={100} height={100} />
-        </span>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <div className="relative z-10">
-        <h3 className="font-extrabold text-base md:text-lg text-[#1a1c1d] dark:text-white group-hover:text-blue-600 transition-colors">
+      {/* Content Section */}
+      <div className="p-4 bg-white">
+        <h3 className="font-bold text-sm md:text-base text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-1">
           {title}
         </h3>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="h-1 w-4 bg-blue-600 rounded-full group-hover:w-8 transition-all duration-300" />
-          <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-gray-500 font-medium">
             {count}
           </p>
+          <span className="material-symbols-outlined text-blue-600 text-lg opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+            arrow_forward
+          </span>
         </div>
       </div>
     </Link>

@@ -97,6 +97,7 @@ export function addToCart(item: CartPayload, quantity = 1) {
   });
 }
 
+
 export function updateCartQuantity(productId: string, quantity: number) {
   setState((prev) => {
     const current = prev.cart[productId];

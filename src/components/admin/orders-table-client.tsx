@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateOrderStatus, OrderStatus } from "@/lib/actions/order";
-import { toast } from "sonner";
+
 import { Sheet, SheetContent } from "../ui/sheet";
 import { Search } from "lucide-react";
 import { OrderDetailsView } from "./OrderDetailsView";
@@ -11,26 +10,32 @@ export function OrdersTableClient({ initialOrders }: { initialOrders: any[] }) {
     const [orders, setOrders] = useState(initialOrders);
     const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
     const [search, setSearch] = useState("");
-    const [activeTab, setActiveTab] = useState("All");
+    const [activeTab, setActiveTab] = useState("all");
 
-    // 1. FILTER LOGIC
     const filteredOrders = orders.filter(order => {
-        // First, apply Search filter
         const matchesSearch =
             order.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
             order.id.toString().includes(search);
 
         if (!matchesSearch) return false;
 
-        // Second, apply Tab filter
         switch (activeTab) {
-            case "Unfulfilled":
-                return order.status === "pending" || order.status === "processing";
-            case "Unpaid":
-                return order.payment_status?.toLowerCase() !== "paid";
-            case "Open":
-                // Statuses that aren't closed/finished
-                return !["delivered", "cancelled", "returned"].includes(order.status?.toLowerCase());
+            case "pending":
+                return order.status === "pending"
+            case "processing":
+                return order.status === "processing";
+            case "shipped":
+                return order.status === "shipped";
+            case "delivered":
+                return order.status === "delivered";
+            case "cancelled":
+                return order.status === "cancelled";
+            case "returned":
+                return order.status === "returned";
+            case "unpaid":
+                return order.payment_status === "unpaid";
+            case "paid":
+                return order.payment_status === "paid";
             case "All":
             default:
                 return true;
@@ -40,24 +45,28 @@ export function OrdersTableClient({ initialOrders }: { initialOrders: any[] }) {
     return (
         <>
             {/* Tabs & Search */}
-            <div className="flex px-4 border-b border-[#f1f1f1] gap-6 overflow-x-auto bg-white">
-                {["All", "Unfulfilled", "Unpaid", "Open"].map((tab) => (
+            <div className="flex px-4 gap-6 overflow-x-auto bg-white">
+                {["all", "pending", "processing", "shipped", "delivered", "cancelled", "returned", "unpaid", "paid"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`py-3 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${activeTab === tab
-                                ? "border-[#008060] text-[#202223]"
-                                : "border-transparent text-[#6d7175] hover:text-[#202223]"
+                            ? "border-[#008060] text-[#202223]"
+                            : "border-transparent text-[#6d7175] hover:text-[#202223]"
                             }`}
                     >
-                        {tab}
+                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
                         <span className="ml-2 text-[10px] text-[#ababab]">
-                            {/* Optional: Show counts next to tabs */}
                             {orders.filter(o => {
-                                if (tab === "All") return true;
-                                if (tab === "Unfulfilled") return o.status === "pending" || o.status === "processing";
-                                if (tab === "Unpaid") return o.payment_status !== "paid";
-                                if (tab === "Open") return !["delivered", "cancelled"].includes(o.status);
+                                if (tab === "all") return true;
+                                if (tab === "pending") return o.status === "pending";
+                                if (tab === "processing") return o.status === "processing";
+                                if (tab === "shipped") return o.status === "shipped";
+                                if (tab === "delivered") return o.status === "delivered";
+                                if (tab === "cancelled") return o.status === "cancelled";
+                                if (tab === "returned") return o.status === "returned";
+                                if (tab === "unpaid") return o.payment_status === "unpaid";
+                                if (tab === "paid") return o.payment_status === "paid";
                                 return true;
                             }).length}
                         </span>
@@ -113,7 +122,7 @@ export function OrdersTableClient({ initialOrders }: { initialOrders: any[] }) {
                                         {order.profiles?.full_name || "Guest"}
                                     </td>
                                     <td className="px-4 py-4 text-xs font-medium text-[#202223]">
-                                        ₹{order.total_amount?.toLocaleString()}
+                                        ₹ {order.total_amount?.toLocaleString()}
                                     </td>
                                     <td className="px-4 py-4">
                                         <PaymentBadge status={order.payment_status} />
@@ -160,8 +169,8 @@ function StatusBadge({ status }: { status: string }) {
 
     return (
         <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${isPositive ? "bg-[#e3f1df] text-[#005e4d] border-[#bbe5b3]" :
-                isNeutral ? "bg-[#fff4da] text-[#8a6116] border-[#ffe2b5]" :
-                    "bg-[#f9eaea] text-[#8e1f0b] border-[#f4bfbf]"
+            isNeutral ? "bg-[#fff4da] text-[#8a6116] border-[#ffe2b5]" :
+                "bg-[#f9eaea] text-[#8e1f0b] border-[#f4bfbf]"
             }`}>
             {status?.charAt(0).toUpperCase() + status?.slice(1)}
         </span>

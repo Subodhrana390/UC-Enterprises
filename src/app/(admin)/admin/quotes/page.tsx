@@ -3,16 +3,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getAdminQuotes } from "@/lib/actions/admin";
+import { PaginationControls } from "@/components/shared/PaginationControls";
 
-export default async function DraftOrdersPage() {
-  const supabase = await createClient();
+export default async function DraftOrdersPage({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const page = params.page ? parseInt(params.page as string) : 1;
   
-  // Fetch pending orders as Drafts
-  const { data: quotes } = await supabase
-    .from("orders")
-    .select("*, profiles(first_name, last_name, company_name)")
-    .eq("status", "pending")
-    .order("created_at", { ascending: false });
+  const { quotes, total, totalPages } = await getAdminQuotes(page, 20);
 
   return (
     <div className="space-y-6">
@@ -107,6 +109,8 @@ export default async function DraftOrdersPage() {
           </Table>
         </CardContent>
       </Card>
+      
+      <PaginationControls currentPage={page} totalPages={totalPages} basePath="/admin/quotes" />
     </div>
   );
 }

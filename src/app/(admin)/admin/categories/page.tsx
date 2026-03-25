@@ -1,13 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { CollectionsTable } from "../../_components/CollectionsTable";
+import { getAdminCategories } from "@/lib/actions/admin";
+import { PaginationControls } from "@/components/shared/PaginationControls";
 
-export default async function CollectionsPage() {
-  const supabase = await createClient();
+export default async function CollectionsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const page = params.page ? parseInt(params.page as string) : 1;
   
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("*, products(count)")
-    .order("name");
+  const { categories, total, totalPages } = await getAdminCategories(page, 20);
   
   return (
     <div className="space-y-6">
@@ -16,6 +20,7 @@ export default async function CollectionsPage() {
       </header>
       
       <CollectionsTable initialCategories={categories || []} />
+      <PaginationControls currentPage={page} totalPages={totalPages} basePath="/admin/categories" />
     </div>
   );
 }

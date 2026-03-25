@@ -5,7 +5,10 @@ import { getProductById, getRelatedProducts } from "@/lib/actions/products";
 import { formatDateINR, formatPriceINR } from "@/lib/utils";
 import { ProductAddToCartWithQuantity } from "@/components/shop/ProductAddToCartWithQuantity";
 import { AddToWishlistButton } from "@/components/shop/AddToWishlistButton";
-import { ProductReviewForm } from "@/components/shop/ProductReviewForm";
+import { ProductImageGallery } from "@/components/shop/ProductImageGallery";
+import { ProductQASection } from "@/components/shop/ProductQASection";
+import { getProductQuestions } from "@/lib/actions/qa";
+import { Button } from "@/components/ui/button";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -14,11 +17,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!product) {
     notFound();
   }
-  const relatedProducts = await getRelatedProducts(product.categories?.slug, id);
+
+  const [relatedProducts, productQuestions] = await Promise.all([
+    getRelatedProducts(product.categories?.slug, id),
+    getProductQuestions(id)
+  ]);
 
   const rawImages = product.product_images?.map((img: any) => img.image_url) || (Array.isArray(product.images) ? product.images : product.images ? Object.values(product.images) : []);
   const mainImage = product.product_images?.find((img: any) => img.is_main)?.image_url || product.image_url || rawImages?.[0] || "/placeholder-product.png";
-  const thumbnails = rawImages || [];
+  const allImages = rawImages.length > 0 ? rawImages : [mainImage];
 
   const productReviews = (product as { productReviews?: Array<{ id: string; rating: number; comment: string | null; created_at: string; profiles?: { full_name: string | null } | null }> }).productReviews ?? [];
   const reviewCount = productReviews.length;
@@ -54,29 +61,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         {/* Product Summary Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-20">
           {/* Gallery Section */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-50">
-              <Image
-                src={mainImage}
-                alt={product.name}
-                fill
-                className="object-cover transition-transform duration-500 hover:scale-105"
-                priority
-              />
-            </div>
-
-            <div className="grid grid-cols-4 gap-4">
-              {thumbnails.slice(0, 4).map((thumb: string, i: number) => (
-                <div key={i} className="relative aspect-square rounded-md overflow-hidden bg-gray-50 cursor-pointer border hover:border-black transition-colors">
-                  <Image src={thumb} alt={`View ${i + 1}`} fill className="object-cover" />
-                  {i === 3 && thumbnails.length > 4 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm font-medium">
-                      +{thumbnails.length - 3}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="lg:col-span-6">
+            <ProductImageGallery images={allImages} productName={product.name} />
           </div>
 
           {/* Product Info Section */}
@@ -140,6 +126,24 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
 
+            {/* Specifications - Compact View */}
+            {specificationRows.length > 0 && (
+              <div className="mb-8 pb-8 border-b border-gray-100">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-900 mb-4">Specifications</h3>
+                <div className="space-y-2">
+                  {specificationRows.slice(0, 5).map((spec: any, index: number) => (
+                    <div key={index} className="flex text-xs">
+                      <dt className="font-semibold text-gray-700 w-1/3">{spec.key || spec.name}:</dt>
+                      <dd className="text-gray-600 w-2/3">{spec.value}</dd>
+                    </div>
+                  ))}
+                  {specificationRows.length > 5 && (
+                    <p className="text-xs text-gray-500 italic mt-2">+ {specificationRows.length - 5} more specifications below</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* 4. Actions - Full Width Shopify Style */}
             <div className="space-y-4">
               <div className="flex flex-col gap-4">
@@ -154,6 +158,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   productImage={mainImage}
                 />
               </div>
+
+              {/* Request Quote Button */}
+              <Link href="/quote" className="block">
+                <Button
+                  variant="outline"
+                  className="w-full h-12 text-sm font-semibold border-2 border-gray-300 hover:border-black hover:bg-gray-50 transition-all"
+                >
+                  <span className="material-symbols-outlined text-lg mr-2">request_quote</span>
+                  Request Bulk Quote
+                </Button>
+              </Link>
 
               {/* SKU & Shipping Meta */}
               <div className="pt-6 space-y-2 border-t border-gray-100">
@@ -171,44 +186,48 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Reviews */}
-        <section className="bg-surface-container-low rounded-3xl p-10 border border-border/40">
-          <div className="flex flex-col md:flex-row gap-16">
+        <section className="bg-white rounded-xl p-8 md:p-12 border border-gray-100">
+          <div className="flex flex-col lg:flex-row gap-16">
             <div className="flex-1 min-w-0">
-              <h2 className="text-3xl font-black tracking-tight font-headline uppercase mb-10">Reviews</h2>
+              <h2 className="text-xl font-semibold tracking-tight mb-12 text-gray-900">
+                Customer Reviews
+              </h2>
+
               {productReviews.length === 0 ? (
-                <p className="text-on-surface-variant text-sm leading-relaxed">
-                  No reviews yet. Purchase this product to share your experience.
+                <p className="text-gray-500 text-sm italic">
+                  No reviews yet. Share your experience with us.
                 </p>
               ) : (
-                <div className="space-y-10">
+                <div className="space-y-12">
                   {productReviews.map((rev) => {
                     const author = rev.profiles?.full_name?.trim() || "Verified customer";
                     const stars = rev.rating ?? 0;
                     return (
-                      <div key={rev.id} className="pb-10 border-b border-border/30 last:border-0 last:pb-0">
-                        <div className="flex flex-wrap items-center gap-3 mb-3">
+                      <div key={rev.id} className="pb-8 border-b border-gray-50 last:border-0 last:pb-0">
+                        <div className="flex items-center gap-4 mb-4">
+                          {/* Smaller, cleaner stars */}
                           <div className="flex text-amber-400">
                             {[...Array(5)].map((_, i) => (
                               <span
                                 key={i}
-                                className="material-symbols-outlined text-sm"
+                                className="material-symbols-outlined text-[16px]"
                                 style={{ fontVariationSettings: i < stars ? "'FILL' 1" : "'FILL' 0" }}
                               >
                                 star
                               </span>
                             ))}
                           </div>
-                          <span className="text-xs font-black text-on-surface">{author}</span>
-                          <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">
+                          <span className="text-sm font-medium text-gray-900">{author}</span>
+                          <span className="text-[11px] text-gray-400 font-normal">
                             {formatDateINR(rev.created_at)}
                           </span>
                         </div>
                         {rev.comment ? (
-                          <p className="text-on-surface-variant text-sm leading-relaxed font-medium whitespace-pre-wrap">
+                          <p className="text-gray-600 text-sm leading-relaxed max-w-2xl">
                             {rev.comment}
                           </p>
                         ) : (
-                          <p className="text-on-surface-variant text-sm italic">No written comment.</p>
+                          <p className="text-gray-400 text-xs italic">No written comment.</p>
                         )}
                       </div>
                     );
@@ -216,38 +235,50 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </div>
               )}
             </div>
-            <div className="w-full md:w-80 h-fit bg-white rounded-2xl p-8 border border-border/40 shadow-sm shrink-0">
-              <h3 className="text-xl font-black uppercase mb-6 tracking-tight">Rating summary</h3>
-              <div className="flex items-end gap-3 mb-10">
-                <span className="text-6xl font-black leading-none text-primary">{displayRating}</span>
-                <div className="pb-1">
-                  <div className="flex text-amber-400 mb-1">
-                    {[...Array(5)].map((_, i) => (
-                      <span
-                        key={i}
-                        className="material-symbols-outlined text-lg"
-                        style={{
-                          fontVariationSettings: i < Math.round(displayRating) ? "'FILL' 1" : "'FILL' 0",
-                        }}
-                      >
-                        star
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-[0.15em]">
-                    Based on {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
-                  </p>
+
+            {/* Sidebar Summary: Cleaner & More Compact */}
+            <div className="w-full lg:w-72 h-fit bg-gray-50/50 rounded-xl p-6 border border-gray-100 shrink-0">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">Summary</h3>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-light text-gray-900">{displayRating}</span>
+                  <span className="text-gray-400 text-sm">/ 5</span>
                 </div>
+
+                <div className="flex text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <span
+                      key={i}
+                      className="material-symbols-outlined text-lg"
+                      style={{ fontVariationSettings: i < Math.round(displayRating) ? "'FILL' 1" : "'FILL' 0" }}
+                    >
+                      star
+                    </span>
+                  ))}
+                </div>
+
+                <p className="text-[11px] text-gray-500 font-medium">
+                  Based on {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                </p>
               </div>
-              <div className="mt-8 flex flex-col gap-4">
-                <Link href="/account/reviews" className="text-xs font-black text-primary uppercase tracking-widest hover:underline text-center">
+
+              <div className="mt-8">
+                <Link href="/account/reviews" className="inline-block w-full py-3 text-center text-[11px] font-bold uppercase tracking-widest text-gray-900 border border-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
                   View all reviews
                 </Link>
-                <ProductReviewForm productId={product.id} />
               </div>
             </div>
           </div>
         </section>
+
+        {/* Product Q&A Section */}
+        <div className="mt-20">
+          <ProductQASection
+            productId={product.id}
+            productName={product.name}
+            initialQuestions={productQuestions}
+          />
+        </div>
 
         {/* Related Products Section */}
         <div className="mt-20 pt-16 border-t border-gray-100">
