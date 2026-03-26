@@ -2,7 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { toggleWishlist, useShopStore } from "@/lib/store/shop-store";
+import { addToWishlist, removeFromWishlist } from "@/lib/actions/wishlist";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function AddToWishlistButton({
   productId,
@@ -26,8 +29,23 @@ export function AddToWishlistButton({
   description?: string;
 }) {
   const isWishlisted = useShopStore((s) => Boolean(s.wishlist[productId]));
+  const router = useRouter();
+  const supabase = createClient();
 
-  function onToggle() {
+  async function onToggle() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Please login to manage wishlist");
+      router.push("/login?redirect=/wishlist");
+      return;
+    }
+
+    if (isWishlisted) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(productId);
+    }
+
     toggleWishlist(productId, {
       productId,
       name: productName,
@@ -37,6 +55,7 @@ export function AddToWishlistButton({
       brandName,
       description,
     });
+    router.refresh();
     toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
   }
 

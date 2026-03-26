@@ -144,3 +144,19 @@ export async function clearCart(userId: string) {
   revalidatePath("/cart");
   return { success: true };
 }
+
+export async function removeFromCartByProductId(productId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { error } = await supabase
+    .from("cart_items")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("product_id", productId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/cart");
+  return { success: true };
+}

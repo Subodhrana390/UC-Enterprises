@@ -6,11 +6,17 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPriceINR } from "@/lib/utils";
-import { addToCart, removeFromWishlist, toggleWishlist, useShopHydration, useShopStore } from "@/lib/store/shop-store";
+import { addToCart as addLocalCart, removeFromWishlist as removeLocalWishlist, toggleWishlist as toggleLocalWishlist, useShopHydration, useShopStore } from "@/lib/store/shop-store";
+import { addToCart as addToCartAction } from "@/lib/actions/cart";
+import { removeFromWishlist as removeFromWishlistAction, removeFromWishlistByProductId as removeByProductAction } from "@/lib/actions/wishlist";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function WishlistPage() {
   useShopHydration();
+  const router = useRouter();
+  const supabase = createClient();
   const [query, setQuery] = useState("");
   const wishlistItems = useShopStore((s) => Object.values(s.wishlist));
 
@@ -65,9 +71,14 @@ export default function WishlistPage() {
                 <div className="absolute top-4 right-4">
                   <button
                     type="button"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault();
-                      toggleWishlist(item.productId);
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) return;
+
+                      await removeByProductAction(item.productId);
+                      removeLocalWishlist(item.productId);
+                      router.refresh();
                       toast.success("Removed from wishlist");
                     }}
                     className="text-red-500/70 hover:text-red-600 transition-all"
@@ -94,8 +105,21 @@ export default function WishlistPage() {
                   <Button
                     type="button"
                     className="bg-primary text-white h-11 px-4 rounded-xl font-black text-[10px] uppercase tracking-widest"
-                    onClick={() => {
-                      addToCart(
+                    onClick={async () => {
+                      const { data: { user } } = await supabase.auth.getUser();
+
+                      if (!user) {
+                        toast.error("Please login to add items to cart");
+                        router.push("/login?redirect=/wishlist");
+                        return;
+                      }
+
+                      // 1. Server Side Updates
+                      await addToCartAction(item.productId, 1);
+                      await removeFromWishlistAction(item.productId);
+
+                      // 2. Local State Updates (Optimistic UI)
+                      addLocalCart(
                         {
                           productId: item.productId,
                           name: item.name,
@@ -105,6 +129,10 @@ export default function WishlistPage() {
                         },
                         1,
                       );
+                      removeLocalWishlist(item.productId);
+
+                      // 3. Sync & Feedback
+                      router.refresh();
                       toast.success("Moved to cart");
                     }}
                     disabled={Boolean(item.stockQuantity !== undefined && item.stockQuantity <= 0)}

@@ -3,7 +3,10 @@
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { addToCart, removeFromCart, useShopStore } from "@/lib/store/shop-store";
+import { addToCart as addToCartAction, removeFromCartByProductId } from "@/lib/actions/cart";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function AddToCartButton({
   productId,
@@ -26,6 +29,7 @@ export function AddToCartButton({
 }) {
 
   const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -35,11 +39,22 @@ export function AddToCartButton({
   const cartQuantity = useShopStore((s) => s.cart[productId]?.quantity ?? 0);
   const isAdded = isMounted && cartQuantity > 0;
 
-  function onAdd(e: React.MouseEvent) {
+  async function onAdd(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      toast.error("Please login to add items to cart");
+      router.push("/login?redirect=/cart");
+      return;
+    }
+
     if (isDisabled) return;
+
+    await addToCartAction(productId, quantity);
 
     addToCart(
       {
@@ -51,6 +66,7 @@ export function AddToCartButton({
       },
       quantity,
     );
+    router.refresh();
     toast.success(cartQuantity > 0 ? "Quantity updated" : "Added to cart");
   }
 
@@ -59,7 +75,15 @@ export function AddToCartButton({
       type="button"
       disabled={isDisabled}
       className={className}
-      onClick={(e) => isAdded ? removeFromCart(productId) : onAdd(e)}
+      onClick={(e) => {
+        if (isAdded) {
+          removeFromCart(productId);
+          removeFromCartByProductId(productId);
+          toast.success("Removed from cart");
+        } else {
+          onAdd(e);
+        }
+      }}
     >
       {children ?? (
         <div className="flex items-center gap-2">

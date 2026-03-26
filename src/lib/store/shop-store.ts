@@ -85,7 +85,6 @@ export function addToCart(item: CartPayload, quantity = 1) {
     const max = item.stockQuantity && item.stockQuantity > 0 ? item.stockQuantity : 9999;
     const nextQty = Math.min(max, (existing?.quantity ?? 0) + safeQty);
 
-    // Mutual Exclusivity: Remove from wishlist if added to cart
     const nextWishlist = { ...prev.wishlist };
     if (nextWishlist[item.productId]) {
       delete nextWishlist[item.productId];
@@ -197,15 +196,15 @@ export function removeFromWishlist(productId: string) {
   });
 }
 
-export function mergeServerState(input: {
-  cart?: Record<string, CartItem>;
-  wishlist?: Record<string, WishlistItem>;
+export function replaceWithServerState(input: {
+  cart: Record<string, CartItem>;
+  wishlist: Record<string, WishlistItem>;
 }) {
-  setState((prev) => {
-    const nextCart = { ...(input.cart ?? {}), ...prev.cart };
-    const nextWishlist = { ...(input.wishlist ?? {}), ...prev.wishlist };
-    return { ...prev, cart: nextCart, wishlist: nextWishlist };
-  });
+  setState((prev) => ({
+    ...prev,
+    cart: input.cart,
+    wishlist: input.wishlist,
+  }));
 }
 
 function subscribe(listener: Listener) {
@@ -232,6 +231,10 @@ export function getCartItems() {
 
 export function getCartCount() {
   return Object.values(state.cart).reduce((sum, item) => sum + item.quantity, 0);
+}
+
+export function getWishlistItems() {
+  return Object.values(state.wishlist);
 }
 
 export function getWishlistCount() {

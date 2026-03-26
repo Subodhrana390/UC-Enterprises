@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
 import { getAllQA } from "@/lib/actions/admin/qa";
 import { QAItem } from "../../_components/QAItem";
 
 export default async function QAPage() {
   const { data: questions } = await getAllQA();
+
 
   const pendingCount = questions?.filter((q: any) => !q.answer).length || 0;
   const answeredCount = questions?.filter((q: any) => q.answer).length || 0;

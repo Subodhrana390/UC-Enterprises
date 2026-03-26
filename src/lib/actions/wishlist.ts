@@ -80,8 +80,25 @@ export async function addWishlistItemToCart(wishlistItemId: string) {
   const result = await addToCart(item.product_id, 1);
   if (result.error) return result;
 
+
   await supabase.from("wishlist_items").delete().eq("id", wishlistItemId).eq("user_id", user.id);
   revalidatePath("/account/wishlist");
   revalidatePath("/cart");
+  return { success: true };
+}
+
+export async function removeFromWishlistByProductId(productId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { error } = await supabase
+    .from("wishlist_items")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("product_id", productId);
+
+  if (error) return { error: error.message };
+  revalidatePath("/account/wishlist");
   return { success: true };
 }

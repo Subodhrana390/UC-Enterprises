@@ -3,14 +3,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { answerQA, deleteQA, toggleQAPublic } from "@/lib/actions/admin/qa";
-import { Check, X, Trash2, Globe, GlobeOff } from "lucide-react";
+import { Check, X, Trash2, Globe, GlobeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface QAItemProps {
   qa: any;
 }
 
 export function QAItem({ qa }: QAItemProps) {
+  const router = useRouter();
   const [answering, setAnswering] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [answer, setAnswer] = useState(qa.answer || "");
 
   return (
@@ -19,7 +23,7 @@ export function QAItem({ qa }: QAItemProps) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold text-[#1a1c1d]">
-              {qa.profiles?.full_name || "Anonymous"}
+              {qa.author?.full_name || "Anonymous"}
             </span>
             <span className="text-[10px] text-[#ababab]">
               {new Date(qa.created_at).toLocaleDateString()}
@@ -53,47 +57,73 @@ export function QAItem({ qa }: QAItemProps) {
                 Answer
               </Button>
             ) : (
-              <form action={async () => {
-                await answerQA(qa.id, answer);
-              }}>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setAnswering(!answering)}
-                  className="h-7 text-xs"
-                >
-                  <Check className="w-3 h-3 mr-1" />
-                  Edit
-                </Button>
-              </form>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setAnswering(!answering)}
+                className="h-7 text-xs"
+              >
+                <Check className="w-3 h-3 mr-1" />
+                Edit
+              </Button>
             )}
 
-            <form action={async () => {
-              await toggleQAPublic(qa.id, !qa.is_public);
-            }}>
-              <Button variant="ghost" size="sm" className="h-7 text-xs">
-                {qa.is_public ? (
-                  <>
-                    <GlobeOff className="w-3 h-3 mr-1" />
-                    Hide
-                  </>
-                ) : (
-                  <>
-                    <Globe className="w-3 h-3 mr-1" />
-                    Show
-                  </>
-                )}
-              </Button>
-            </form>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={isPending}
+              onClick={async () => {
+                setIsPending(true);
+                try {
+                  const res: any = await toggleQAPublic(qa.id, !qa.is_public);
+                  if (res?.success) {
+                    toast.success(qa.is_public ? "Question hidden" : "Question visible");
+                    router.refresh();
+                  } else {
+                    toast.error(res?.error || "Failed to update visibility");
+                  }
+                } finally {
+                  setIsPending(false);
+                }
+              }}
+            >
+              {qa.is_public ? (
+                <>
+                  <GlobeOff className="w-3 h-3 mr-1" />
+                  Hide
+                </>
+              ) : (
+                <>
+                  <Globe className="w-3 h-3 mr-1" />
+                  Show
+                </>
+              )}
+            </Button>
 
-            <form action={async () => {
-              await deleteQA(qa.id);
-            }}>
-              <Button variant="ghost" size="sm" className="h-7 text-xs text-rose-600 hover:text-rose-700">
-                <Trash2 className="w-3 h-3 mr-1" />
-                Delete
-              </Button>
-            </form>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs text-rose-600 hover:text-rose-700"
+              disabled={isPending}
+              onClick={async () => {
+                setIsPending(true);
+                try {
+                  const res: any = await deleteQA(qa.id);
+                  if (res?.success) {
+                    toast.success("Question deleted");
+                    router.refresh();
+                  } else {
+                    toast.error(res?.error || "Failed to delete");
+                  }
+                } finally {
+                  setIsPending(false);
+                }
+              }}
+            >
+              <Trash2 className="w-3 h-3 mr-1" />
+              Delete
+            </Button>
           </div>
 
           {answering && (
@@ -106,14 +136,31 @@ export function QAItem({ qa }: QAItemProps) {
                 placeholder="Write your answer..."
               />
               <div className="flex gap-2 mt-2">
-                <form action={async () => {
-                  await answerQA(qa.id, answer);
-                  setAnswering(false);
-                }}>
-                  <Button size="sm" className="bg-[#1a1c1d] text-white h-7 text-xs">
-                    Save Answer
-                  </Button>
-                </form>
+                <Button
+                  size="sm"
+                  disabled={isPending}
+                  className="bg-[#1a1c1d] text-white h-7 text-xs"
+                  onClick={async () => {
+                    setIsPending(true);
+                    try {
+                      const res: any = await answerQA(qa.id, answer);
+                      if (res?.success) {
+                        toast.success("Answer saved!");
+                        setAnswering(false);
+                        router.refresh();
+                      } else {
+                        toast.error(res?.error || "Failed to save answer");
+                      }
+                    } catch (err: any) {
+                      toast.error("Something went wrong");
+                    } finally {
+                      setIsPending(false);
+                    }
+                  }}
+                >
+                  {isPending ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                  Save Answer
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => setAnswering(false)} className="h-7 text-xs">
                   Cancel
                 </Button>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
-  mergeServerState,
+  replaceWithServerState,
   useShopHydration,
   useShopStore,
   type CartItem,
@@ -92,7 +92,7 @@ export function ShopSyncBridge({ userId }: { userId: string }) {
         };
       }
 
-      mergeServerState({ cart: nextCart, wishlist: nextWishlist });
+      replaceWithServerState({ cart: nextCart, wishlist: nextWishlist });
       skipNextPush.current = true;
       setBootstrapped(true);
     })();
@@ -100,56 +100,10 @@ export function ShopSyncBridge({ userId }: { userId: string }) {
 
   useEffect(() => {
     if (!hydrated || !bootstrapped) return;
-    if (skipNextPush.current) {
-      skipNextPush.current = false;
-      return;
-    }
-
-    const supabase = createClient();
-    const timer = window.setTimeout(async () => {
-      const cartIds = Object.keys(cart);
-      const wishlistIds = Object.keys(wishlist);
-
-      const [serverCartRes, serverWishlistRes] = await Promise.all([
-        supabase.from("cart_items").select("id, product_id").eq("user_id", userId),
-        supabase.from("wishlist_items").select("id, product_id").eq("user_id", userId),
-      ]);
-
-      const serverCart = new Map((serverCartRes.data ?? []).map((r) => [r.product_id as string, r.id as string]));
-      const serverWishlist = new Map((serverWishlistRes.data ?? []).map((r) => [r.product_id as string, r.id as string]));
-
-      // Pushing changes to Supabase
-      for (const [productId, item] of Object.entries(cart)) {
-        const existingId = serverCart.get(productId);
-        if (existingId) {
-          await supabase.from("cart_items").update({ quantity: item.quantity }).eq("id", existingId).eq("user_id", userId);
-        } else {
-          await supabase.from("cart_items").insert({ user_id: userId, product_id: productId, quantity: item.quantity });
-        }
-      }
-
-      // Deleting items from Supabase that were removed locally
-      for (const [productId, rowId] of serverCart.entries()) {
-        if (!cartIds.includes(productId)) {
-          await supabase.from("cart_items").delete().eq("id", rowId).eq("user_id", userId);
-        }
-      }
-
-      // Sync Wishlist
-      for (const productId of wishlistIds) {
-        if (!serverWishlist.has(productId)) {
-          await supabase.from("wishlist_items").insert({ user_id: userId, product_id: productId });
-        }
-      }
-      for (const [productId, rowId] of serverWishlist.entries()) {
-        if (!wishlistIds.includes(productId)) {
-          await supabase.from("wishlist_items").delete().eq("id", rowId).eq("user_id", userId);
-        }
-      }
-    }, 500);
-
-    return () => window.clearTimeout(timer);
-  }, [bootstrapped, cart, hydrated, signature, userId, wishlist]);
+    // Pushing logic removed to follow Login-Only server-action model.
+    // The local store is now an optimistic mirror updated by UI components.
+    // router.refresh() in components ensures server-side sync.
+  }, [bootstrapped, hydrated, userId]);
 
   return null;
 }

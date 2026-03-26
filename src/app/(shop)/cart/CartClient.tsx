@@ -10,7 +10,8 @@ import {
   toggleWishlist as toggleLocal,
   addToWishlist as addLocalWishlist,
   addToCart as addLocalCart,
-  clearCart as clearLocal
+  clearCart as clearLocal,
+  useShopStore
 } from "@/lib/store/shop-store";
 import { formatPriceINR } from "@/lib/utils";
 import { Trash2, Minus, Plus, ArrowRight, ShoppingBag, Heart, Loader2 } from "lucide-react";
@@ -34,8 +35,7 @@ export function CartClient({
   minimumRequired
 }: CartClientProps) {
   const [items, setItems] = useState(initialItems);
-  const [isPending, startTransition] = useTransition();
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
   const router = useRouter();
 
   const handleQuantityChange = async (itemId: string, productId: string, newQuantity: number) => {
@@ -44,10 +44,8 @@ export function CartClient({
       return;
     }
 
-    setLoadingId(itemId);
     startTransition(async () => {
       const result = await updateCartQuantity(itemId, newQuantity);
-      setLoadingId(null);
 
       if (result.error) {
         toast.error(result.error);
@@ -55,43 +53,37 @@ export function CartClient({
         setItems((prev) =>
           prev.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item))
         );
-        // Sync with local store for badge updates
         updateLocalQty(productId, newQuantity);
+        router.refresh();
         toast.success("Quantity updated");
       }
     });
   };
 
   const handleRemove = async (itemId: string, productId: string) => {
-    setLoadingId(itemId);
     startTransition(async () => {
       const result = await removeFromCart(itemId);
-      setLoadingId(null);
 
       if (result.error) {
         toast.error(result.error);
       } else {
         setItems((prev) => prev.filter((item) => item.id !== itemId));
         removeLocal(productId);
+        router.refresh();
         toast.success("Item removed from cart");
       }
     });
   };
 
   const handleSaveForLater = async (itemId: string, productId: string) => {
-    setLoadingId(itemId);
     startTransition(async () => {
-      // 1. Add to wishlist
       const addResult = await addToWishlist(productId);
       if (addResult.error) {
-        setLoadingId(null);
         toast.error(addResult.error);
         return;
       }
 
-      // 2. Remove from cart
       const removeResult = await removeFromCart(itemId);
-      setLoadingId(null);
 
       if (removeResult.error) {
         toast.error(removeResult.error);
@@ -113,7 +105,6 @@ export function CartClient({
     });
   };
 
-
   const handleClearCart = async () => {
     startTransition(async () => {
       const result = await clearCart(userId);
@@ -122,6 +113,7 @@ export function CartClient({
       } else {
         setItems([]);
         clearLocal();
+        router.refresh();
         toast.success("Cart cleared");
       }
     });
@@ -133,8 +125,6 @@ export function CartClient({
     setIsRedirecting(true);
     router.push("/checkout");
   };
-
-  const isAnyLoading = isPending || isRedirecting || !!loadingId;
 
   const currentSubtotal = items.reduce(
     (acc, item) => acc + (item.products?.base_price || 0) * item.quantity,
@@ -181,7 +171,7 @@ export function CartClient({
                   variant="ghost"
                   size="sm"
                   onClick={handleClearCart}
-                  disabled={isAnyLoading}
+                  disabled={isRedirecting}
                   className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
@@ -191,105 +181,78 @@ export function CartClient({
             </div>
 
             <div className="divide-y divide-[#f1f1f1]">
-              {items.length > 0 ? (
-                items.map((item) => (
-                  <div key={item.id} className="p-4 md:p-6 flex gap-4 md:gap-6 items-center relative group">
-                    <div className="w-24 h-24 bg-[#f5f5f5] rounded-xl overflow-hidden shrink-0 border border-[#ebebeb] relative">
-                      {item.products?.images?.[0] ? (
-                        <img
-                          src={item.products.images[0]}
-                          alt={item.products.name}
-                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#ababab]">
-                          <ShoppingBag className="w-8 h-8 opacity-20" />
-                        </div>
-                      )}
-                      {loadingId === item.id && (
-                        <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
-                          <Loader2 className="w-6 h-6 animate-spin text-black" />
-                        </div>
-                      )}
-                    </div>
+              {items.map((item) => (
+                <div key={item.id} className="p-4 md:p-6 flex gap-4 md:gap-6 items-center relative group">
+                  <div className="w-24 h-24 bg-[#f5f5f5] rounded-xl overflow-hidden shrink-0 border border-[#ebebeb] relative">
+                    {item.products?.images?.[0] ? (
+                      <img
+                        src={item.products.images[0]}
+                        alt={item.products.name}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#ababab]">
+                        <ShoppingBag className="w-8 h-8 opacity-20" />
+                      </div>
+                    )}
+                  </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-[#1a1c1d] truncate text-base mb-1 group-hover:text-blue-600 transition-colors">
-                        <Link href={`/products/${item.product_id}`}>{item.products?.name}</Link>
-                      </h3>
-                      <p className="text-sm font-bold text-black mb-3">{formatPriceINR(item.products?.base_price || 0)}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-[#1a1c1d] truncate text-base mb-1 group-hover:text-blue-600 transition-colors">
+                      <Link href={`/products/${item.product_id}`}>{item.products?.name}</Link>
+                    </h3>
+                    <p className="text-sm font-bold text-black mb-3">{formatPriceINR(item.products?.base_price || 0)}</p>
 
-                      <div className="flex flex-wrap items-center gap-4">
-                        <div className="flex items-center bg-[#f8f9fa] rounded-lg border border-[#ebebeb] overflow-hidden p-0.5">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-white"
-                            onClick={() => handleQuantityChange(item.id, item.product_id, item.quantity - 1)}
-                            disabled={isAnyLoading}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
-                          <span className="w-10 text-center font-bold text-sm">{item.quantity}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-white"
-                            onClick={() => handleQuantityChange(item.id, item.product_id, item.quantity + 1)}
-                            disabled={isAnyLoading || item.quantity >= (item.products?.stock_quantity || 999)}
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        </div>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex items-center bg-[#f8f9fa] rounded-lg border border-[#ebebeb] overflow-hidden p-0.5">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-white"
+                          onClick={() => handleQuantityChange(item.id, item.product_id, item.quantity - 1)}
+                        >
+                          <Minus className="w-3 h-3" />
+                        </Button>
+                        <span className="w-10 text-center font-bold text-sm">{item.quantity}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-white"
+                          onClick={() => handleQuantityChange(item.id, item.product_id, item.quantity + 1)}
+                          disabled={item.quantity >= (item.products?.stock_quantity || 999)}
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
 
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => handleSaveForLater(item.id, item.product_id)}
-                            disabled={isAnyLoading}
-                            className="text-[#616161] hover:text-blue-600 transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
-                          >
-                            <Heart className="w-3.5 h-3.5" />
-                            Save
-                          </button>
-                          <div className="w-px h-3 bg-[#ebebeb]" />
-                          <button
-                            onClick={() => handleRemove(item.id, item.product_id)}
-                            disabled={isAnyLoading}
-                            className="text-[#919191] hover:text-rose-600 transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Remove
-                          </button>
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handleSaveForLater(item.id, item.product_id)}
+                          className="text-[#616161] hover:text-blue-600 transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
+                        >
+                          <Heart className="w-3.5 h-3.5" />
+                          Save
+                        </button>
+                        <div className="w-px h-3 bg-[#ebebeb]" />
+                        <button
+                          onClick={() => handleRemove(item.id, item.product_id)}
+                          className="text-[#919191] hover:text-rose-600 transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Remove
+                        </button>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="text-right shrink-0 hidden md:block">
-                      <p className="text-lg font-black text-[#1a1c1d]">
-                        {formatPriceINR((item.products?.base_price || 0) * item.quantity)}
-                      </p>
-                      <p className="text-[10px] text-[#008060] font-bold uppercase tracking-wider mt-1">In Stock</p>
-                    </div>
+                  <div className="text-right shrink-0 hidden md:block">
+                    <p className="text-lg font-black text-[#1a1c1d]">
+                      {formatPriceINR((item.products?.base_price || 0) * item.quantity)}
+                    </p>
+                    <p className="text-[10px] text-[#008060] font-bold uppercase tracking-wider mt-1">In Stock</p>
                   </div>
-                ))
-              ) : (
-                <div className="p-12 text-center bg-white rounded-xl">
-                  <div className="w-16 h-16 bg-[#f8f9fa] rounded-full flex items-center justify-center mx-auto mb-4">
-                    <ShoppingBag className="w-8 h-8 text-[#ababab]" />
-                  </div>
-                  <p className="text-[#1a1c1d] font-bold mb-1 text-lg">Your cart is empty</p>
-                  <p className="text-[#616161] text-sm mb-6 max-w-[280px] mx-auto">
-                    Look like you haven't added anything to your cart yet. Start browsing our collection.
-                  </p>
-                  <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm hover:text-blue-700 transition-colors group"
-                  >
-                    Continue Shopping
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>
@@ -336,10 +299,10 @@ export function CartClient({
             <Button
               className="w-full bg-[#1a1c1d] hover:bg-black text-white h-14 rounded-xl font-bold transition-all active:scale-[0.98] disabled:opacity-50"
               onClick={handleCheckout}
-              disabled={isBelowMinimum || isAnyLoading || items.length === 0}
+              disabled={isBelowMinimum || isRedirecting || items.length === 0}
             >
-              {isAnyLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Proceed to Checkout"}
-              {!isAnyLoading && <ArrowRight className="w-4 h-4 ml-2" />}
+              {isRedirecting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Proceed to Checkout"}
+              {!isRedirecting && <ArrowRight className="w-4 h-4 ml-2" />}
             </Button>
 
             <Link href="/" className="block text-center text-sm text-[#616161] mt-6 hover:text-black font-medium">
@@ -348,7 +311,6 @@ export function CartClient({
           </div>
         </div>
       </div>
-
     </div>
   );
 }

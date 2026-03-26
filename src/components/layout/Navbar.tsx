@@ -22,11 +22,11 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
   const isAdmin = userRole === "admin";
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [logoSrc, setLogoSrc] = useState("/logo.jpg");
-  useShopHydration();
+  const hydrated = useShopStore((s) => s.hydrated);
   const liveCartCount = useShopStore((s) => Object.values(s.cart).reduce((sum, item) => sum + item.quantity, 0));
   const liveWishlistCount = useShopStore((s) => Object.keys(s.wishlist).length);
-  const displayCartCount = useMemo(() => Math.max(cartCount, liveCartCount), [cartCount, liveCartCount]);
-  const displayWishlistCount = useMemo(() => Math.max(wishlistCount, liveWishlistCount), [wishlistCount, liveWishlistCount]);
+  const displayCartCount = hydrated ? liveCartCount : cartCount;
+  const displayWishlistCount = hydrated ? liveWishlistCount : wishlistCount;
 
   // Get only parent categories for the menu, or all if none are parents
   const parentCategories = useMemo(() => {
