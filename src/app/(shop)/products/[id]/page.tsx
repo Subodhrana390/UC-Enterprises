@@ -1,14 +1,15 @@
+
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { getProductById, getRelatedProducts } from "@/lib/actions/products";
 import { formatDateINR, formatPriceINR } from "@/lib/utils";
 import { ProductAddToCartWithQuantity } from "@/components/shop/ProductAddToCartWithQuantity";
 import { AddToWishlistButton } from "@/components/shop/AddToWishlistButton";
 import { ProductImageGallery } from "@/components/shop/ProductImageGallery";
-import { ProductQASection } from "@/components/shop/ProductQASection";
 import { getProductQuestions } from "@/lib/actions/qa";
 import { Button } from "@/components/ui/button";
+import ProductTabs from "../../_components/ProductTabs";
+import RelatedProducts from "../../_components/RelatedProducts";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -81,13 +82,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="flex flex-col gap-3 mb-6 pb-6 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-light text-gray-900">
-                  {formatPriceINR(product.base_price ?? product.price ?? 0)}
+                  {formatPriceINR(product.base_price ?? 0)}
                 </span>
 
                 <AddToWishlistButton
                   productId={product.id}
                   productName={product.name}
-                  productPrice={product.base_price ?? product.price ?? 0}
+                  productPrice={product.base_price ?? 0}
                   productImage={mainImage}
                   stockQuantity={product.stock_quantity}
                   brandName={product.brands?.name || product.manufacturer}
@@ -97,46 +98,41 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 />
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center text-sm">
-                  {[...Array(5)].map((_, i) => {
-                    const starValue = i + 1;
-                    let iconName = 'star';
-                    let iconClass = 'text-yellow-500';
+              <div className="flex items-center text-sm">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  let iconName = "star";
+                  let fillValue = 0;
+                  let colorClass = "text-yellow-200";
 
-                    if (displayRating >= starValue) {
-                      iconName = 'star';
-                    } else if (displayRating >= starValue - 0.5) {
-                      iconName = 'star_half';
-                    } else {
-                      iconName = 'star';
-                      iconClass = 'text-yellow-200';
-                    }
+                  if (displayRating >= star) {
+                    fillValue = 1;
+                    colorClass = "text-yellow-500";
+                  } else if (displayRating >= star - 0.5) {
+                    iconName = "star_half";
+                    fillValue = 1;
+                    colorClass = "text-yellow-500";
+                  }
 
-                    return (
-                      <span
-                        key={i}
-                        className={`material-symbols-outlined text-base ${iconClass}`}
-                        style={{ fontVariationSettings: "'FILL' 1" }}
-                      >
-                        {iconName}
-                      </span>
-                    );
-                  })}
-
-                  {reviewCount > 0 && (
-                    <span className="ml-2 text-gray-500 underline underline-offset-4 cursor-pointer hover:text-black transition-colors">
-                      {reviewCount} reviews
+                  return (
+                    <span
+                      key={star}
+                      className={`material-symbols-outlined text-base ${colorClass}`}
+                      style={{ fontVariationSettings: `'FILL' ${fillValue}` }}
+                    >
+                      {iconName}
                     </span>
-                  )}
-                </div>
+                  );
+                })}
 
-                <div className="flex items-center gap-1.5">
-                  <span className={`h-1.5 w-1.5 rounded-full ${product.stock_quantity > 0 ? 'bg-green-600' : 'bg-red-600'}`}></span>
-                  <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">
-                    {product.stock_quantity > 0 ? "In Stock" : "Out of Stock"}
+                {reviewCount > 0 ? (
+                  <span className="ml-2 text-gray-500 underline underline-offset-4 cursor-pointer hover:text-black transition-colors">
+                    {reviewCount} reviews
                   </span>
-                </div>
+                ) : (
+                  <span className="ml-2 text-gray-500 underline underline-offset-4 cursor-pointer hover:text-black transition-colors">
+                    No reviews yet
+                  </span>
+                )}
               </div>
             </div>
 
@@ -145,24 +141,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                   {product.description}
                 </p>
-              </div>
-            )}
-
-            {/* Specifications - Compact View */}
-            {specificationRows.length > 0 && (
-              <div className="mb-8 pb-8 border-b border-gray-100">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-900 mb-4">Specifications</h3>
-                <div className="space-y-2">
-                  {specificationRows.slice(0, 5).map((spec: any, index: number) => (
-                    <div key={index} className="flex text-xs">
-                      <dt className="font-semibold text-gray-700 w-1/3">{spec.key || spec.name}:</dt>
-                      <dd className="text-gray-600 w-2/3">{spec.value}</dd>
-                    </div>
-                  ))}
-                  {specificationRows.length > 5 && (
-                    <p className="text-xs text-gray-500 italic mt-2">+ {specificationRows.length - 5} more specifications below</p>
-                  )}
-                </div>
               </div>
             )}
 
@@ -223,191 +201,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
 
-        {/* Reviews */}
-        <section className="bg-white rounded-xl p-8 md:p-12 border border-gray-100">
-          <div className="flex flex-col lg:flex-row gap-16">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-semibold tracking-tight mb-12 text-gray-900">
-                Customer Reviews
-              </h2>
-
-              {productReviews.length === 0 ? (
-                <p className="text-gray-500 text-sm italic">
-                  No reviews yet. Share your experience with us.
-                </p>
-              ) : (
-                <div className="space-y-12">
-                  {productReviews.map((rev) => {
-                    const author = rev.profiles?.full_name?.trim() || "Verified customer";
-                    const stars = rev.rating ?? 0;
-                    return (
-                      <div key={rev.id} className="pb-8 border-b border-gray-50 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-4 mb-4">
-                          {/* Smaller, cleaner stars */}
-                          <div className="flex text-amber-400">
-                            {[...Array(5)].map((_, i) => (
-                              <span
-                                key={i}
-                                className="material-symbols-outlined text-[16px]"
-                                style={{ fontVariationSettings: i < stars ? "'FILL' 1" : "'FILL' 0" }}
-                              >
-                                star
-                              </span>
-                            ))}
-                          </div>
-                          <span className="text-sm font-medium text-gray-900">{author}</span>
-                          <span className="text-[11px] text-gray-400 font-normal">
-                            {formatDateINR(rev.created_at)}
-                          </span>
-                        </div>
-                        {rev.comment ? (
-                          <p className="text-gray-600 text-sm leading-relaxed max-w-2xl">
-                            {rev.comment}
-                          </p>
-                        ) : (
-                          <p className="text-gray-400 text-xs italic">No written comment.</p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Sidebar Summary: Cleaner & More Compact */}
-            <div className="w-full lg:w-72 h-fit bg-gray-50/50 rounded-xl p-6 border border-gray-100 shrink-0">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">Summary</h3>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-light text-gray-900">{displayRating}</span>
-                  <span className="text-gray-400 text-sm">/ 5</span>
-                </div>
-
-                <div className="flex text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <span
-                      key={i}
-                      className="material-symbols-outlined text-lg"
-                      style={{ fontVariationSettings: i < Math.round(displayRating) ? "'FILL' 1" : "'FILL' 0" }}
-                    >
-                      star
-                    </span>
-                  ))}
-                </div>
-
-                <p className="text-[11px] text-gray-500 font-medium">
-                  Based on {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
-                </p>
-              </div>
-
-              <div className="mt-8">
-                <Link href="/account/reviews" className="inline-block w-full py-3 text-center text-[11px] font-bold uppercase tracking-widest text-gray-900 border border-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
-                  View all reviews
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Product Q&A Section */}
-        <div className="mt-20">
-          <ProductQASection
-            productId={product.id}
-            productName={product.name}
-            initialQuestions={productQuestions}
-          />
-        </div>
+        <ProductTabs
+          specificationRows={specificationRows}
+          productReviews={productReviews}
+          productQuestions={productQuestions}
+          displayRating={displayRating}
+          reviewCount={reviewCount}
+          product={product}
+        />
 
         {/* Related Products Section */}
-        <div className="mt-20 pt-16 border-t border-gray-100">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2 className="text-2xl font-normal tracking-tight text-gray-900">
-                You may also like
-              </h2>
-              <div className="h-0.5 w-12 bg-black mt-2"></div>
-            </div>
-            <Link href="/shop" className="text-sm font-medium underline underline-offset-4 hover:text-gray-600 transition-colors">
-              View all
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-            {relatedProducts.length > 0 ? relatedProducts.map((item: any) => (
-              <Link key={item.id} href={`/products/${item.id}`} className="group block cursor-pointer">
-                {/* Image Wrapper */}
-                <div className="relative aspect-[4/5] overflow-hidden bg-gray-50 rounded-sm mb-4">
-                  <Image
-                    src={item.images?.[0]}
-                    alt={item.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-
-                  {/* Badge Logic */}
-                  <div className="absolute top-3 left-3 flex flex-col gap-2">
-                    {item.isNew && (
-                      <span className="bg-white px-2 py-1 text-[10px] font-bold uppercase tracking-widest border border-gray-100 shadow-sm">
-                        New
-                      </span>
-                    )}
-                    {item.stock_quantity === 0 && (
-                      <span className="bg-gray-900 text-white px-2 py-1 text-[10px] font-bold uppercase tracking-widest">
-                        Sold Out
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Product Details */}
-                <div className="space-y-1.5">
-                  {/* Brand Name */}
-                  <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">
-                    {item.brands?.name || item.manufacturer}
-                  </p>
-
-                  {/* Product Name */}
-                  <h3 className="text-sm font-normal text-gray-800 group-hover:text-black transition-colors truncate">
-                    {item.name}
-                  </h3>
-
-                  <h3 className="text-sm font-normal text-gray-800 group-hover:text-black transition-colors truncate">
-                    {item.description}
-                  </h3>
-
-                  {/* Mini Stars Rating */}
-                  <div className="flex items-center gap-1">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="material-symbols-outlined text-[14px]"
-                          style={{ fontVariationSettings: i < Math.floor(item.average_rating) ? "'FILL' 1" : "'FILL' 0" }}>
-                          star
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-[11px] text-gray-400">({item.review_count})</span>
-                  </div>
-
-                  {/* Price & Discount */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {formatPriceINR(item.base_price ?? item.price ?? 0)}
-                    </p>
-                    {item.compare_at_price && (
-                      <p className="text-xs text-gray-400 line-through decoration-gray-300">
-                        {formatPriceINR(item.compare_at_price)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            )) : (
-              <div className="col-span-full py-20 text-center border border-dashed border-gray-200 rounded-lg">
-                <p className="text-gray-400 text-sm">No related products found in this category.</p>
-              </div>
-            )}
-          </div>
-        </div>
+        <RelatedProducts relatedProducts={relatedProducts} />
       </main>
     </div>
   );

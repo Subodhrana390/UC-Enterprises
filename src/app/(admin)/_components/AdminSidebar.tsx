@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import logo from '@/app/logo.jpg'
+import Image from "next/image";
 
 interface AdminSidebarProps {
   onNavigate?: () => void;
@@ -33,13 +35,10 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
     <div className="flex flex-col h-full bg-[#f1f1f1] border-r border-[#d2d2d2]">
       {/* Header */}
       <div className="px-4 py-4 flex items-center gap-3">
-        <div className="w-9 h-9 bg-[#1a1c1d] rounded-lg flex items-center justify-center text-white font-black text-sm">
-          U
-        </div>
-        <div className="flex flex-col overflow-hidden">
-          <h2 className="text-sm font-bold text-[#1a1c1d] truncate">UCEnterprises</h2>
-          <p className="text-xs text-[#616161] font-medium">Admin Panel</p>
-        </div>
+        <h2 className="text-sm font-bold text-[#1a1c1d] truncate">
+          <Image src={logo} alt="Logo" className="w-10 h-10" />
+        </h2>
+        <p className="text-xs text-[#616161] font-medium">Admin Panel</p>
       </div>
 
       <Separator className="bg-[#d2d2d2]/60" />
@@ -93,14 +92,14 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
           <span className="material-symbols-outlined text-[20px] text-[#5c5c5c]">settings</span>
           <span>Settings</span>
         </Link>
-        
+
         <Button
           variant="ghost"
           onClick={() => logout()}
           className="justify-start gap-3 h-9 px-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700"
         >
           <span className="material-symbols-outlined text-[20px]">logout</span>
-          <span>Exit Session</span>
+          <span>Log Out</span>
         </Button>
       </div>
     </div>

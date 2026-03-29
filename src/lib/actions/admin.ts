@@ -666,9 +666,9 @@ export async function getAdminQuotes(page = 1, pageSize = 20) {
   const to = from + pageSize - 1;
 
   const { data, error, count } = await supabase
-    .from("orders")
-    .select("*, profiles(first_name, last_name, company_name)", { count: "exact" })
-    .eq("status", "pending")
+    .from("quote_requests")
+    .select("*, profiles(full_name)", { count: "exact" })
+    .eq("status", "open")
     .order("created_at", { ascending: false })
     .range(from, to);
 

@@ -43,7 +43,7 @@ export default function AdminLayoutClient({
                                 <AdminSidebar onNavigate={() => setIsMobileMenuOpen(false)} />
                             </SheetContent>
                         </Sheet>
-                        
+
                         <h1 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 truncate">
                             Admin Dashboard
                         </h1>

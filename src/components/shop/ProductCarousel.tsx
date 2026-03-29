@@ -149,7 +149,7 @@ export function ProductCarousel({
               sku={p.sku}
               stock_quantity={p.stock_quantity}
               rating={p.rating}
-              reviewCount={p.reviewCount}
+              reviewCount={p.reviewCount ?? 0}
             />
           ))}
         </div>

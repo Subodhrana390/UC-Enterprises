@@ -17,7 +17,7 @@ interface ProductCardProps {
   image?: string;
   images?: string[];
   rating?: number;
-  reviewCount?: number;
+  reviewCount: number;
   sku?: string;
   stock_quantity?: number;
 }
@@ -141,29 +141,41 @@ export function ProductCard({
             <span className="text-blue-600 text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest truncate">{brand?.name || "Generic"}</span>
           </div>
 
-          <h3 className="font-semibold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight mb-1 h-4 md:h-6">
+          <h3 className="font-semibold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors leading-tight mb-1 break-words">
             {name}
           </h3>
 
-          {description && (
-            <p className="font-normal text-[10px] md:text-xs text-slate-500 line-clamp-2 mb-2">
-              {description}
-            </p>
-          )}
-
           <div className="flex items-center gap-1.5 mb-2 h-5 select-none">
             {/* Rating Section */}
-            <div className="flex items-center gap-0.5 shrink-0">
-              <span
-                className="material-symbols-outlined text-[14px] text-yellow-400 leading-none"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                star
-              </span>
-              <span className="text-[11px] font-bold text-gray-900 leading-none pt-[1px]">
-                {rating > 0 ? rating.toFixed(1) : "—"}
-              </span>
+
+
+            <div className="flex items-center text-sm">
+              {[1, 2, 3, 4, 5].map((star) => {
+                let iconName = "star";
+                let fillValue = 0;
+                let colorClass = "text-yellow-200";
+
+                if (rating >= star) {
+                  fillValue = 1;
+                  colorClass = "text-yellow-500";
+                } else if (rating >= star - 0.5) {
+                  iconName = "star_half";
+                  fillValue = 1;
+                  colorClass = "text-yellow-500";
+                }
+
+                return (
+                  <span
+                    key={star}
+                    className={`material-symbols-outlined text-base ${colorClass} text-[10px]`}
+                    style={{ fontVariationSettings: `'FILL' ${fillValue}` }}
+                  >
+                    {iconName}
+                  </span>
+                );
+              })}
             </div>
+
 
             {/* Separator Dot (Optional but adds a nice touch) */}
             <span className="text-gray-300 text-[10px]">•</span>

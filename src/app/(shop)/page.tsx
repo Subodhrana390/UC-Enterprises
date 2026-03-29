@@ -1,16 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ProductCarousel } from "@/components/shop/ProductCarousel";
-import type { ProductCarouselItem } from "@/components/shop/ProductCarousel";
 import { getShopCategories, getFeaturedProducts, getLatestProducts } from "@/lib/actions/products";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
+import HeroBanner from "@/components/shop/HeroBanner";
+import FeatureBanner from "@/components/shop/FeatureBanner";
+import FeatureProductSection from "./_components/FeatureProductSection";
+import LatestProductSection from "./_components/LatestProductSection";
+import ShopByCategory from "./_components/ShopByCategory";
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // Fetch real product count
   const { count: productCount } = await supabase
     .from("products")
     .select("*", { count: "exact", head: true });
@@ -25,123 +27,19 @@ export default async function HomePage() {
 
   return (
     <div className="flex-1">
-      {/* Hero Section */}
-      <section className="px-4 md:px-8 py-12">
-        <div className="relative h-[400px] md:h-[600px] rounded-2xl overflow-hidden bg-primary shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary to-transparent z-10"></div>
-          <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJgvd0gY803KY5-EPENMvIVnuuew7rSB-botDPPtmg1K238ZEBbe-EEfd_s_V26CRdOKLN31gVQqXy3c0FdqCHVypMkcrOK2232OOL-SMX6U3KJjT18pE2nRSn8g97x6Mt6c0pV57dCoAh5f-rl51s5X4S_M2z0l_eGf2GqrurYHIRJGUxjT-583g9HtSLJGxusM37kLlYlCOGsvhhRcilj9iVuCcRbuwwESH-bgE3GoCGECtvQJTBvyw40xIVgexDti8D4NmyQtHO"
-            alt="Hero Background"
-            fill
-            className="object-cover opacity-50 mix-blend-overlay"
-            priority
-          />
-          <div className="relative z-20 h-full flex flex-col justify-center px-8 md:px-16 max-w-4xl">
-            <span className="text-blue-400 font-bold tracking-widest text-sm mb-4 uppercase">
-              Next-Gen Distribution
-            </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight font-headline tracking-tighter">
-              Precision Components for High-Performance Engineering.
-            </h1>
-            <p className="text-slate-300 text-base md:text-lg mb-10 max-w-2xl leading-relaxed">
-              Global distributor of semiconductors and electronic components. Trusted by engineers for over 25 years. Same-day shipping on orders before 8 PM.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/search">
-                <Button className="bg-gradient-to-r from-on-primary-container to-blue-700 text-white px-8 h-14 rounded-lg font-bold text-sm hover:opacity-90 transition-all flex items-center gap-2">
-                  Shop Now
-                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                </Button>
-              </Link>
-              <Link href="/categories">
-                <Button
-                  variant="outline"
-                  className="bg-white/10 backdrop-blur-md text-white border-white/20 px-8 h-14 rounded-lg font-bold text-sm hover:bg-white/20 transition-all"
-                >
-                  Browse Components
-                </Button>
-              </Link>
-              <Link href="/quote">
-                <Button
-                  variant="link"
-                  className="text-white px-8 h-14 rounded-lg font-bold text-sm hover:underline flex items-center gap-2"
-                >
-                  Request Quote
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Banner */}
+      <HeroBanner />
+
+      <FeatureBanner />
 
       {/* Shop by Category */}
-      <section className="px-4 md:px-8 py-16 md:py-20 bg-[#f8f9fa]">
-        <div className="max-w-[1920px] mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-black text-[#1a1c1d] font-headline tracking-tight mb-2">
-                Shop by Category
-              </h2>
-              <p className="text-gray-600 text-sm md:text-base">
-                Over {skuCount.toLocaleString()} SKUs available in stock.
-              </p>
-            </div>
-            <Link
-              href="/categories"
-              className="text-blue-600 font-bold hover:underline flex items-center gap-1 group text-sm md:text-base"
-            >
-              View All Categories
-              <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
-                chevron_right
-              </span>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-            {categories.map((cat) => (
-              <CategoryCard
-                key={cat.id}
-                icon={cat.icon}
-                title={cat.name}
-                count={`${cat.productCount} Products`}
-                slug={cat.slug}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <ShopByCategory categories={categories} skuCount={skuCount} />
 
       {/* Featured Products */}
-      {featuredProducts.length > 0 ? (
-        <section className="px-4 md:px-8 py-10" id="featured">
-          <div className="max-w-[1920px] mx-auto">
-            <ProductCarousel title="Featured Products" subtitle="Hand-picked products with top demand." products={featuredProducts as ProductCarouselItem[]} autoplay />
-          </div>
-        </section>) : (<div className="max-w-[1920px] mx-auto" id="featured">
-          <div className="flex justify-center items-center h-full">
-            <p className="text-on-surface-variant text-sm font-bold uppercase tracking-widest mb-12">
-              No featured products found
-            </p>
-          </div>
-        </div>
-      )
-      }
+      <FeatureProductSection featuredProducts={featuredProducts} />
 
       {/* Latest Products */}
-      {latestProducts.length > 0 ? (
-        <section className="px-4 md:px-8 py-12 md:py-20 bg-surface" id="latest">
-          <div className="max-w-[1920px] mx-auto">
-            <ProductCarousel title="Latest Arrivals" subtitle="Check out our newest additions" products={latestProducts as ProductCarouselItem[]} autoplay />
-          </div>
-        </section>
-      ) : (<div className="max-w-[1920px] mx-auto">
-        <div className="flex justify-center items-center h-full" id="latest">
-          <p className="text-on-surface-variant text-sm font-bold uppercase tracking-widest mb-12">
-            No latest products found
-          </p>
-        </div>
-      </div>
-      )}
+      <LatestProductSection latestProducts={latestProducts} />
 
       {/* Fabrication Services - Indian Industry Standard */}
       <section className="px-4 md:px-8 py-20 bg-[#0a0c10] text-white overflow-hidden relative">
@@ -245,51 +143,7 @@ export default async function HomePage() {
   );
 }
 
-function CategoryCard({ icon, title, count, slug }: { icon?: string | null; title: string; count: string; slug: string }) {
-  return (
-    <Link
-      href={`/categories/${slug}`}
-      className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 overflow-hidden"
-    >
-      {/* Image Section */}
-      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        {icon ? (
-          <Image
-            src={icon}
-            alt={title}
-            fill
-            className="object-cover p-6 transition-transform duration-500 group-hover:scale-110"
-            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="material-symbols-outlined text-6xl text-gray-300">
-              category
-            </span>
-          </div>
-        )}
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-
-      {/* Content Section */}
-      <div className="p-4 bg-white">
-        <h3 className="font-bold text-sm md:text-base text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-1">
-          {title}
-        </h3>
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-500 font-medium">
-            {count}
-          </p>
-          <span className="material-symbols-outlined text-blue-600 text-lg opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-            arrow_forward
-          </span>
-        </div>
-      </div>
-    </Link>
-  );
-}
 
 function ServiceCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (

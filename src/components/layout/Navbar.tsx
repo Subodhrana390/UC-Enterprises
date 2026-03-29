@@ -28,7 +28,6 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
   const displayCartCount = hydrated ? liveCartCount : cartCount;
   const displayWishlistCount = hydrated ? liveWishlistCount : wishlistCount;
 
-  // Get only parent categories for the menu, or all if none are parents
   const parentCategories = useMemo(() => {
     const parents = getParentCategories(categories);
     return parents.length > 0 ? parents : categories;
@@ -58,14 +57,14 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
                 onError={() => setLogoSrc("/logo.jpg")}
                 priority
               />
-              <span className="sr-only">UC Enterprises</span>
+              <span className="text-[16px] font-medium">UC Enterprises</span>
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6 font-headline tracking-tight text-sm font-medium">
               <Link href="/" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-all font-black uppercase text-[10px] tracking-widest">
                 Home
               </Link>
-              
+
               <div className="relative group">
                 <button className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-all font-black uppercase text-[10px] tracking-widest">
                   Categories

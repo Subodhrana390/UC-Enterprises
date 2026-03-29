@@ -31,7 +31,7 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
   return (
     <>
       <div className="flex justify-end mb-4">
-        <Button 
+        <Button
           onClick={handleCreate}
           className="bg-[#1a1c1d] text-white h-9 text-xs font-medium px-4 hover:bg-[#303030]"
         >
@@ -39,8 +39,8 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
         </Button>
       </div>
 
-      <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-hidden">
-        
+      <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-auto">
+
         <CardContent className="p-0">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -56,7 +56,7 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
             <tbody className="divide-y divide-[#f1f1f1]">
               {initialCategories.map((category) => {
                 const productCount = category.products?.[0]?.count ?? 0;
-                const parentCategory = category.parent_id 
+                const parentCategory = category.parent_id
                   ? initialCategories.find(c => c.id === category.parent_id)
                   : null;
 
@@ -78,10 +78,10 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
                     <td className="px-4 py-4">
                       <div className="relative h-9 w-9 rounded-md overflow-hidden border border-[#ebebeb] bg-[#f5f5f5]">
                         {category.icon ? (
-                          <Image 
-                            src={category.icon} 
-                            alt={category.name} 
-                            fill 
+                          <Image
+                            src={category.icon}
+                            alt={category.name}
+                            fill
                             className="object-cover"
                             sizes="36px"
                           />
@@ -102,7 +102,7 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
                         >
                           Edit
                         </Button>
-                        <form 
+                        <form
                           action={async (formData) => {
                             if (confirm("Are you sure you want to delete this collection?")) {
                               const result = await deleteCategoryForm(formData);

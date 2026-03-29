@@ -7,27 +7,104 @@ import { redirect } from "next/navigation";
 export async function getShopCategories() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("categories")
-    .select(`
-      id,
-      name,
-      slug,
-      icon,
-      parent_id,
-      products (count)
-    `)
+  const { data = [], error } = await supabase
+    .from("category_product_counts")
+    .select("id, name, slug, icon, product_count")
+    .is("parent_id", null)
     .order("name", { ascending: true });
 
   if (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching parent categories:", error);
     return [];
   }
 
-  return data.map(cat => ({
+  return data?.map((cat) => ({
     ...cat,
-    productCount: cat.products?.[0]?.count || 0
+    productCount: cat.product_count ?? 0,
   }));
+}
+
+export async function getProductsByCategory(
+  categorySlug: string,
+  page = 1,
+  pageSize = 20
+) {
+  const supabase = await createClient();
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data: category } = await supabase
+    .from("categories")
+    .select("id")
+    .eq("slug", categorySlug)
+    .single();
+
+  if (!category) {
+    return { products: [], total: 0, totalPages: 0 };
+  }
+
+  const { data: allCategories } = await supabase
+    .from("categories")
+    .select("id, parent_id");
+
+  const getChildCategoryIds = (parentId: string): string[] => {
+    const children = allCategories
+      ?.filter((c) => c.parent_id === parentId)
+      .map((c) => c.id) || [];
+
+    return children.flatMap((childId) => [
+      childId,
+      ...getChildCategoryIds(childId),
+    ]);
+  };
+
+  const categoryIds = [
+    category.id,
+    ...getChildCategoryIds(category.id),
+  ];
+
+  const { data, error, count } = await supabase
+    .from("products")
+    .select(
+      "*, categories(*), brands(*), reviews(rating)",
+      { count: "exact" }
+    )
+    .in("category_id", categoryIds)
+    .range(from, to);
+
+  if (error) {
+    console.error(
+      `Error fetching products for category ${categorySlug}:`,
+      error
+    );
+    return { products: [], total: 0, totalPages: 0 };
+  }
+
+  const productsWithMeta = (data || []).map((product) => {
+    const reviews = (product as any).reviews || [];
+
+    const reviewCount = reviews.length;
+
+    const avgRating =
+      reviewCount > 0
+        ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) /
+        reviewCount
+        : 0;
+
+    return {
+      ...product,
+      rating: Number(avgRating.toFixed(1)),
+      reviewCount,
+    };
+  });
+  console.log(productsWithMeta)
+
+  return {
+    products: productsWithMeta,
+    total: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize),
+  };
 }
 
 export async function getFeaturedProducts() {
@@ -99,7 +176,8 @@ export async function getProductById(id: string) {
     .select(`
       *,
       brands (name, slug),
-      categories (name, slug)
+      categories (name, slug),
+      reviews(rating)
     `)
     .eq("id", id)
     .maybeSingle();
@@ -140,43 +218,6 @@ export async function getProductById(id: string) {
     productReviews: reviews,
     rating: parseFloat(avgRating.toFixed(1)),
     reviewCount: reviews.length
-  };
-}
-
-export async function getProductsByCategory(categorySlug: string, page = 1, pageSize = 20) {
-  const supabase = await createClient();
-
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
-  const { data, error, count } = await supabase
-    .from("products")
-    .select("*, categories!inner(*), brands(*), reviews(rating)", { count: "exact" })
-    .eq("categories.slug", categorySlug)
-    .range(from, to);
-
-  if (error) {
-    console.error(`Error fetching products for category ${categorySlug}:`, error);
-    return { products: [], total: 0, totalPages: 0 };
-  }
-
-  const productsWithMeta = (data || []).map((product) => {
-    const reviews = (product as any).reviews || [];
-    const reviewCount = reviews.length;
-    const avgRating = reviewCount > 0
-      ? reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviewCount
-      : 0;
-    return {
-      ...product,
-      rating: parseFloat(avgRating.toFixed(1)),
-      reviewCount
-    };
-  });
-
-  return {
-    products: productsWithMeta,
-    total: count || 0,
-    totalPages: Math.ceil((count || 0) / pageSize)
   };
 }
 
@@ -353,10 +394,6 @@ export async function createProduct(formData: FormData) {
   redirect("/admin/products");
 }
 
-/**
- * Fetches all brands/vendors for the product management forms.
- * Ordered alphabetically for a better merchant experience.
- */
 export async function getBrands() {
   const supabase = await createClient();
 

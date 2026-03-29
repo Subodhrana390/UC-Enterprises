@@ -33,7 +33,7 @@ export default async function SearchPage({
     page,
     pageSize: 20
   }), getShopCategories()]);
-  
+
   const { products, total, totalPages } = searchResult;
   const highestPrice = Math.max(1000, ...products.map((p: { base_price?: number }) => Number(p.base_price) || 0));
 
@@ -55,7 +55,7 @@ export default async function SearchPage({
           initialProducts={products}
           totalCount={total}
           query={query}
-          categories={categories}
+          categories={categories ?? []}
           maxPrice={highestPrice}
         />
         <PaginationControls currentPage={page} totalPages={totalPages} basePath="/search" />

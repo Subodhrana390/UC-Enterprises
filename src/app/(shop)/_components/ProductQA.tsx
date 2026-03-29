@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { submitQuestion, getProductQuestions } from "@/lib/actions/admin/qa";
 import { toast } from "sonner";
-import { MessageCircle, Send, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  MessageCircle,
+  Send,
+  ChevronDown,
+  ChevronUp,
+  UserCheck,
+} from "lucide-react";
 
 interface ProductQAProps {
   productId: string;
@@ -18,119 +24,178 @@ export function ProductQA({ productId, productName }: ProductQAProps) {
   const [newQuestion, setNewQuestion] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    loadQuestions();
+  }, []);
+
   const loadQuestions = async () => {
     setLoading(true);
     const result = await getProductQuestions(productId);
+
     if (result.data) {
       setQuestions(result.data);
     }
+
     setLoading(false);
   };
 
-  useState(() => {
-    loadQuestions();
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!newQuestion.trim()) return;
 
     setSubmitting(true);
+
     const result = await submitQuestion(productId, newQuestion);
+
     setSubmitting(false);
 
     if (result.error) {
-      alert(result.error);
+      toast.error(result.error);
     } else {
-      alert("Your question has been submitted");
+      toast.success("Your question has been submitted");
       setNewQuestion("");
       loadQuestions();
     }
   };
 
-  const displayedQuestions = showAll ? questions : questions.slice(0, 3);
+  const displayedQuestions = showAll
+    ? questions
+    : questions.slice(0, 3);
 
   return (
-    <div className="border-t border-[#ebebeb] pt-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <MessageCircle className="w-5 h-5" />
-        Questions & Answers
-      </h3>
+    <section className="pt-10">
 
-      {/* Question Form */}
-      <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newQuestion}
-            onChange={(e) => setNewQuestion(e.target.value)}
-            placeholder={`Ask a question about ${productName}...`}
-            className="flex-1 px-4 py-2 border border-[#d2d2d2] rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#008060]"
-          />
-          <Button
-            type="submit"
-            disabled={submitting || !newQuestion.trim()}
-            className="bg-[#1a1c1d] text-white"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-semibold flex items-center gap-2">
+          <MessageCircle className="w-5 h-5 text-gray-600" />
+          Questions & Answers
+        </h3>
+
+        <span className="text-sm text-gray-500">
+          {questions.length} questions
+        </span>
+      </div>
+
+      {/* Ask Question Card */}
+      <form
+        onSubmit={handleSubmit}
+        className="mb-8 bg-gray-50 border border-gray-200 rounded-xl p-4 flex gap-3"
+      >
+        <input
+          type="text"
+          value={newQuestion}
+          onChange={(e) =>
+            setNewQuestion(e.target.value)
+          }
+          placeholder={`Ask something about ${productName}...`}
+          className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-black/10"
+        />
+
+        <Button
+          type="submit"
+          disabled={
+            submitting || !newQuestion.trim()
+          }
+          className="px-5"
+        >
+          <Send className="w-4 h-4 mr-1" />
+          Ask
+        </Button>
       </form>
 
-      {/* Questions List */}
-      {loading ? (
+      {/* Loading State */}
+      {loading && (
         <div className="space-y-4">
           {[1, 2].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="h-4 bg-[#f5f5f5] rounded w-3/4 mb-2" />
-              <div className="h-4 bg-[#f5f5f5] rounded w-1/2" />
-            </div>
+            <div
+              key={i}
+              className="animate-pulse bg-gray-100 h-20 rounded-lg"
+            />
           ))}
         </div>
-      ) : questions.length === 0 ? (
-        <p className="text-[#616161] text-sm">No questions yet. Be the first to ask!</p>
-      ) : (
-        <div className="space-y-4">
+      )}
+
+      {/* Empty State */}
+      {!loading && questions.length === 0 && (
+        <p className="text-gray-500 text-sm italic">
+          No questions yet. Be the first to ask!
+        </p>
+      )}
+
+      {/* Questions List */}
+      {!loading && questions.length > 0 && (
+        <div className="space-y-6">
+
           {displayedQuestions.map((qa) => (
-            <div key={qa.id} className="bg-[#f9f9f9] rounded-lg p-4">
-              <p className="text-sm font-medium text-[#1a1c1d] mb-2">
-                <span className="text-[#008060] font-semibold">Q:</span> {qa.question}
-              </p>
+            <div
+              key={qa.id}
+              className="border border-gray-200 rounded-xl p-5 bg-white hover:shadow-sm transition"
+            >
+
+              {/* Question */}
+              <div className="mb-3">
+                <span className="font-semibold text-gray-900">
+                  Q:
+                </span>{" "}
+                <span className="text-gray-700">
+                  {qa.question}
+                </span>
+              </div>
+
+              {/* Answer */}
               {qa.answer ? (
-                <div className="pl-4 border-l-2 border-[#008060]">
-                  <p className="text-sm text-[#616161]">
-                    <span className="font-medium text-[#1a1c1d]">A:</span> {qa.answer}
-                  </p>
+                <div className="pl-4 border-l-2 border-gray-900/20">
+
+                  <div className="text-gray-700">
+                    <span className="font-semibold text-gray-900">
+                      A:
+                    </span>{" "}
+                    {qa.answer}
+                  </div>
+
                   {qa.profiles && (
-                    <p className="text-xs text-[#ababab] mt-1">
+                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-2">
+                      <UserCheck className="w-3 h-3" />
                       Answered by {qa.profiles.full_name}
-                    </p>
+                    </div>
                   )}
+
                 </div>
               ) : (
-                <p className="text-xs text-[#ababab] italic">Waiting for answer...</p>
+                <div className="text-xs italic text-gray-400">
+                  Waiting for answer...
+                </div>
               )}
+
             </div>
           ))}
 
+          {/* Show More Button */}
           {questions.length > 3 && (
             <button
-              onClick={() => setShowAll(!showAll)}
-              className="text-sm text-[#008060] font-medium flex items-center gap-1 hover:underline"
+              onClick={() =>
+                setShowAll(!showAll)
+              }
+              className="text-sm font-medium text-gray-700 hover:underline flex items-center gap-1"
             >
               {showAll ? (
                 <>
-                  Show less <ChevronUp className="w-4 h-4" />
+                  Show less
+                  <ChevronUp className="w-4 h-4" />
                 </>
               ) : (
                 <>
-                  Show all {questions.length} questions <ChevronDown className="w-4 h-4" />
+                  Show all {questions.length} questions
+                  <ChevronDown className="w-4 h-4" />
                 </>
               )}
             </button>
           )}
+
         </div>
       )}
-    </div>
+    </section>
   );
 }

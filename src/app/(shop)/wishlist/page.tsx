@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPriceINR } from "@/lib/utils";
-import { addToCart as addLocalCart, removeFromWishlist as removeLocalWishlist, toggleWishlist as toggleLocalWishlist, useShopHydration, useShopStore } from "@/lib/store/shop-store";
+import { addToCart as addLocalCart, removeFromWishlist as removeLocalWishlist, useShopHydration, useShopStore } from "@/lib/store/shop-store";
 import { addToCart as addToCartAction } from "@/lib/actions/cart";
 import { removeFromWishlist as removeFromWishlistAction, removeFromWishlistByProductId as removeByProductAction } from "@/lib/actions/wishlist";
 import { toast } from "sonner";
@@ -17,8 +17,24 @@ export default function WishlistPage() {
   useShopHydration();
   const router = useRouter();
   const supabase = createClient();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login");
+      }
+    };
+
+    checkUser();
+  }, []);
+
   const [query, setQuery] = useState("");
   const wishlistItems = useShopStore((s) => Object.values(s.wishlist));
+
 
   const filteredItems = useMemo(() => {
     const needle = query.trim().toLowerCase();

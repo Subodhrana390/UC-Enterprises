@@ -14,7 +14,7 @@ export default async function QuotePage() {
   return (
     <div className="bg-white min-h-screen">
       <main className="pt-10 pb-24 px-4 md:px-8 max-w-[1200px] mx-auto">
-        
+
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 mb-8 text-xs text-gray-500 font-medium">
           <Link href="/" className="hover:text-black transition-colors">Home</Link>
@@ -69,8 +69,8 @@ export default async function QuotePage() {
               <p className="text-sm text-gray-300 mb-4">
                 Our sales team is available Monday to Saturday, 9 AM to 6 PM IST.
               </p>
-              <Link 
-                href="/support" 
+              <Link
+                href="/support"
                 className="inline-flex items-center gap-2 text-blue-400 text-sm font-semibold hover:underline"
               >
                 Contact Support

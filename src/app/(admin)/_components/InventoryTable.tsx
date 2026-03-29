@@ -17,7 +17,7 @@ export function InventoryTable({ products }: { products: any[] }) {
         <h1 className="text-xl font-semibold text-[#1a1c1d]">Inventory</h1>
       </header>
 
-      <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-hidden">
+      <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-auto">
         <CardContent className="p-0">
           <table className="w-full">
             <thead className="bg-[#fafafa]">

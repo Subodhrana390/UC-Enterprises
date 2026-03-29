@@ -3,7 +3,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-// Submit quotation request
 export async function submitQuotationRequest(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +30,7 @@ export async function submitQuotationRequest(formData: FormData) {
     user_id: user.id,
     subject,
     items: parsedItems,
-    status: "pending",
+    status: "open",
   });
 
   if (error) {
@@ -43,7 +42,6 @@ export async function submitQuotationRequest(formData: FormData) {
   return { success: true, message: "Quotation request submitted successfully!" };
 }
 
-// Get user's quotation requests
 export async function getUserQuotations() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

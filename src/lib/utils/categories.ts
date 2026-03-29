@@ -2,6 +2,8 @@
  * Category utility functions
  */
 
+import { createClient } from "../supabase/client";
+
 export interface Category {
   id: string;
   name: string;
@@ -47,15 +49,29 @@ export function getSubcategoriesForParent(categories: Category[], parentId: stri
   return categories.filter(cat => cat.parent_id === parentId);
 }
 
-/**
- * Build a category tree structure
- */
-export function buildCategoryTree(categories: Category[]): (Category & { subcategories: Category[] })[] {
-  const parents = getParentCategories(categories);
-  const children = getSubcategories(categories);
-  
-  return parents.map(parent => ({
-    ...parent,
-    subcategories: children.filter(child => child.parent_id === parent.id)
-  }));
+export async function getAllCategoriesTreeManual() {
+  const supabase = await createClient();
+
+  // Fetch all categories
+  const { data: allCategories, error } = await supabase
+    .from("categories")
+    .select("id, name, slug, icon, parent_id")
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+
+  const buildTree = (parentId: string | null): any[] => {
+    return allCategories
+      .filter((category) => category.parent_id === parentId)
+      .map((category) => ({
+        ...category,
+        subcategories: buildTree(category.id),
+        productCount: 0
+      }));
+  };
+
+  return buildTree(null);
 }

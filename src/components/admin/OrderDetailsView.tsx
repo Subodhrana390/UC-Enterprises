@@ -256,9 +256,6 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                 <Button variant="outline" size="sm" className="flex-1 text-xs border-[#babfc3] font-semibold h-9">
                     Print Invoice
                 </Button>
-                <Button size="sm" className="flex-1 text-xs bg-[#202223] text-white hover:bg-[#303030] font-semibold h-9">
-                    Fulfill Item
-                </Button>
             </div>
         </div>
     );

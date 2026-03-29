@@ -31,7 +31,7 @@ export async function login(formData: FormData) {
   if (profile?.role === 'admin') {
     redirect("/admin");
   } else {
-    redirect("/account");
+    redirect("/");
   }
 }
 

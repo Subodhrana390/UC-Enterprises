@@ -30,7 +30,7 @@ export function ProductsTable({ products, brands, categories }: { products: any[
         </Button>
       </header>
 
-      <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-hidden">
+      <Card className="bg-white border-[#ebebeb] shadow-sm rounded-xl overflow-auto">
         <CardContent className="p-0">
           <table className="w-full text-left border-collapse">
             <thead>
