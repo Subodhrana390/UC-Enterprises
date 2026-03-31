@@ -100,7 +100,7 @@ export default function LoginPage() {
                   <Checkbox id="remember" className="rounded-sm border-border" />
                   <label htmlFor="remember" className="text-xs text-on-surface-variant cursor-pointer select-none font-medium">Stay logged in</label>
                 </div>
-                <Link href="#" className="text-xs text-blue-600 font-bold hover:underline">Forgot password?</Link>
+                <Link href="/forgot-password" className="text-xs text-blue-600 font-bold hover:underline">Forgot password?</Link>
               </div>
 
               <Button

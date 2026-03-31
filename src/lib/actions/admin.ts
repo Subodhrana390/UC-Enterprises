@@ -18,7 +18,7 @@ function toOptionalNumber(value: FormDataEntryValue | null) {
   return Number.isNaN(parsed) ? null : parsed;
 }
 
-async function uploadPublicImage(
+export async function uploadPublicImage(
   file: File,
   bucket: string,
   folder: string,
@@ -85,7 +85,6 @@ export async function getInventoryStatus() {
   return data;
 }
 
-// Products CRUD
 export async function createProduct(formData: FormData) {
   const name = formData.get("name") as string;
   const slug = (formData.get("slug") as string) || toSlug(name || "");
@@ -447,7 +446,6 @@ export async function deleteBrandForm(formData: FormData) {
   }
 }
 
-// Inventory
 export async function adjustStockForm(formData: FormData) {
   const productId = formData.get("productId") as string;
   const delta = parseInt(formData.get("delta") as string) || 0;
@@ -493,8 +491,6 @@ export async function updateOrderStatus(orderId: string, status: string) {
   return { success: true };
 }
 
-
-// Paginated data fetching for admin
 export async function getAdminProducts(page = 1, pageSize = 20) {
   const supabase = await createClient();
 
@@ -668,7 +664,6 @@ export async function getAdminQuotes(page = 1, pageSize = 20) {
   const { data, error, count } = await supabase
     .from("quote_requests")
     .select("*, profiles(full_name)", { count: "exact" })
-    .eq("status", "open")
     .order("created_at", { ascending: false })
     .range(from, to);
 
@@ -682,4 +677,13 @@ export async function getAdminQuotes(page = 1, pageSize = 20) {
     total: count || 0,
     totalPages: Math.ceil((count || 0) / pageSize)
   };
+}
+
+
+export async function respondToQuote(id: string, offeredPrice: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("quote_requests").update({ offered_price: offeredPrice, status: "responded" }).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath("/admin/quotes");
+  return { data, success: true };
 }

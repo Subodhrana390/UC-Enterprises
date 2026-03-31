@@ -13,6 +13,7 @@ interface BannerFormProps {
 export function BannerForm({ banner }: BannerFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
 
   if (!isOpen) {
     return (
@@ -30,12 +31,12 @@ export function BannerForm({ banner }: BannerFormProps) {
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      const result = banner 
+      const result = banner
         ? await updateBanner(banner.id, formData)
         : await createBanner(formData);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error as any);
       } else {
         toast.success(banner ? "Banner updated successfully" : "Banner created successfully");
         setIsOpen(false);
@@ -48,8 +49,8 @@ export function BannerForm({ banner }: BannerFormProps) {
       <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-center p-4 border-b border-[#f1f1f1]">
           <h2 className="text-lg font-semibold">{banner ? "Edit Banner" : "Create Banner"}</h2>
-          <button 
-            onClick={() => setIsOpen(false)} 
+          <button
+            onClick={() => setIsOpen(false)}
             disabled={isPending}
             className="text-[#616161] hover:text-black disabled:opacity-50"
           >
@@ -82,13 +83,18 @@ export function BannerForm({ banner }: BannerFormProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#616161] mb-1">Image URL</label>
+            <label className="block text-xs font-medium text-[#616161] mb-1">Banner Image</label>
             <input
-              name="image_url"
-              required
-              defaultValue={banner?.image_url}
+              name="file"
+              type="file"
+              required={!banner}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setBannerFile(file);
+                }
+              }}
               className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-xs outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50"
-              placeholder="https://example.com/banner.jpg"
               disabled={isPending}
             />
           </div>
@@ -153,27 +159,27 @@ export function BannerForm({ banner }: BannerFormProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              name="is_active" 
-              id="is_active" 
-              defaultChecked={banner ? banner.is_active : true} 
+            <input
+              type="checkbox"
+              name="is_active"
+              id="is_active"
+              defaultChecked={banner ? banner.is_active : true}
               disabled={isPending}
             />
             <label htmlFor="is_active" className="text-xs">Active</label>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => setIsOpen(false)}
               disabled={isPending}
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="bg-[#1a1c1d] text-white"
               disabled={isPending}
             >
@@ -185,4 +191,4 @@ export function BannerForm({ banner }: BannerFormProps) {
       </div>
     </div>
   );
-}
+}

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { logout } from "@/lib/actions/auth";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { useShopHydration, useShopStore } from "@/lib/store/shop-store";
+import { useShopStore } from "@/lib/store/shop-store";
 import { getParentCategories } from "@/lib/utils/categories";
 
 interface NavbarProps {

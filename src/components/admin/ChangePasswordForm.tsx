@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { changePassword } from "@/lib/actions/admin/settings";
+import { changePassword, signOut } from "@/lib/actions/admin/settings";
 
 export function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +30,7 @@ export function ChangePasswordForm() {
 
     try {
       const result = await changePassword(newPassword);
-      
+
       if (result.error) {
         toast.error(result.error);
       } else {
@@ -38,6 +38,7 @@ export function ChangePasswordForm() {
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
+        await signOut();
       }
     } catch (error) {
       toast.error("Failed to change password");

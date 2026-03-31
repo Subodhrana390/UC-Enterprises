@@ -19,7 +19,7 @@ export default async function AuthLayout({
   return (
     <>
       <Navbar categories={categories} user={user} userRole={userRole} />
-      <main className="pt-20 flex-1">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </>
   );

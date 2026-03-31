@@ -45,7 +45,7 @@ export function Footer() {
     { title: "Search Products", href: "/search" },
     { title: "Browse Categories", href: "/categories" },
     { title: "Fabrication Services", href: "/fabrication" },
-    { title: "Request Quote", href: "/quote" },
+    { title: "Request Quote", href: "/quotation" },
     { title: "My Orders", href: "/account/orders" },
     { title: "Support", href: "/support" }
   ];

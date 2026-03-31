@@ -146,13 +146,13 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                                         {item.products?.name || "Unknown Product"}
                                     </p>
                                     <p className="text-[10px] text-[#6d7175]">
-                                        ₹{item.price_at_purchase?.toLocaleString()} × {item.quantity || 1}
+                                        ₹ {item.unit_price?.toLocaleString()} × {item.quantity || 1}
                                     </p>
                                 </div>
 
                                 {/* Total per Item */}
                                 <div className="text-xs font-medium text-[#202223]">
-                                    ₹{(item.unit_price * (item.quantity || 1)).toLocaleString()}
+                                    ₹ {(item.unit_price * (item.quantity || 1)).toLocaleString()}
                                 </div>
                             </div>
                         ))}
@@ -180,10 +180,12 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                             <span className="text-[#6d7175]">Method</span>
                             <span className="font-medium capitalize">{metadata.method || order.payment_method || "N/A"}</span>
                         </div>
-                        <div className="flex justify-between text-xs">
-                            <span className="text-[#6d7175]">Razorpay ID</span>
-                            <code className="bg-[#f1f1f1] px-1 rounded text-[10px] font-mono">{metadata.razorpay_payment_id || "N/A"}</code>
-                        </div>
+                        {metadata.method === "razorpay" && (
+                            <div className="flex justify-between text-xs">
+                                <span className="text-[#6d7175]">Razorpay ID</span>
+                                <code className="bg-[#f1f1f1] px-1 rounded text-[10px] font-mono">{metadata.razorpay_payment_id || "N/A"}</code>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -170,5 +170,4 @@ export function ProductCarousel({
         </div>
       )}
     </section>
-  );
-}
+  );}

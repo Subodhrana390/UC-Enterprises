@@ -6,35 +6,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile } from "@/lib/actions/account";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export function ProfileForm({
-  defaultFirstName,
-  defaultLastName,
+  userId,
+  defaultFullName,
+  email,
   defaultPhone,
-  defaultAvatar,
+  defaultAvatar = "/placeholder-avatar.png",
 }: {
-  defaultFirstName?: string;
-  defaultLastName?: string;
+  userId: string;
+  defaultFullName?: string;
+  email?: string;
   defaultPhone?: string;
   defaultAvatar?: string;
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [fullName, setFullName] = useState(defaultFullName || "");
   const [phone, setPhone] = useState(defaultPhone || "");
-  const [avatarUrl, setAvatarUrl] = useState(defaultAvatar || "");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState(defaultAvatar || "");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-
-    const formData = new FormData(e.currentTarget);
-    formData.set("phone", phone);
-    formData.set("avatarUrl", avatarUrl);
-
     try {
-      const result = await updateProfile(formData);
+      const result = await updateProfile(userId, fullName, phone, avatarFile);
       if (result.error) {
         toast.error(result.error);
       } else {
+        setAvatarPreview("");
+        setAvatarFile(null);
         toast.success("Profile updated successfully");
       }
     } catch (error) {
@@ -44,33 +46,92 @@ export function ProfileForm({
     }
   };
 
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label className="text-xs font-semibold text-[#1a1c1d]">First Name</Label>
-          <Input 
-            name="firstName" 
-            defaultValue={defaultFirstName} 
-            className="h-10 border-[#d2d2d2] focus:border-[#005bd3]" 
-            required
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-2xl mx-auto space-y-6 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm"
+    >
+
+      {/* Avatar Upload */}
+      <div className="flex items-center gap-5">
+        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+          <Image
+            src={avatarFile ? avatarPreview : defaultAvatar}
+            alt="Avatar"
+            width={64}
+            height={64}
+            className="object-cover w-full h-full"
           />
         </div>
+
         <div className="space-y-2">
-          <Label className="text-xs font-semibold text-[#1a1c1d]">Last Name</Label>
-          <Input 
-            name="lastName" 
-            defaultValue={defaultLastName} 
-            className="h-10 border-[#d2d2d2] focus:border-[#005bd3]" 
+          <Label
+            htmlFor="avatarFile"
+            className="text-xs font-semibold text-[#1a1c1d]"
+          >
+            Profile Picture
+          </Label>
+
+          <Input
+            id="avatarFile"
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarChange}
+            className="h-10 border-[#d2d2d2] focus:border-[#005bd3]"
           />
+
+          <p className="text-xs text-gray-500">
+            JPG, PNG or WEBP (max 2MB)
+          </p>
         </div>
       </div>
 
-      {/* Phone Number */}
+      {/* Name */}
       <div className="space-y-2">
-        <Label htmlFor="phone" className="text-xs font-semibold text-[#1a1c1d]">
+        <Label className="text-xs font-semibold text-[#1a1c1d]">
+          Full Name
+        </Label>
+
+        <Input
+          name="fullName"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="Enter your full name"
+          className="h-10 border-[#d2d2d2] focus:border-[#005bd3]"
+        />
+      </div>
+
+      {/* READ ONLY SECTION */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-gray-50">
+        <div className="space-y-2">
+          <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Registered Email</Label>
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-100">
+            <span className="material-symbols-outlined text-lg">mail</span>
+            {email}
+          </div>
+        </div>
+      </div>
+
+
+      {/* Phone */}
+      <div className="space-y-2">
+        <Label
+          htmlFor="phone"
+          className="text-xs font-semibold text-[#1a1c1d]"
+        >
           Phone Number
         </Label>
+
         <Input
           id="phone"
           type="tel"
@@ -81,43 +142,25 @@ export function ProfileForm({
         />
       </div>
 
-      {/* Avatar URL */}
-      <div className="space-y-2">
-        <Label htmlFor="avatar" className="text-xs font-semibold text-[#1a1c1d]">
-          Profile Picture URL
-        </Label>
-        <div className="flex gap-3">
-          {avatarUrl && (
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-            </div>
-          )}
-          <Input
-            id="avatar"
-            type="url"
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            placeholder="https://example.com/avatar.jpg"
-            className="h-10 border-[#d2d2d2] focus:border-[#005bd3]"
-          />
-        </div>
-        <p className="text-xs text-gray-500">Enter a URL to your profile picture</p>
-      </div>
-
+      {/* Submit */}
       <div className="flex justify-end pt-4 border-t border-gray-100">
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-[#1a1c1d] text-white hover:bg-[#303030] px-6"
+          className="flex items-center gap-2 bg-[#1a1c1d] hover:bg-[#303030] text-white px-6 h-10 rounded-lg"
         >
           {isLoading ? (
             <>
-              <span className="material-symbols-outlined animate-spin text-sm mr-2">progress_activity</span>
+              <span className="material-symbols-outlined animate-spin text-sm">
+                progress_activity
+              </span>
               Saving...
             </>
           ) : (
             <>
-              <span className="material-symbols-outlined text-sm mr-2">save</span>
+              <span className="material-symbols-outlined text-sm">
+                save
+              </span>
               Update Profile
             </>
           )}

@@ -2,28 +2,28 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { uploadPublicImage } from "./admin";
 
-export async function updateProfile(formData: FormData) {
+export async function updateProfile(userId: string, fullName: string, phone_number: string, avatarFile: File | null) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized" };
 
-  const firstName = formData.get("firstName") as string;
-  const lastName = formData.get("lastName") as string;
-  const phone = formData.get("phone") as string;
-  const avatarUrl = formData.get("avatarUrl") as string;
+  let avatarUrl = "";
+
+  if (avatarFile) {
+    const upload = await uploadPublicImage(avatarFile, "avatars", "users");
+    if (upload.error) return { error: upload.error.message };
+    if (upload.data) avatarUrl = upload.data;
+  }
 
   const { error } = await supabase
     .from("profiles")
     .update({
-      first_name: firstName,
-      last_name: lastName,
-      full_name: `${firstName || ""} ${lastName || ""}`.trim() || null,
-      phone: phone || null,
+      full_name: fullName,
+      phone_number: phone_number || null,
       avatar_url: avatarUrl || null,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", user.id);
+    .eq("id", userId);
 
   if (error) return { error: error.message };
   revalidatePath("/account/profile");

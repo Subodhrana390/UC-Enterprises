@@ -13,7 +13,6 @@ export default async function UsersPage({
   const params = await searchParams;
   const page = params.page ? parseInt(params.page as string) : 1;
 
-  const supabase = await createClient();
   const { users, total, totalPages } = await getAdminUsersPaginated(page, 20);
 
   return (
@@ -45,8 +44,6 @@ export default async function UsersPage({
               <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Customer name</TableHead>
               <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Role</TableHead>
               <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Email subscription</TableHead>
-              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">Orders</TableHead>
-              <TableHead className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider text-right">Amount spent</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-[#f1f1f1]">
@@ -70,12 +67,6 @@ export default async function UsersPage({
                   <Badge variant="secondary" className="bg-[#e3f1df] text-[#008060] hover:bg-[#e3f1df] border-none text-[10px] font-medium rounded-md px-2 py-0">
                     Subscribed
                   </Badge>
-                </TableCell>
-                <TableCell className="text-xs text-[#1a1c1d]">
-                  -
-                </TableCell>
-                <TableCell className="text-xs text-[#1a1c1d] text-right font-medium">
-                  -
                 </TableCell>
               </TableRow>
             ))}

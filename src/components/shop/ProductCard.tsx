@@ -66,7 +66,7 @@ export function ProductCard({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/products/${id}`} className="flex flex-col flex-1 cursor-pointer">
-        <div className="bg-[#f8f9fa] aspect-square rounded-lg mb-2 md:mb-3 relative overflow-hidden border border-gray-50 shrink-0 flex items-center justify-center">
+        <div className="aspect-square rounded-lg mb-2 md:mb-3 relative overflow-hidden border border-gray-50 shrink-0 flex items-center justify-center">
           <div className="relative w-[85%] h-[85%]">
             <Image
               src={allImages[currentImageIndex]}

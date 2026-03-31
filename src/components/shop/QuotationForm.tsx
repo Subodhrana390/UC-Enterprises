@@ -17,11 +17,11 @@ interface QuoteItem {
   specifications?: string;
 }
 
-export function QuotationForm() {
+export function QuotationForm({ productName, sku }: { productName?: string | null; sku?: string | null }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [items, setItems] = useState<QuoteItem[]>([
-    { productName: "", sku: "", quantity: 1, specifications: "" }
+    { productName: productName || "", sku: sku || "", quantity: 1, specifications: "" }
   ]);
 
   const addItem = () => {
@@ -42,7 +42,7 @@ export function QuotationForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     const formData = new FormData(e.currentTarget);
     formData.set("items", JSON.stringify(items));
 
@@ -62,11 +62,11 @@ export function QuotationForm() {
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Basic Information */}
       <section className="bg-white rounded-2xl border border-gray-200 p-8">
-        <h3 className="text-lg font-semibold text-black mb-6">Request Details</h3>
+        <h3 className="text-lg font-semibold text-black mb-6">Requirements Details</h3>
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900">Subject / Project Name</Label>
-            <Input 
+            <Label className="text-sm font-medium text-gray-900">Subject Name</Label>
+            <Input
               name="subject"
               required
               placeholder="e.g., Q1 2024 Component Procurement"
@@ -76,7 +76,7 @@ export function QuotationForm() {
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-900">Additional Requirements (Optional)</Label>
-            <Textarea 
+            <Textarea
               name="message"
               rows={4}
               placeholder="Delivery timeline, payment terms, special requirements..."
@@ -169,7 +169,7 @@ export function QuotationForm() {
         <p className="text-xs text-gray-500 max-w-md">
           Our team will review your request and send a detailed quotation to your registered email within 24 hours.
         </p>
-        <Button 
+        <Button
           type="submit"
           disabled={isSubmitting}
           className="h-12 px-10 bg-black hover:bg-gray-800 text-white font-semibold text-sm rounded-lg transition-all"

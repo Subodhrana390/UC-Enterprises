@@ -30,14 +30,14 @@ export default function AccountLayoutClient({
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                     Account Menu
                 </span>
-                
+
                 <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
                     <SheetTrigger className="p-2 -mr-2 text-gray-900 transition-opacity active:opacity-50">
                         <span className="material-symbols-outlined text-[22px] block">
                             {isMobileSidebarOpen ? 'close' : 'menu'}
                         </span>
                     </SheetTrigger>
-                    
+
                     <SheetContent side="left" className="p-0 w-[280px] border-none">
                         <SheetTitle className="sr-only">Account Navigation</SheetTitle>
                         <AccountSidebar onNavigate={() => setIsMobileSidebarOpen(false)} />
@@ -54,7 +54,7 @@ export default function AccountLayoutClient({
                 </aside>
 
                 <main className="flex-1 bg-gray-50/50 pt-[52px] lg:pt-0">
-                    <div className="p-6 md:p-10 lg:p-16">
+                    <div className="p-6 md:p-10 lg:p-4">
                         <div className="max-w-4xl mx-auto">
                             {children}
                         </div>

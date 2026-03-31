@@ -97,10 +97,10 @@ export default async function SettingsPage() {
           </Card>
         </section>
 
-        <hr className="border-[#d2d2d2]" />
+        {/* <hr className="border-[#d2d2d2]" /> */}
 
         {/* 4. Danger Zone (The Shopify 'Archive' Look) */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-20">
+        {/* <section className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-20">
           <div className="md:col-span-1">
             <h2 className="text-sm font-semibold text-[#d72c0d]">Danger zone</h2>
             <p className="text-sm text-[#616161] mt-1">Permanently remove your data from UC Enterprises.</p>
@@ -125,7 +125,7 @@ export default async function SettingsPage() {
               </div>
             </CardContent>
           </Card>
-        </section>
+        </section> */}
       </div>
     </div>
   );

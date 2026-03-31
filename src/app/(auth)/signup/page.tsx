@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Image from "next/image";
 import { signup } from "@/lib/actions/auth";
 
 export default function SignupPage() {
@@ -30,9 +29,9 @@ export default function SignupPage() {
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary-fixed-dim rounded-full blur-[120px]"></div>
         <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-surface-container-highest rounded-full blur-[120px]"></div>
-        <div 
+        <div
           className="absolute inset-0"
-          style={{ 
+          style={{
             backgroundImage: "radial-gradient(circle at 2px 2px, rgba(0, 8, 22, 0.05) 1px, transparent 0)",
             backgroundSize: "24px 24px"
           }}
@@ -41,7 +40,7 @@ export default function SignupPage() {
 
       {/* Auth Container */}
       <div className="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-2 bg-white rounded-2xl overflow-hidden shadow-2xl relative z-10 min-h-[700px] border border-border/40">
-        
+
         {/* Left Side: Signup Form */}
         <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-between border-r border-border/40">
           <div>
@@ -51,7 +50,7 @@ export default function SignupPage() {
               </span>
               <span className="font-headline font-black text-2xl tracking-tighter text-on-surface">UCEnterprises</span>
             </div>
-            
+
             <div className="space-y-2 mb-8">
               <h1 className="font-headline font-black text-3xl tracking-tight text-on-surface">Create Account</h1>
               <p className="text-on-surface-variant leading-relaxed text-sm font-medium">
@@ -71,14 +70,14 @@ export default function SignupPage() {
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Account Type</Label>
                 <div className="flex gap-1 p-1 bg-surface-container-low rounded-lg h-11">
-                  <button 
+                  <button
                     onClick={() => setAccountType("individual")}
                     className={`flex-1 text-xs font-bold rounded-md transition-all ${accountType === 'individual' ? 'bg-white shadow-sm text-[#008060]' : 'text-on-surface-variant hover:text-on-surface'}`}
                     type="button"
                   >
                     Personal
                   </button>
-                  <button 
+                  <button
                     onClick={() => setAccountType("business")}
                     className={`flex-1 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${accountType === 'business' ? 'bg-white shadow-sm text-[#008060]' : 'text-on-surface-variant hover:text-on-surface'}`}
                     type="button"
@@ -91,57 +90,57 @@ export default function SignupPage() {
 
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <Input 
+                  <Input
                     name="firstName"
                     required
-                    className="bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
-                    placeholder="First Name" 
-                    type="text" 
+                    className="bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all"
+                    placeholder="First Name"
+                    type="text"
                   />
-                  <Input 
+                  <Input
                     name="lastName"
                     required
-                    className="bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
-                    placeholder="Last Name" 
-                    type="text" 
+                    className="bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all"
+                    placeholder="Last Name"
+                    type="text"
                   />
                 </div>
-                <Input 
+                <Input
                   name="email"
                   required
-                  className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
-                  placeholder={accountType === 'business' ? "Work Email Address" : "Email Address"} 
-                  type="email" 
+                  className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all"
+                  placeholder={accountType === 'business' ? "Work Email Address" : "Email Address"}
+                  type="email"
                 />
 
                 <div className="relative">
-                  <Input 
+                  <Input
                     name="password"
                     required
                     minLength={6}
-                    className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all pr-12" 
-                    placeholder="Password (min. 6 characters)" 
-                    type="password" 
+                    className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all pr-12"
+                    placeholder="Password (min. 6 characters)"
+                    type="password"
                   />
                   <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-40 text-lg">
                     lock
                   </span>
                 </div>
-                
+
                 {accountType === 'business' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input 
+                    <Input
                       name="companyName"
                       required
-                      className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all" 
-                      placeholder="Company Legal Name" 
-                      type="text" 
+                      className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all"
+                      placeholder="Company Legal Name"
+                      type="text"
                     />
-                    <Input 
+                    <Input
                       name="gstNumber"
-                      className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all uppercase" 
-                      placeholder="GSTIN (Optional)" 
-                      type="text" 
+                      className="w-full bg-surface-container-low border-none rounded-lg h-14 px-5 text-sm focus:ring-2 focus:ring-primary/10 transition-all uppercase"
+                      placeholder="GSTIN (Optional)"
+                      type="text"
                     />
                   </div>
                 )}
@@ -154,7 +153,7 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-[#008060] text-white h-14 rounded-lg font-bold tracking-tight shadow-xl shadow-green-900/10 hover:bg-[#006e52] transition-all text-sm"

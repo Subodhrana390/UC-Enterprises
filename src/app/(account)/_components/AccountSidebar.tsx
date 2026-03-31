@@ -57,7 +57,7 @@ export function AccountSidebar({ onNavigate }: AccountSidebarProps) {
                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
-                <span 
+                <span
                   className="material-symbols-outlined text-[18px]"
                   style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
                 >
@@ -82,12 +82,6 @@ export function AccountSidebar({ onNavigate }: AccountSidebarProps) {
           <span className="material-symbols-outlined text-[18px]">logout</span>
           <span>Logout</span>
         </button>
-        
-        <div className="mt-6 px-3">
-          <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">
-            UC Enterprises &copy; 2026
-          </p>
-        </div>
       </div>
     </div>
   );

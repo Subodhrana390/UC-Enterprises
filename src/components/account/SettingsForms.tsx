@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updatePassword, requestDeactivation } from "@/lib/actions/account";
+import { signOut } from "@/lib/actions/admin/settings";
 
 export function PasswordForm() {
   const [state, formAction] = useActionState(
     async (_: { error?: string } | null, fd: FormData) => {
       const result = await updatePassword(fd);
+      await signOut();
       return result?.error ? { error: result.error } : { success: true };
     },
     null
@@ -32,7 +34,7 @@ export function PasswordForm() {
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state?.success && <p className="text-sm text-emerald-600">Password updated.</p>}
       <Button type="submit" className="h-14 px-10 rounded-xl bg-primary text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-primary/20">
-        Update Security Credentials
+        change Password
       </Button>
     </form>
   );

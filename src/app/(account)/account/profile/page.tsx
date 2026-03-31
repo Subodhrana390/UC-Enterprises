@@ -22,8 +22,6 @@ export default async function ProfilePage() {
     .single();
 
   const fullName = profile?.full_name || "";
-  const firstName = profile?.first_name || fullName.split(" ")[0] || "";
-  const lastName = profile?.last_name || fullName.split(" ").slice(1).join(" ") || "";
 
   return (
     <div className=" min-h-screen max-w-6xl mx-auto p-4 md:p-10 space-y-8">
@@ -48,49 +46,18 @@ export default async function ProfilePage() {
         </Badge>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-        {/* MAIN FORM AREA */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="rounded-xl border-[#ebebeb] bg-white shadow-sm overflow-hidden">
-            <CardHeader className="p-6 border-b border-[#f1f1f1] bg-white">
-              <CardTitle className="text-lg font-semibold text-[#1a1c1d]">Basic Information</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-6">
+        <div className="md:col-span-2">
 
-              {/* READ ONLY SECTION */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-gray-50">
-                <div className="space-y-2">
-                  <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Registered Email</Label>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <span className="material-symbols-outlined text-lg">mail</span>
-                    {user.email}
-                  </div>
-                </div>
-
-                {
-                  profile.mobile_number && (
-                    <div className="space-y-2">
-                      <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Mobile Number</Label>
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-900 bg-white p-3 rounded-lg border border-gray-200">
-                        <span className="font-semibold text-gray-400">+91</span>
-                        {profile?.phone || "Not linked"}
-                        <Badge className="ml-auto bg-blue-50 text-blue-600 hover:bg-blue-50 border-none text-[10px]">VERIFIED</Badge>
-                      </div>
-                    </div>)
-                }
-
-              </div>
-
-              {/* EDITABLE FORM */}
-              <ProfileForm
-                defaultFirstName={firstName}
-                defaultLastName={lastName}
-                defaultPhone={profile?.phone || ""}
-                defaultAvatar={profile?.avatar_url || ""}
-              />
-            </CardContent>
-          </Card>
+          {/* EDITABLE FORM */}
+          <ProfileForm
+            userId={user.id}
+            defaultFullName={fullName}
+            email={user.email}
+            defaultPhone={profile?.phone_number || ""}
+            defaultAvatar={profile?.avatar_url || ""}
+          />
 
           {profile?.role === "business" && (
             /* GST & BUSINESS SECTION - High value for Indian Users */
@@ -144,36 +111,10 @@ export default async function ProfilePage() {
               </CardContent>
             </Card>
           )}
-
         </div>
 
         {/* SIDEBAR: LOYALTY & SECURITY */}
         <div className="space-y-6">
-
-          {/* INDIAN LOYALTY CARD (Flipkart Plus/Gold style) */}
-          <Card className="rounded-2xl border-none bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] text-white p-6 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-20">
-              <span className="material-symbols-outlined text-6xl">military_tech</span>
-            </div>
-
-            <div className="relative z-10 space-y-4">
-              <p className="text-xs text-blue-100 leading-relaxed">
-                You are saving an average of <span className="font-bold text-yellow-300">₹2,400</span> per year with exclusive member prices.
-              </p>
-
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-yellow-400 text-sm">local_shipping</span>
-                  <p className="text-[11px] font-medium">Free Express Delivery on all orders</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-yellow-400 text-sm">support_agent</span>
-                  <p className="text-[11px] font-medium">24/7 Priority Support Access</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
           <Link href="/account/settings" className="flex items-center justify-between p-4 rounded-xl border border-red-100 bg-red-50 text-red-700 hover:bg-red-100 transition-all">
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-xl">settings</span>
@@ -182,7 +123,7 @@ export default async function ProfilePage() {
             <span className="material-symbols-outlined text-sm">arrow_forward_ios</span>
           </Link>
         </div>
-      </div>
+      </div >
     </div>
   );
 }

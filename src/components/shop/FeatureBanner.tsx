@@ -8,7 +8,7 @@ const features = [
 ];
 
 const FeatureBanner = () => (
-    <section className="py-8 border-b border-border">
+    <section className="py-8 border-b border-border bg-[#fff]">
         <div className="container mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 place-items-center">
                 {features.map((f) => (

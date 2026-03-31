@@ -15,8 +15,8 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "UC Enterprises | India's Leading Electronic Component Distributor",
-    template: "%s | UC Enterprises India",
+    default: "UC Enterprises",
+    template: "%s | UC Enterprises",
   },
   description: "UC Enterprises is a premier global distributor of semiconductors and electronic components in India. Expert PCB fabrication, SMT assembly, and IoT solutions. Fastest shipping on Arduino, Raspberry Pi, and industrial parts.",
   keywords: [
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     url: "https://ucenterprises.co.in",
-    title: "UC Enterprises | Leading Electronic Component Distributor in India",
+    title: "UC Enterprises",
     description: "Expert distributor of semiconductors, Arduino, Raspberry Pi, and industrial parts. Professional PCB & SMT services.",
     siteName: "UC Enterprises",
     images: [{
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "UC Enterprises | India's Trusted Component Partner",
+    title: "UC Enterprises",
     description: "Global quality semiconductors and components, distributed in India. PCB fabrication and assembly services.",
     images: ["/logo.jpg"],
   },

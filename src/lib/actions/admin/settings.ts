@@ -2,19 +2,27 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { uploadPublicImage } from "../admin";
 
 export async function updateAdminProfile({
   userId,
   fullName,
   phone,
-  avatarUrl,
+  avatarFile,
 }: {
   userId: string;
   fullName: string;
   phone: string;
-  avatarUrl: string;
+  avatarFile: File | null;
 }) {
   const supabase = await createClient();
+
+  let avatarUrl = "";
+  if (avatarFile) {
+    const upload = await uploadPublicImage(avatarFile, "avatars", "admin");
+    if (upload.error) return { error: `Product image upload failed: ${upload.error.message}` };
+    if (upload.data) avatarUrl = upload.data;
+  }
 
   const { error } = await supabase
     .from("profiles")
@@ -92,5 +100,12 @@ export async function createAdminUser(email: string, password: string, fullName:
 
   revalidatePath("/admin/users");
   return { success: true, userId: data.user?.id };
+}
+
+export async function signOut() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  revalidatePath("/login");
+  return { success: true };
 }
 

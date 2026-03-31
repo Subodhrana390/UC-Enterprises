@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProductById, getRelatedProducts } from "@/lib/actions/products";
-import { formatDateINR, formatPriceINR } from "@/lib/utils";
+import { formatPriceINR } from "@/lib/utils";
 import { ProductAddToCartWithQuantity } from "@/components/shop/ProductAddToCartWithQuantity";
 import { AddToWishlistButton } from "@/components/shop/AddToWishlistButton";
 import { ProductImageGallery } from "@/components/shop/ProductImageGallery";
@@ -163,7 +163,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </div>
 
                   {/* Request Quote Button */}
-                  <Link href="/quote" className="block">
+                  <Link href={`/quotation?productName=${product.name}&sku=${product.sku}`} className="block">
                     <Button
                       variant="outline"
                       className="w-full h-12 text-sm font-semibold border-2 border-gray-300 hover:border-black hover:bg-gray-50 transition-all"

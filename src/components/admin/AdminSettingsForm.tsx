@@ -23,7 +23,8 @@ export function AdminSettingsForm({
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState(defaultFullName);
   const [phone, setPhone] = useState(defaultPhone);
-  const [avatarUrl, setAvatarUrl] = useState(defaultAvatar);
+  const [previewAvatar, setPreviewAvatar] = useState(defaultAvatar);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +35,7 @@ export function AdminSettingsForm({
         userId,
         fullName,
         phone,
-        avatarUrl,
+        avatarFile
       });
 
       if (result.error) {
@@ -46,6 +47,15 @@ export function AdminSettingsForm({
       toast.error("Failed to update profile");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setPreviewAvatar(URL.createObjectURL(file));
     }
   };
 
@@ -89,19 +99,19 @@ export function AdminSettingsForm({
           Avatar URL
         </Label>
         <div className="flex gap-3">
-          {avatarUrl && (
+          {previewAvatar ? (
             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              <img src={previewAvatar} alt="Avatar" className="w-full h-full object-cover" />
             </div>
+          ) : (
+            <Input
+              id="avatar"
+              type="file"
+              onChange={handleFileChange}
+              placeholder="https://example.com/avatar.jpg"
+              className="h-10 border-[#d2d2d2] focus:border-[#005bd3]"
+            />
           )}
-          <Input
-            id="avatar"
-            type="url"
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            placeholder="https://example.com/avatar.jpg"
-            className="h-10 border-[#d2d2d2] focus:border-[#005bd3]"
-          />
         </div>
         <p className="text-xs text-gray-500">Enter a URL to your profile picture</p>
       </div>

@@ -1,15 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { QuotationForm } from "@/components/shop/QuotationForm";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
-export default async function QuotePage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function QuotePage() {
+  const searchParams = useSearchParams();
 
-  if (!user) {
-    redirect("/login?redirect=/quote");
-  }
+  const productName = searchParams.get("productName");
+  const sku = searchParams.get("sku");
+
+  console.log(productName, sku);
 
   return (
     <div className="bg-white min-h-screen">
@@ -35,7 +36,7 @@ export default async function QuotePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Form */}
           <div className="lg:col-span-2">
-            <QuotationForm />
+            <QuotationForm productName={productName} sku={sku} />
           </div>
 
           {/* Sidebar */}
