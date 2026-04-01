@@ -104,8 +104,8 @@ export function ProductCarousel({
     >
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tight">{title}</h2>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          <h2 className="text-2xl md:text-3xl text-slate-900 tracking-tight">{title}</h2>
+          {subtitle && <p className="text-sm text-slate-900 mt-1">{subtitle}</p>}
         </div>
         {products.length > visibleItems && (
           <div className="flex items-center gap-2">
@@ -170,4 +170,5 @@ export function ProductCarousel({
         </div>
       )}
     </section>
-  );}
+  );
+}

@@ -14,38 +14,51 @@ export default function CategoryCard({
 }) {
     return (
         <Link href={`/categories/${slug}`} className="group block">
-            <div className="relative w-full h-[140px] p-5 rounded-xl transition-all duration-500 hover:shadow-md overflow-hidden">
+            <div className="relative w-full h-[160px] p-6 rounded-2xl bg-white border border-slate-200 transition-all duration-500 hover:border-slate-900 hover:shadow-[20px_20px_60px_#d1d5db,-20px_-20px_60px_#ffffff] overflow-hidden">
 
-                {/* Full Background Icon - Always Visible */}
-                <div className="absolute inset-0 transition-all duration-500 group-hover:scale-110">
+                {/* Background Icon Effect - Subtle Neutral Tone */}
+                <div className="absolute -right-4 -bottom-4 w-32 h-32 transition-all duration-700 group-hover:-translate-y-2 group-hover:-translate-x-2 group-hover:scale-110 opacity-[0.03] group-hover:opacity-[0.08]">
                     {icon && (
                         <div className="relative w-full h-full">
                             <Image
                                 src={icon}
                                 alt={title}
                                 fill
-                                className="object-cover opacity-100 transition-all duration-500"
+                                className="object-contain grayscale"
                             />
                         </div>
                     )}
                 </div>
 
-                {/* Overlay Gradient for Readability */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-white/60 to-blue-50/50 group-hover:from-white/60 group-hover:via-white/50 group-hover:to-blue-50/40 transition-all duration-500" />
+                {/* Content Overlay */}
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="space-y-3">
+                        {/* Technical Accent Line */}
+                        <div className="w-6 h-[3px] bg-slate-900 transition-all duration-500 group-hover:w-10 group-hover:bg-cyan-600" />
 
-                {/* Content */}
-                <div className="relative z-10 space-y-1.5">
-                    <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
-                        {title}
-                    </h3>
+                        <h3 className="text-lg font-black text-slate-800 tracking-tight leading-tight group-hover:text-slate-900 transition-colors duration-300 line-clamp-2 uppercase">
+                            {title}
+                        </h3>
+                    </div>
 
-                    <p className="text-sm text-white-400 group-hover:text-gray-500 transition-colors duration-300">
-                        {count} Products
-                    </p>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono font-bold py-1 px-2 rounded bg-slate-50 text-slate-500 border border-slate-200 group-hover:text-cyan-600 group-hover:border-cyan-100 group-hover:bg-cyan-50 transition-all uppercase tracking-tighter">
+                                {count} Items
+                            </span>
+                        </div>
+
+                        {/* Minimalist Arrow */}
+                        <div className="w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
+                            <span className="material-symbols-outlined text-sm">
+                                arrow_forward
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Subtle hover accent */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-500 pointer-events-none z-5" />
+                {/* Clean Hover State Overlay */}
+                <div className="absolute inset-0 bg-slate-900/[0.01] group-hover:bg-transparent transition-all duration-500" />
             </div>
         </Link>
     );

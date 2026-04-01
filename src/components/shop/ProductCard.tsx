@@ -61,46 +61,47 @@ export function ProductCard({
 
   return (
     <div
-      className="group flex flex-col h-full bg-white transition-all duration-300 md:hover:shadow-xl md:p-3 p-2 rounded-xl border border-gray-100 hover:border-blue-100 overflow-hidden"
+      className="group flex flex-col h-full bg-white p-4 rounded-3xl border border-slate-100 transition-all duration-500 hover:shadow-[30px_30px_60px_-15px_rgba(203,213,225,0.6)] hover:border-slate-200"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/products/${id}`} className="flex flex-col flex-1 cursor-pointer">
-        <div className="aspect-square rounded-lg mb-2 md:mb-3 relative overflow-hidden border border-gray-50 shrink-0 flex items-center justify-center">
-          <div className="relative w-[85%] h-[85%]">
+        {/* Image Container - Using slate-50 to make white product images pop */}
+        <div className="aspect-square rounded-2xl mb-4 relative overflow-hidden shrink-0 flex items-center justify-center bg-slate-50 border border-slate-100/50">
+          <div className="relative w-[80%] h-[80%]">
             <Image
               src={allImages[currentImageIndex]}
-              alt={`${name} - view ${currentImageIndex + 1}`}
+              alt={`${name}`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-contain transition-opacity duration-500"
+              className={`object-contain transition-all duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
               priority={currentImageIndex === 0}
             />
           </div>
 
-          {/* Carousel Indicators */}
+          {/* Minimalist Carousel Indicators */}
           {hasMultipleImages && (
-            <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1 z-10">
               {allImages.map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1 rounded-full transition-all duration-300 ${i === currentImageIndex ? "w-4 bg-blue-600" : "w-1 bg-gray-300"
-                    }`}
+                  className={`h-1 rounded-full transition-all duration-500 ${i === currentImageIndex ? "w-6 bg-slate-900" : "w-1 bg-slate-200"}`}
                 />
               ))}
             </div>
           )}
 
-          {/* Badges */}
-          <div className="absolute top-1.5 left-1.5 md:top-2 md:left-2 flex flex-col gap-1 z-10">
-            {discount > 0 && (
-              <div className="bg-rose-600 text-white text-[9px] md:text-[10px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded shadow-lg">
-                {discount}% OFF
+          {/* Technical Discount Badge */}
+          {discount > 0 && (
+            <div className="absolute top-3 left-3 z-10">
+              <div className="bg-white border border-rose-100 text-rose-600 text-[9px] font-black px-2 py-1 rounded-full shadow-sm uppercase tracking-tighter">
+                -{discount}% OFF
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div className="absolute top-1.5 right-1.5 z-10" onClick={(e) => e.preventDefault()}>
+          {/* Wishlist Button - Clean Outline */}
+          <div className="absolute top-3 right-3 z-10" onClick={(e) => e.preventDefault()}>
             <AddToWishlistButton
               productId={id}
               productName={name}
@@ -110,103 +111,85 @@ export function ProductCard({
               brandName={brand?.name}
               description={description ?? undefined}
               variant="outline"
-              className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-white/90 backdrop-blur shadow-sm border-0 p-0"
+              className="h-9 w-9 rounded-full bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-100 shadow-sm transition-all"
             />
           </div>
 
-          {/* Stock Status */}
-          <div className="absolute bottom-1.5 left-1.5 z-10">
-            <div className={`backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase flex items-center shadow-sm border ${inStock ? "bg-white/90 text-green-700 border-green-100" : "bg-gray-100/90 text-gray-500 border-gray-200"
-              }`}>
-              {inStock && <span className="w-1 h-1 rounded-full bg-green-500 mr-1 animate-pulse"></span>}
-              {inStock ? "In Stock" : "Sold Out"}
-            </div>
-          </div>
-
-          {/* Desktop Hover Add to Cart */}
-          <div className="absolute inset-x-2 bottom-2 hidden md:block translate-y-12 group-hover:translate-y-0 transition-transform duration-300 z-20" onClick={(e) => e.preventDefault()}>
+          {/* Desktop Hover Add to Cart - Solid Black */}
+          <div className="absolute inset-x-4 bottom-4 hidden md:block translate-y-20 group-hover:translate-y-0 transition-transform duration-500 z-20" onClick={(e) => e.preventDefault()}>
             <AddToCartButton
               productId={id}
               productName={name}
               productPrice={price}
               productImage={allImages[0]}
               stockQuantity={stock_quantity}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold text-xs shadow-xl flex items-center justify-center gap-2 h-9"
+              className="w-full bg-slate-900 hover:bg-cyan-600 text-white py-2 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-slate-200 flex items-center justify-center gap-2 h-11 transition-all"
             />
           </div>
         </div>
 
-        <div className="flex flex-col flex-1">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-blue-600 text-[9px] md:text-[10px] font-extrabold uppercase tracking-widest truncate">{brand?.name || "Generic"}</span>
+        {/* Product Details */}
+        <div className="flex flex-col flex-1 px-1">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-cyan-600 text-[9px] font-black uppercase tracking-[0.3em] truncate">
+              {brand?.name || "Industrial Standard"}
+            </span>
+            <div className={`flex items-center text-[9px] font-black uppercase tracking-tighter ${inStock ? "text-emerald-600" : "text-slate-400"}`}>
+              {inStock && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />}
+              {inStock ? "In Stock" : "Out of Stock"}
+            </div>
           </div>
 
-          <h3 className="font-semibold text-xs md:text-sm text-slate-900 group-hover:text-blue-600 transition-colors leading-tight mb-1 break-words">
+          <h3 className="font-black text-sm text-slate-800 group-hover:text-cyan-700 transition-colors leading-tight mb-2 line-clamp-2 uppercase italic tracking-tight">
             {name}
           </h3>
 
-          <div className="flex items-center gap-1.5 mb-2 h-5 select-none">
-            {/* Rating Section */}
-
-
-            <div className="flex items-center text-sm">
-              {[1, 2, 3, 4, 5].map((star) => {
-                let iconName = "star";
-                let fillValue = 0;
-                let colorClass = "text-yellow-200";
-
-                if (rating >= star) {
-                  fillValue = 1;
-                  colorClass = "text-yellow-500";
-                } else if (rating >= star - 0.5) {
-                  iconName = "star_half";
-                  fillValue = 1;
-                  colorClass = "text-yellow-500";
-                }
-
-                return (
-                  <span
-                    key={star}
-                    className={`material-symbols-outlined text-base ${colorClass} text-[10px]`}
-                    style={{ fontVariationSettings: `'FILL' ${fillValue}` }}
-                  >
-                    {iconName}
-                  </span>
-                );
-              })}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className="material-symbols-outlined text-[12px]"
+                  style={{
+                    fontVariationSettings: `'FILL' ${rating >= star ? 1 : 0}`,
+                    color: rating >= star ? '#0891b2' : '#e2e8f0'
+                  }}
+                >
+                  star
+                </span>
+              ))}
             </div>
-
-
-            {/* Separator Dot (Optional but adds a nice touch) */}
-            <span className="text-gray-300 text-[10px]">•</span>
-
-            {/* Review Count */}
-            <span className="text-[10px] md:text-[11px] text-gray-500 font-medium tabular-nums hover:text-blue-600 cursor-pointer transition-colors">
-              {reviewCount.toLocaleString()} reviews
+            <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">
+              ({reviewCount})
             </span>
           </div>
 
-          {/* Price pushed to bottom */}
-          <div className="mt-auto">
-            <div className="flex items-baseline flex-wrap gap-1 md:gap-2">
-              <span className="text-sm md:text-lg font-black text-slate-900">{formatPriceINR(price)}</span>
+          {/* Pricing - Bold & Technical */}
+          <div className="mt-auto pt-4 border-t border-slate-50">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-black text-slate-900 tracking-tighter italic">
+                {formatPriceINR(price)}
+              </span>
               {compareAtPrice && compareAtPrice > price && (
-                <span className="text-[10px] md:text-xs text-gray-400 line-through">{formatPriceINR(compareAtPrice)}</span>
+                <span className="text-[10px] text-slate-300 line-through font-bold">
+                  {formatPriceINR(compareAtPrice)}
+                </span>
               )}
             </div>
-            <p className="text-[8px] md:text-[10px] text-gray-500 font-medium leading-none">Inc. GST</p>
+            <p className="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">Inclusive of GST</p>
           </div>
         </div>
       </Link>
 
-      <div className="mt-3 md:hidden">
+      {/* Mobile Add to Cart - Solid Industrial Look */}
+      <div className="mt-5 md:hidden">
         <AddToCartButton
           productId={id}
           productName={name}
           productPrice={price}
           productImage={allImages[0]}
           stockQuantity={stock_quantity}
-          className="w-full bg-slate-900 text-white py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider flex items-center justify-center h-9"
+          className="w-full bg-slate-50 hover:bg-slate-100 text-slate-900 py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] border border-slate-200 h-11 transition-all"
         />
       </div>
     </div>
