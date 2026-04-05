@@ -45,7 +45,7 @@ export function Navbar({ categories = [], user, userRole = null, cartCount = 0, 
           {/* Logo Section */}
           <div className="flex items-center gap-6 lg:gap-12">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative h-8 md:h-10 w-auto aspect-square bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-800">
+              <div className="relative h-8 md:h-10 w-auto aspect-square bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center overflow-hidden bg-white">
                 <Image
                   src={logoSrc}
                   alt="UC Enterprises logo"

@@ -23,7 +23,7 @@ export default async function ShopLayout({
   const cartCount = cartResult?.count ?? 0;
   const wishlistCount = wishlistResult?.count ?? 0;
   const userRole = profileResult?.data?.role ?? null;
-  
+
   return (
     <>
       <Navbar categories={categories} user={user} userRole={userRole} cartCount={cartCount} wishlistCount={wishlistCount} />

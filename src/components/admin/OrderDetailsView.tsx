@@ -229,7 +229,7 @@ export function OrderDetailsView({ order, onUpdate }: { order: any, onUpdate: (s
                 <div className="bg-white rounded-lg border border-[#ebebed] p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-3">
                         <FileText className="w-4 h-4 text-[#6d7175]" />
-                        <h3 className="text-sm font-semibold text-[#202223]">Financial Summary</h3>
+                        <h3 className="text-sm font-semibold text-[#202223]">Pricing Summary</h3>
                     </div>
                     <div className="space-y-2 text-xs">
                         <div className="flex justify-between">

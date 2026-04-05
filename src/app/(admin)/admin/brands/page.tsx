@@ -10,7 +10,7 @@ export default async function BrandManagementPage({
 }) {
   const params = await searchParams;
   const page = params.page ? parseInt(params.page as string) : 1;
-  
+
   const { brands, total, totalPages } = await getAdminBrandsPaginated(page, 20);
 
   return (
@@ -20,4 +20,3 @@ export default async function BrandManagementPage({
     </div>
   );
 }
-  

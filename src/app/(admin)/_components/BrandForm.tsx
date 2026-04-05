@@ -25,7 +25,7 @@ export function BrandForm({ isOpen, onClose, isEdit, brand }: BrandFormProps) {
   const [isFeatured, setIsFeatured] = useState(false);
 
   const [logoUrl, setLogoUrl] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); 
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -52,6 +52,17 @@ export function BrandForm({ isOpen, onClose, isEdit, brand }: BrandFormProps) {
     setPreviewUrl(null);
     setLogoUrl("");
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const autoSlug = (name: string) => {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  };
+
+  const handleNameChange = (name: string) => {
+    setName(name);
+    if (!isEdit) {
+      setSlug(autoSlug(name));
+    }
   };
 
   return (
@@ -84,7 +95,7 @@ export function BrandForm({ isOpen, onClose, isEdit, brand }: BrandFormProps) {
         {/* Logo Upload Section */}
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-[#1a1c1d]">Vendor Logo</label>
-          <div 
+          <div
             onClick={() => fileInputRef.current?.click()}
             className="group relative cursor-pointer border-2 border-dashed border-[#ebebeb] rounded-xl p-4 hover:bg-[#fafafa] hover:border-[#d2d2d2] transition-all flex flex-col items-center justify-center min-h-[120px]"
           >
@@ -98,7 +109,7 @@ export function BrandForm({ isOpen, onClose, isEdit, brand }: BrandFormProps) {
                   className="h-full w-auto object-contain rounded"
                   unoptimized
                 />
-                <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); removeImage(); }}
                   className="absolute -top-2 -right-2 bg-white border border-[#ebebeb] p-1 rounded-full shadow-sm text-rose-500 hover:bg-rose-50"
                 >
@@ -114,13 +125,13 @@ export function BrandForm({ isOpen, onClose, isEdit, brand }: BrandFormProps) {
                 <p className="text-[10px] text-[#9e9e9e]">PNG, JPG up to 2MB</p>
               </div>
             )}
-            <input 
-              type="file" 
+            <input
+              type="file"
               name="logo_file"
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              className="hidden" 
-              accept="image/*" 
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*"
             />
           </div>
         </div>
@@ -129,13 +140,13 @@ export function BrandForm({ isOpen, onClose, isEdit, brand }: BrandFormProps) {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-[#1a1c1d]">Name</label>
-            <input name="name" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-sm outline-none" required />
+            <input name="name" value={name} onChange={(e) => handleNameChange(e.target.value)} className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-sm outline-none" required />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-[#1a1c1d]">URL Slug</label>
-            <input name="slug" value={slug} onChange={(e) => setSlug(e.target.value)} className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-sm bg-[#fafafa] font-mono text-[12px] outline-none" required />
+            <input name="slug" value={slug} className="w-full px-3 py-2 border border-[#d2d2d2] rounded-md text-sm bg-[#fafafa] font-mono text-[12px] outline-none" required disabled />
           </div>
-        </div>
+        </div>``
 
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-[#1a1c1d]">Website URL</label>

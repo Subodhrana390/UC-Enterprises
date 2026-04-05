@@ -1,85 +1,131 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Package, Users, ShoppingBag, IndianRupee } from "lucide-react";
+import {
+  Package,
+  Users,
+  ShoppingBag,
+  IndianRupee,
+  TrendingUp,
+  AlertCircle,
+  ArrowUpRight,
+  MoreHorizontal
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default async function AdminDashboard() {
-  const supabase = await createClient();
-
-  const { data: recentOrders } = await supabase
-    .from("orders")
-    .select(`
-      id, 
-      status,
-      total_amount,
-      profiles:user_id (
-        full_name
-      )
-    `)
-    .order("created_at", { ascending: false })
-    .limit(5);
-
-  const { data: allOrders } = await supabase.from("orders").select("total_amount");
-  const totalRevenue = allOrders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
-  const { count: totalProducts } = await supabase.from("products").select("*", { count: "exact", head: true });
-  const { count: totalUsers } = await supabase.from("profiles").select("*", { count: "exact", head: true });
+export default function AdminDashboard({
+  recentOrders = [],
+  totalRevenue = 0,
+  totalOrders = 0,
+  totalProducts = 0,
+  totalUsers = 0
+}: any) {
 
   return (
-    <div className="min-h-screen p-6 md:p-10 font-sans text-[#202223]">
-      <div className="max-w-[1024px] mx-auto space-y-5">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-10 font-sans text-[#202223]">
+      <div className="max-w-[1200px] mx-auto space-y-6">
 
-        {/* Shopify Style Header */}
-        <header className="flex justify-between items-start mb-6">
+        {/* Header Section */}
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
           <div>
-            <h1 className="text-xl font-bold text-[#202223]">Home</h1>
-            <p className="text-sm text-[#6d7175]">Here's what's happening with your store today.</p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#202223]">Dashboard</h1>
+            <p className="text-sm text-[#6d7175]">Overview of MedicineFinder operations today.</p>
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" className="flex-1 sm:flex-none bg-white text-xs font-semibold h-9">
+              Export Data
+            </Button>
+            <Button className="flex-1 sm:flex-none bg-[#008060] hover:bg-[#006e52] text-white text-xs font-semibold h-9">
+              Add Product
+            </Button>
           </div>
         </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard title="Total Revenue" value={`₹${totalRevenue.toLocaleString()}`} delta="+12%" icon={<IndianRupee size={16} />} />
-          <StatsCard title="Orders" value={allOrders?.length || 0} delta="+5%" icon={<ShoppingBag size={16} />} />
-          <StatsCard title="Products" value={totalProducts || 0} delta="0%" icon={<Package size={16} />} />
-          <StatsCard title="Customers" value={totalUsers || 0} delta="+2%" icon={<Users size={16} />} />
+        {/* Stats Grid - 4 columns on desktop, 2 on tablet, 1 on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
+            title="Total Revenue"
+            value={`₹${totalRevenue.toLocaleString()}`}
+            delta="+12.5%"
+            trend="up"
+            icon={<IndianRupee size={16} />}
+          />
+          <StatsCard
+            title="Active Orders"
+            value={totalOrders}
+            delta="+5.2%"
+            trend="up"
+            icon={<ShoppingBag size={16} />}
+          />
+          <StatsCard
+            title="Inventory Items"
+            value={totalProducts}
+            delta="0%"
+            trend="neutral"
+            icon={<Package size={16} />}
+          />
+          <StatsCard
+            title="Total Customers"
+            value={totalUsers}
+            delta="+2.4%"
+            trend="up"
+            icon={<Users size={16} />}
+          />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {/* Main Content Area */}
-          <div className="lg:col-span-2 space-y-5">
-            <Card className="bg-white border-[#ebebed] shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Table Area: 2/3 width on desktop */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="bg-white border-[#ebebed] shadow-sm rounded-xl overflow-hidden">
               <CardHeader className="flex flex-row items-center justify-between border-b border-[#f1f1f1] px-5 py-4">
-                <CardTitle className="text-[14px] font-semibold">Recent Orders</CardTitle>
-                <Link href="/admin/orders" className="text-xs font-semibold text-[#005bd3] hover:underline">
-                  View all
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-[14px] font-bold">Recent Orders</CardTitle>
+                  <span className="bg-[#f1f1f1] text-[#6d7175] text-[10px] px-2 py-0.5 rounded-full font-bold">
+                    Last 5
+                  </span>
+                </div>
+                <Link href="/admin/orders" className="text-xs font-bold text-[#005bd3] hover:underline flex items-center gap-1">
+                  View all <ArrowUpRight size={12} />
                 </Link>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full text-left border-collapse min-w-[500px]">
                     <thead>
-                      <tr className="text-[12px] text-[#6d7175] border-b border-[#f1f1f1] bg-[#fafafa]">
-                        <th className="px-5 py-3 font-medium">Order</th>
-                        <th className="px-5 py-3 font-medium">Customer</th>
-                        <th className="px-5 py-3 font-medium text-right">Total</th>
-                        <th className="px-5 py-3 font-medium text-center">Status</th>
+                      <tr className="text-[11px] uppercase tracking-wider text-[#6d7175] border-b border-[#f1f1f1] bg-[#fafafa]">
+                        <th className="px-5 py-3 font-bold">Order ID</th>
+                        <th className="px-5 py-3 font-bold">Customer</th>
+                        <th className="px-5 py-3 font-bold text-right">Amount</th>
+                        <th className="px-5 py-3 font-bold text-center">Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#f1f1f1]">
-                      {recentOrders?.map((order: any) => (
-                        <tr key={order.id} className="hover:bg-[#f6f6f7] transition-colors cursor-pointer group">
-                          <td className="px-5 py-3 text-sm font-medium text-[#202223]">#{order.id.toString().substring(0, 5)}</td>
-                          <td className="px-5 py-3 text-sm text-[#6d7175]">{order.profiles?.full_name || "Guest"}</td>
-                          <td className="px-5 py-3 text-sm text-right font-medium">₹{order.total_amount?.toLocaleString()}</td>
-                          <td className="px-5 py-3 text-center">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${order.status === 'delivered' ? 'bg-[#e3f1df] text-[#005e4d]' : 'bg-[#fff4e5] text-[#8a6116]'
-                              }`}>
-                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                            </span>
+                      {recentOrders.length > 0 ? (
+                        recentOrders.map((order: any) => (
+                          <tr key={order.id} className="hover:bg-[#f6f6f7] transition-colors cursor-pointer group">
+                            <td className="px-5 py-4 text-sm font-semibold text-[#202223]">
+                              <span className="text-[#005bd3]">#{order.id.toString().substring(0, 6).toUpperCase()}</span>
+                            </td>
+                            <td className="px-5 py-4 text-sm text-[#202223] font-medium">
+                              {order.profiles?.full_name || "Guest User"}
+                            </td>
+                            <td className="px-5 py-4 text-sm text-right font-bold text-[#202223]">
+                              ₹{order.total_amount?.toLocaleString()}
+                            </td>
+                            <td className="px-5 py-4 text-center">
+                              <StatusBadge status={order.status} />
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="px-5 py-10 text-center text-sm text-[#6d7175]">
+                            No recent orders found.
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -87,16 +133,39 @@ export default async function AdminDashboard() {
             </Card>
           </div>
 
-          {/* Sidebar Area */}
-          <div className="space-y-5">
-            <Card className="bg-white border-[#ebebed] shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-xl">
-              <CardHeader className="px-5 py-4 border-b border-[#f1f1f1]">
-                <CardTitle className="text-[14px] font-semibold">Store Status</CardTitle>
+          {/* Sidebar Area: 1/3 width on desktop */}
+          <div className="space-y-6">
+            {/* Store Status Card */}
+            <Card className="bg-white border-[#ebebed] shadow-sm rounded-xl">
+              <CardHeader className="px-5 py-4 border-b border-[#f1f1f1] flex flex-row justify-between items-center">
+                <CardTitle className="text-[14px] font-bold">System Health</CardTitle>
+                <MoreHorizontal size={14} className="text-[#6d7175]" />
               </CardHeader>
-              <CardContent className="px-5 py-4 space-y-4">
-                <StatusItem label="Online Store" status="Active" />
-                <StatusItem label="Inventory Sync" status="Pending" />
-                <StatusItem label="API Connections" status="Active" />
+              <CardContent className="px-5 py-5 space-y-5">
+                <StatusRow label="Medicine Portal" status="Active" />
+                <StatusRow label="Stock Ledger Sync" status="Pending" />
+                <StatusRow label="Payment Gateway" status="Active" />
+                <Separator />
+                <div className="bg-[#fff4e5] p-3 rounded-lg flex gap-3 border border-[#ffe1b2]">
+                  <AlertCircle size={16} className="text-[#8a6116] shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-bold text-[#5c3e00] uppercase tracking-wide">Action Required</p>
+                    <p className="text-xs text-[#8a6116] leading-snug">3 Prescriptions awaiting verification from pharmacists.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions Card */}
+            <Card className="bg-white border-[#ebebed] shadow-sm rounded-xl">
+              <CardContent className="p-5">
+                <h3 className="text-[14px] font-bold mb-4">Quick Links</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <QuickLink label="Orders" href="/admin/orders" color="bg-blue-50 text-blue-700" />
+                  <QuickLink label="Stock" href="/admin/inventory" color="bg-emerald-50 text-emerald-700" />
+                  <QuickLink label="Users" href="/admin/users" color="bg-purple-50 text-purple-700" />
+                  <QuickLink label="Quotes" href="/admin/quotes" color="bg-amber-50 text-amber-700" />
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -106,36 +175,69 @@ export default async function AdminDashboard() {
   );
 }
 
-function StatsCard({ title, value, delta, icon }: { title: string, value: string | number, delta: string, icon: React.ReactNode }) {
+// --- Sub-components for Cleanliness ---
+
+function StatsCard({ title, value, delta, trend, icon }: any) {
   return (
-    <Card className="bg-white border-[#ebebed] shadow-[0_1px_3px_rgba(0,0,0,0.1)] rounded-xl group hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <div className="p-2 bg-[#f6f6f7] rounded-md text-[#6d7175]">
+    <Card className="bg-white border-[#ebebed] shadow-sm rounded-xl group hover:border-[#b6b6b6] transition-all">
+      <CardContent className="p-5">
+        <div className="flex justify-between items-start mb-4">
+          <div className="p-2.5 bg-[#f1f1f1] rounded-lg text-[#6d7175] group-hover:bg-[#202223] group-hover:text-white transition-colors">
             {icon}
           </div>
-          <span className="text-[11px] font-bold text-[#008060] bg-[#e3f1df] px-1.5 py-0.5 rounded">
+          <div className={cn(
+            "flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md",
+            trend === 'up' ? "bg-[#e3f1df] text-[#008060]" : "bg-[#f1f1f1] text-[#6d7175]"
+          )}>
+            {trend === 'up' && <TrendingUp size={10} />}
             {delta}
-          </span>
+          </div>
         </div>
         <div>
-          <p className="text-xs font-medium text-[#6d7175]">{title}</p>
-          <p className="text-lg font-bold text-[#202223] mt-0.5">{value}</p>
+          <p className="text-xs font-bold text-[#6d7175] uppercase tracking-wider">{title}</p>
+          <p className="text-2xl font-black text-[#202223] mt-1">{value}</p>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-function StatusItem({ label, status }: { label: string, status: string }) {
+function StatusBadge({ status }: { status: string }) {
+  const isDelivered = status.toLowerCase() === 'delivered';
+  const isCancelled = status.toLowerCase() === 'cancelled';
+
+  return (
+    <span className={cn(
+      "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tight",
+      isDelivered ? "bg-[#e3f1df] text-[#005e4d]" :
+        isCancelled ? "bg-[#fff0f0] text-[#bf0711]" : "bg-[#fff4e5] text-[#8a6116]"
+    )}>
+      {status}
+    </span>
+  );
+}
+
+function StatusRow({ label, status }: { label: string, status: string }) {
   const isActive = status === 'Active';
   return (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-[#6d7175]">{label}</span>
+    <div className="flex items-center justify-between">
+      <span className="text-sm font-medium text-[#6d7175]">{label}</span>
       <div className="flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-[#008060]' : 'bg-[#e4b200]'}`} />
-        <span className="text-xs font-medium text-[#202223]">{status}</span>
+        <div className={cn("w-2 h-2 rounded-full", isActive ? "bg-[#008060] animate-pulse" : "bg-[#e4b200]")} />
+        <span className="text-xs font-bold text-[#202223]">{status}</span>
       </div>
     </div>
   );
+}
+
+function QuickLink({ label, href, color }: { label: string, href: string, color: string }) {
+  return (
+    <Link href={href} className={cn("text-center py-3 rounded-lg text-xs font-bold hover:opacity-80 transition-opacity", color)}>
+      {label}
+    </Link>
+  );
+}
+
+function Separator() {
+  return <div className="h-[1px] w-full bg-[#f1f1f1]" />;
 }

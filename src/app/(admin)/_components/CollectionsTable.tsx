@@ -45,7 +45,6 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#fafafa] border-b border-[#f1f1f1] text-[11px] font-semibold text-[#616161] uppercase tracking-wider">
-                <th className="px-6 py-3 w-10"><input type="checkbox" className="rounded border-[#d2d2d2]" /></th>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Parent Category</th>
                 <th className="px-4 py-3">Icon</th>
@@ -62,7 +61,7 @@ export function CollectionsTable({ initialCategories }: { initialCategories: any
 
                 return (
                   <tr key={category.id} className="group hover:bg-[#fafafa] transition-colors">
-                    <td className="px-6 py-4"><input type="checkbox" className="rounded border-[#d2d2d2]" /></td>
+
                     <td className="px-4 py-4">
                       <span className="text-xs font-semibold text-[#1a1c1d]">
                         {category.parent_id ? '↳ ' : ''}{category.name}
