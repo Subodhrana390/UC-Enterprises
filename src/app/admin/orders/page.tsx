@@ -107,6 +107,8 @@ export default function OrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending": return "bg-amber-100 text-amber-700 border-amber-200";
+      case "pending payment": return "bg-orange-100 text-orange-700 border-orange-200";
+      case "paid": return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case "shipped": return "bg-blue-100 text-blue-700 border-blue-200";
       case "delivered": return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case "cancelled": return "bg-red-100 text-red-700 border-red-200";
@@ -422,13 +424,22 @@ export default function OrdersPage() {
                     </div>
                     
                     <div className="space-y-4">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Shipping Address</h4>
-                      <div className="p-5 rounded-2xl bg-zinc-50">
-                        <p className="text-sm font-bold text-zinc-600 leading-relaxed italic">
-                          {selectedOrder.shipping_address}, {selectedOrder.city}, {selectedOrder.state} - {selectedOrder.postal_code}, {selectedOrder.country}
-                        </p>
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Payment & Tracking</h4>
+                      <div className="p-5 rounded-2xl bg-zinc-50 space-y-4">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Method</span>
+                          <span className="font-bold text-zinc-900">{selectedOrder.payment_method === "ONLINE" ? "Online Payment (Razorpay)" : "Cash on Delivery"}</span>
+                        </div>
+                        
+                        {selectedOrder.razorpay_payment_id && (
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Transaction ID</span>
+                            <span className="font-bold text-zinc-600 text-xs">{selectedOrder.razorpay_payment_id}</span>
+                          </div>
+                        )}
+
                         {selectedOrder.tracking_id && (
-                          <div className="mt-4 pt-4 border-t border-zinc-200">
+                          <div className="pt-4 border-t border-zinc-200">
                             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Tracking Info</span>
                             <div className="flex items-center gap-2 mt-1">
                               <Truck className="w-4 h-4 text-blue-500" />

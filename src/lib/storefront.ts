@@ -14,37 +14,8 @@ export type StoreDepartment =
   | "safety-equipment-ppe"
   | "industrial-electrical";
 
-export const storeDepartments: Array<{
-  id: StoreDepartment;
-  label: string;
-  description: string;
-}> = [
-  {
-    id: "chemicals-reagents",
-    label: "Chemicals & Reagents",
-    description: "Laboratory chemicals, analytical reagents, solvents, powders, and specialty chemicals.",
-  },
-  {
-    id: "glassware-plasticware",
-    label: "Glassware & Plasticware",
-    description: "Beakers, flasks, test tubes, measuring cylinders, pipettes, and lab consumables.",
-  },
-  {
-    id: "tools-hardware",
-    label: "Tools & Hardware",
-    description: "Power tools, hand tools, measuring tools, cutting tools, and hardware fasteners.",
-  },
-  {
-    id: "safety-equipment-ppe",
-    label: "Safety Equipment & PPE",
-    description: "Personal protective equipment, first aid, hazard signage, fire safety, and fall protection.",
-  },
-  {
-    id: "industrial-electrical",
-    label: "Industrial & Electrical",
-    description: "Electrical accessories, electronic equipment, wires, detectors, and lockout/tagout devices.",
-  },
-];
+// Hardcoded departments removed in favor of dynamic categories from Supabase
+
 
 const departmentKeywordMap: Record<StoreDepartment, string[]> = {
   "chemicals-reagents": [
@@ -109,8 +80,13 @@ export function getDepartmentFromCategoryName(name: string | null | undefined): 
   return "industrial-electrical";
 }
 
-export function getDepartmentMeta(department: StoreDepartment) {
-  return storeDepartments.find((item) => item.id === department) || storeDepartments[4];
+export function getDepartmentMeta(department: string) {
+  // Return a generic meta since we are moving away from hardcoded departments
+  return {
+    id: department,
+    label: department.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+    description: "Industrial supplies and laboratory equipment."
+  };
 }
 
 export const primaryNavLinks = [

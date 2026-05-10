@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowRight, BadgePercent, ChevronLeft, ChevronRight, FolderTree, ShoppingBag, Star } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { formatCurrency } from "@/lib/format";
-import { storeDepartments } from "@/lib/storefront";
+import CategorySelector from "@/components/storefront/CategorySelector";
 
 export default function HomePage() {
   const supabase = useMemo(() => createClient(), []);
@@ -20,7 +20,7 @@ export default function HomePage() {
     async function fetchStorefrontData() {
       const [{ data: productData }, { data: categoryData }, { data: bannerData }] = await Promise.all([
         supabase.from("products").select("id, name, slug, price, image_url, status").order("created_at", { ascending: false }).limit(8),
-        supabase.from("categories").select("id, name, slug").order("name", { ascending: true }).limit(6),
+        supabase.from("categories").select("id, name, slug, parent_id").order("name", { ascending: true }),
         supabase.from("banners").select("*").eq("is_active", true).order("position", { ascending: true }),
       ]);
 
@@ -141,6 +141,10 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="container mx-auto px-4 -mt-12 relative z-30">
+        <CategorySelector categories={categories} />
+      </section>
+
       <section className="container mx-auto px-4 py-10">
         <div className="mb-6 flex items-center justify-between">
           <div>
@@ -149,10 +153,14 @@ export default function HomePage() {
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {storeDepartments.map((segment) => (
-            <Link key={segment.id} href={`/categories?segment=${segment.id}`} className="border border-orange-100 bg-white p-6 shadow-sm transition hover:border-primary hover:shadow-lg">
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">{segment.label}</p>
-              <p className="mt-4 text-sm leading-6 text-zinc-600">{segment.description}</p>
+          {categories.filter(c => !c.parent_id).slice(0, 4).map((segment) => (
+            <Link key={segment.id} href={`/categories/${segment.slug}`} className="group relative overflow-hidden border border-orange-100 bg-white p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
+              <div className="relative z-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-2">Main Category</p>
+                <h3 className="text-xl font-black text-zinc-950 mb-3">{segment.name}</h3>
+                <p className="text-sm leading-6 text-zinc-600 line-clamp-2">Complete industrial solutions for {segment.name.toLowerCase()} & related laboratory requirements.</p>
+              </div>
+              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-orange-50 rounded-full opacity-50 transition-all group-hover:scale-150 group-hover:bg-primary/10" />
             </Link>
           ))}
         </div>
@@ -167,10 +175,10 @@ export default function HomePage() {
           <Link href="/categories" className="text-sm font-black uppercase tracking-widest text-primary">View all</Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-          {categories.map((category) => (
+          {categories.filter(c => !c.parent_id).map((category) => (
             <Link key={category.id} href={`/categories/${category.slug}`} className="border border-orange-100 bg-white p-5 text-center shadow-sm transition hover:border-primary hover:shadow-lg">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-primary"><FolderTree className="h-6 w-6" /></div>
-              <p className="mt-4 text-sm font-bold text-zinc-950">{category.name}</p>
+              <p className="mt-4 text-sm font-bold text-zinc-950 line-clamp-1">{category.name}</p>
             </Link>
           ))}
         </div>

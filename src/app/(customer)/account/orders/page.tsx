@@ -56,6 +56,10 @@ export default function OrderHistoryPage() {
         return "bg-red-50 text-red-600 border-red-100";
       case "shipped":
         return "bg-blue-50 text-blue-600 border-blue-100";
+      case "paid":
+        return "bg-emerald-50 text-emerald-600 border-emerald-100";
+      case "pending payment":
+        return "bg-orange-50 text-orange-600 border-orange-100";
       default:
         return "bg-amber-50 text-amber-600 border-amber-100";
     }
@@ -152,12 +156,13 @@ export default function OrderHistoryPage() {
                       Qty: {item.quantity} | Price: {formatCurrency(item.unit_price)}
                     </p>
                   </div>
-                  <Button 
-                    render={<Link href={`/track-order?orderId=${order.id}&email=${order.customer_email}`} />}
-                    className="h-12 bg-zinc-950 hover:bg-primary text-white font-black uppercase tracking-widest text-[10px] px-8 rounded-none"
-                  >
-                    Track Order <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  <Link href={`/track-order?orderId=${order.id}&email=${order.customer_email}`}>
+                    <Button 
+                      className="h-12 bg-zinc-950 hover:bg-primary text-white font-black uppercase tracking-widest text-[10px] px-8 rounded-none"
+                    >
+                      Track Order <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
                 </div>
               ))}
             </div>

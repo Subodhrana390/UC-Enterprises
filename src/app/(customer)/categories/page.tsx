@@ -4,8 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 import {
   getDepartmentFromCategoryName,
   getDepartmentMeta,
-  storeDepartments,
-  type StoreDepartment,
 } from "@/lib/storefront";
 
 export default async function CategoriesPage({
@@ -14,26 +12,30 @@ export default async function CategoriesPage({
   searchParams: Promise<{ segment?: string }>;
 }) {
   const params = await searchParams;
-  const activeSegment = (params.segment as StoreDepartment | undefined) || undefined;
+  const activeSegment = (params.segment as string | undefined) || undefined;
 
   const supabase = await createClient();
-  const { data: categories } = await supabase
+  const { data: allCategories } = await supabase
     .from("categories")
-    .select("id, name, slug, status, image_url")
+    .select("id, name, slug, status, image_url, parent_id")
     .order("name", { ascending: true });
 
-  const groupedCategories = storeDepartments.map((department) => ({
-    ...department,
-    categories: (categories || []).filter(
-      (category) => getDepartmentFromCategoryName(category.name) === department.id
-    ),
+  const mainCategories = (allCategories || []).filter(c => !c.parent_id);
+  const subCategories = (allCategories || []).filter(c => c.parent_id);
+
+  const groupedCategories = mainCategories.map((main) => ({
+    id: main.id,
+    label: main.name,
+    slug: main.slug,
+    description: `Browse our specialized ${main.name.toLowerCase()} catalog and related industrial supplies.`,
+    categories: subCategories.filter(sub => sub.parent_id === main.id),
   }));
 
   const visibleGroups = activeSegment
-    ? groupedCategories.filter((group) => group.id === activeSegment)
+    ? groupedCategories.filter((group) => group.slug === activeSegment)
     : groupedCategories;
 
-  const activeMeta = activeSegment ? getDepartmentMeta(activeSegment) : null;
+  const activeMeta = activeSegment ? groupedCategories.find(g => g.slug === activeSegment) : null;
 
   return (
     <div className="bg-[linear-gradient(180deg,#fff8ef_0%,#ffffff_100%)]">
@@ -50,21 +52,31 @@ export default async function CategoriesPage({
           </p>
         </div>
 
-        <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {storeDepartments.map((segment) => {
-            const isActive = segment.id === activeSegment;
+        <div className="mb-8 flex flex-wrap gap-3">
+          <Link
+            href="/categories"
+            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-[0.2em] transition-all border ${
+              !activeSegment
+                ? "border-primary bg-primary text-white shadow-xl shadow-orange-200"
+                : "border-orange-100 bg-white text-zinc-600 hover:border-primary hover:text-primary"
+            }`}
+          >
+            All Departments
+          </Link>
+          {mainCategories.map((segment) => {
+            const isActive = segment.slug === activeSegment;
 
             return (
               <Link
                 key={segment.id}
-                href={`/categories?segment=${segment.id}`}
-                className={`border p-5 transition ${
+                href={`/categories?segment=${segment.slug}`}
+                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-[0.2em] transition-all border ${
                   isActive
-                    ? "border-primary bg-primary text-white shadow-lg"
-                    : "border-orange-100 bg-orange-50 hover:border-primary hover:bg-white"
+                    ? "border-primary bg-primary text-white shadow-xl shadow-orange-200"
+                    : "border-orange-100 bg-white text-zinc-600 hover:border-primary hover:text-primary"
                 }`}
               >
-                <p className="text-sm font-black uppercase tracking-widest">{segment.label}</p>
+                {segment.name}
               </Link>
             );
           })}

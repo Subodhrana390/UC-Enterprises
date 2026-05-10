@@ -18,7 +18,8 @@ import {
   Activity,
   Terminal,
   Image,
-  BadgePercent
+  BadgePercent,
+  MessageSquareQuote
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +84,7 @@ export default function AdminLayout({
     { icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard", href: "/admin" },
     { icon: <Package className="w-4 h-4" />, label: "Products", href: "/admin/products" },
     { icon: <PlusCircle className="w-4 h-4" />, label: "Categories", href: "/admin/categories" },
+    { icon: <MessageSquareQuote className="w-4 h-4" />, label: "Quotations", href: "/admin/quotes" },
     { icon: <Clock className="w-4 h-4" />, label: "Orders", href: "/admin/orders" },
     { icon: <IndianRupee className="w-4 h-4" />, label: "Payments", href: "/admin/payments" },
     { icon: <Activity className="w-4 h-4" />, label: "Inventory", href: "/admin/inventory" },

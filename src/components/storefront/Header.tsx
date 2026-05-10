@@ -18,8 +18,7 @@ import {
   supportPhone, 
   supportPhoneHref, 
   supportEmailHref, 
-  primaryNavLinks, 
-  storeDepartments 
+  primaryNavLinks 
 } from "@/lib/storefront";
 import CartButton from "@/components/storefront/CartButton";
 import HeaderSearch from "@/components/storefront/HeaderSearch";
@@ -28,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderProps {
-  categories: { id: string; name: string; slug: string }[];
+  categories: { id: string; name: string; slug: string; parent_id?: string | null }[];
   user: any;
 }
 
@@ -123,12 +122,55 @@ export default function Header({ categories, user }: HeaderProps) {
                 Categories
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="invisible absolute left-0 top-full z-50 mt-2 w-72 border border-orange-100 bg-white opacity-0 shadow-2xl rounded-xl overflow-hidden transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-y-1">
-                {(categories || []).map((category) => (
-                  <Link key={category.id} href={`/categories/${category.slug}`} className="block px-5 py-3 text-sm hover:bg-orange-50 hover:text-primary transition-colors">
-                    {category.name}
-                  </Link>
-                ))}
+              
+              <div className="invisible absolute left-0 top-full z-50 mt-2 w-[600px] border border-orange-100 bg-white opacity-0 shadow-2xl rounded-2xl overflow-hidden transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-y-1 flex">
+                {/* Main Categories (Left Sidebar) */}
+                <div className="w-1/3 bg-zinc-50 border-r border-orange-100 p-2">
+                  <p className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Main Categories</p>
+                  <div className="space-y-1 mt-1">
+                    {categories.filter(c => !c.parent_id).map((mainCat) => (
+                      <div key={mainCat.id} className="group/main relative">
+                        <Link 
+                          href={`/categories/${mainCat.slug}`}
+                          className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-bold rounded-xl hover:bg-white hover:text-primary transition-all text-zinc-700"
+                        >
+                          {mainCat.name}
+                          <ChevronDown className="h-3 w-3 -rotate-90 opacity-40 group-hover/main:opacity-100" />
+                        </Link>
+                        
+                        {/* Subcategories (Right Panel) */}
+                        <div className="invisible absolute left-full top-[-44px] w-[400px] min-h-[300px] p-6 bg-white border-l border-orange-100 opacity-0 transition-all group-hover/main:visible group-hover/main:opacity-100">
+                          <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-black tracking-tight text-zinc-950">{mainCat.name}</h3>
+                            <Link href={`/categories/${mainCat.slug}`} className="text-xs font-bold text-primary hover:underline uppercase tracking-widest">View All</Link>
+                          </div>
+                          <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                            {categories
+                              .filter(sub => sub.parent_id === mainCat.id)
+                              .map((subCat) => (
+                                <Link 
+                                  key={subCat.id} 
+                                  href={`/categories/${subCat.slug}`}
+                                  className="text-sm text-zinc-600 hover:text-primary transition-colors hover:font-bold"
+                                >
+                                  {subCat.name}
+                                </Link>
+                              ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Default Panel (Right) - Shown when no main category is hovered */}
+                <div className="flex-1 p-8 flex flex-col justify-center text-center bg-white">
+                  <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-orange-100">
+                    <img src="/logo.jpg" alt="Logo" className="w-10 h-10 object-contain opacity-50" />
+                  </div>
+                  <h4 className="text-sm font-black uppercase tracking-widest text-zinc-950 mb-2">Explore Our Catalog</h4>
+                  <p className="text-xs text-zinc-500 max-w-[200px] mx-auto leading-relaxed font-medium">Hover over a main category to see specialized industrial supplies & equipment.</p>
+                </div>
               </div>
             </div>
             
@@ -138,17 +180,7 @@ export default function Header({ categories, user }: HeaderProps) {
               </Link>
             ))}
 
-            <div className="ml-auto hidden xl:flex items-center gap-2">
-              {storeDepartments.map((segment) => (
-                <Link
-                  key={segment.id}
-                  href={`/categories?segment=${segment.id}`}
-                  className="rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-700 hover:border-primary hover:text-primary hover:bg-white transition-all"
-                >
-                  {segment.label}
-                </Link>
-              ))}
-            </div>
+
           </nav>
           
           {/* Mobile Search (visible only on mobile) */}
@@ -228,16 +260,31 @@ export default function Header({ categories, user }: HeaderProps) {
                   {/* Categories */}
                   <div className="space-y-1 pt-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-4 px-4">Categories</p>
-                    <div className="grid gap-2 px-2">
-                      {(categories || []).map((category) => (
-                        <Link 
-                          key={category.id} 
-                          href={`/categories/${category.slug}`}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="px-4 py-2 rounded-lg text-sm text-zinc-600 hover:bg-orange-50 hover:text-primary transition-colors"
-                        >
-                          {category.name}
-                        </Link>
+                    <div className="space-y-2 px-2">
+                      {categories.filter(c => !c.parent_id).map((mainCat) => (
+                        <div key={mainCat.id} className="space-y-1">
+                          <Link 
+                            href={`/categories/${mainCat.slug}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex items-center justify-between px-4 py-2 rounded-xl text-sm font-black uppercase tracking-wider text-zinc-950 bg-orange-50/30 border border-orange-100/50"
+                          >
+                            {mainCat.name}
+                          </Link>
+                          <div className="grid grid-cols-1 gap-1 pl-4">
+                            {categories
+                              .filter(sub => sub.parent_id === mainCat.id)
+                              .map((subCat) => (
+                                <Link 
+                                  key={subCat.id} 
+                                  href={`/categories/${subCat.slug}`}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className="px-4 py-1.5 rounded-lg text-xs font-bold text-zinc-500 hover:text-primary transition-colors"
+                                >
+                                  {subCat.name}
+                                </Link>
+                              ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>

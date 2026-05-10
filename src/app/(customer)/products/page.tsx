@@ -3,13 +3,12 @@ import Link from "next/link";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { formatCurrency } from "@/lib/format";
-import { getDepartmentFromCategoryName, getDepartmentMeta } from "@/lib/storefront";
 
 export default async function ProductsPage() {
   const supabase = await createClient();
   const { data: products } = await supabase
     .from("products")
-    .select("id, name, slug, price, image_url, status, stock_quantity, categories(name, slug)")
+    .select("id, name, slug, price, image_url, status, stock_quantity, categories(name, slug, parent_id, parent:categories!parent_id(name))")
     .order("created_at", { ascending: false });
 
   return (
@@ -25,8 +24,9 @@ export default async function ProductsPage() {
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {(products || []).map((product) => {
-            const categoryName = (product as any).categories?.[0]?.name || (product as any).categories?.name || "General";
-            const department = getDepartmentMeta(getDepartmentFromCategoryName(categoryName));
+            const cat = (product as any).categories;
+            const categoryName = cat?.name || "General";
+            const mainCategoryName = cat?.parent?.name || categoryName;
 
             return (
               <div
@@ -47,7 +47,7 @@ export default async function ProductsPage() {
                     <span>{categoryName}</span>
                     <span>{product.stock_quantity > 0 ? "In Stock" : "Back Soon"}</span>
                   </div>
-                  <p className="text-[11px] font-black uppercase tracking-widest text-primary">{department.label}</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-primary">{mainCategoryName}</p>
                   <h2 className="line-clamp-2 text-lg font-bold text-zinc-950 transition group-hover:text-primary">
                     {product.name}
                   </h2>

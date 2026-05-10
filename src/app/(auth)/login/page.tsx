@@ -1,14 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Mail, Lock, ArrowRight, Box, Globe, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { login } from "@/app/actions/auth";
 import { toast } from "sonner";
+import Header from "@/components/storefront/Header";
+import Footer from "@/components/storefront/Footer";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo") || "/account/profile";
+
+  useEffect(() => {
+    async function fetchData() {
+      const [{ data: cats }, { data: { user: u } }] = await Promise.all([
+        supabase.from("categories").select("id, name, slug, parent_id").order("name"),
+        supabase.auth.getUser()
+      ]);
+      setCategories(cats || []);
+      setUser(u);
+    }
+    fetchData();
+  }, [supabase]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,7 +45,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center py-20 px-6">
+    <div className="flex flex-col min-h-screen">
+      <Header categories={categories} user={user} />
+      
+      <main className="flex-1 bg-zinc-50 flex items-center justify-center py-20 px-6">
       <div className="w-full max-w-md bg-white border border-zinc-100 shadow-2xl p-10 space-y-8">
         <div className="text-center space-y-2">
           <div className="w-12 h-12 bg-primary mx-auto flex items-center justify-center mb-4">
@@ -35,7 +59,7 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <input type="hidden" name="redirectTo" value="/account/profile" />
+          <input type="hidden" name="redirectTo" value={returnTo} />
           <div className="space-y-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Email ID</label>
@@ -105,12 +129,14 @@ export default function LoginPage() {
             <Link href="/register" className="text-primary font-black uppercase tracking-widest hover:underline">Register Account</Link>
           </p>
         </div>
-
         <div className="pt-4 flex items-center justify-center gap-2 text-[9px] font-black text-zinc-300 uppercase tracking-widest border-t border-zinc-50">
           <ShieldCheck className="w-3 h-3" />
           Secure login with HTTP-only session
         </div>
       </div>
+    </main>
+
+      <Footer />
     </div>
   );
 }

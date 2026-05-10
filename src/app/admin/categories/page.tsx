@@ -62,6 +62,7 @@ export default function CategoriesPage() {
     status: "Active",
     image_url: "",
     parent_id: null as string | null,
+    tax_rate: 0,
   });
 
   const supabase = createClient();
@@ -112,6 +113,7 @@ export default function CategoriesPage() {
         status: category.status || "Active",
         image_url: category.image_url || "",
         parent_id: category.parent_id || null,
+        tax_rate: category.tax_rate || 0,
       });
     } else {
       setEditingCategory(null);
@@ -122,6 +124,7 @@ export default function CategoriesPage() {
         status: "Active",
         image_url: "",
         parent_id: null,
+        tax_rate: 0,
       });
     }
     setIsDrawerOpen(true);
@@ -189,357 +192,208 @@ export default function CategoriesPage() {
     );
   }
 
-  const filteredCategories = categories.filter(c => {
-    if (activeTab === 'main') return !c.parent_id;
-    if (activeTab === 'sub') return c.parent_id !== null;
-    return true;
-  });
-
   return (
     <div className="space-y-6 relative min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Category Management</h1>
-          <p className="text-muted-foreground">Manage your product hierarchy and taxonomy.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button className="gap-2 bg-white text-zinc-950 hover:bg-zinc-50 border border-zinc-200 shadow-sm" onClick={() => handleOpenDrawer('sub')}>
-            <Plus className="w-4 h-4" />
-            Add Subcategory
-          </Button>
-          <Button className="gap-2 shadow-lg shadow-primary/20" onClick={() => handleOpenDrawer('main')}>
-            <Plus className="w-4 h-4" />
-            Add Main Category
-          </Button>
+          <p className="text-muted-foreground">Manage your product hierarchy and taxonomy with tax rates.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1 border-none shadow-sm h-fit bg-white/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Insight</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-zinc-100 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-xl">
-                  <FolderTree className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-sm font-bold text-zinc-600">Total</span>
-              </div>
-              <span className="font-black text-xl">{categories.length}</span>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-zinc-100 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-50 rounded-xl">
-                  <ChevronRight className="w-4 h-4 text-emerald-600" />
-                </div>
-                <span className="text-sm font-bold text-zinc-600">Active</span>
-              </div>
-              <span className="font-black text-xl text-emerald-600">
-                {categories.filter(c => c.status === "Active").length}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-2 border-none shadow-sm overflow-hidden">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-1 bg-zinc-50 p-1 rounded-xl">
-                <button 
-                  onClick={() => setActiveTab('main')}
-                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'main' ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950")}
-                >
-                  Main Categories
-                </button>
-                <button 
-                  onClick={() => setActiveTab('sub')}
-                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'sub' ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950")}
-                >
-                  Subcategories
-                </button>
-                <button 
-                  onClick={() => setActiveTab('all')}
-                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'all' ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950")}
-                >
-                  All
-                </button>
-              </div>
-              <div className="relative flex-1 max-w-[250px]">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search categories..." className="pl-12 bg-zinc-50 border-none h-10 rounded-xl" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="relative w-full overflow-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b bg-zinc-50/50">
-                    <th className="h-14 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Name</th>
-                    <th className="h-14 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Slug</th>
-                    <th className="h-14 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Status</th>
-                    <th className="h-14 px-6 text-right align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100">
-                  {filteredCategories.map((category) => (
-                    <tr key={category.id} className="group transition-colors hover:bg-zinc-50/50">
-                      <td className="px-6 py-4 align-middle font-bold text-zinc-900">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 overflow-hidden flex items-center justify-center shrink-0">
-                            {category.image_url ? (
-                              <img src={category.image_url} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <FolderTree className="w-5 h-5 text-primary" />
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <span>{category.name}</span>
-                            {category.parent_id && (
-                              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">
-                                Subcategory of {categories.find(c => c.id === category.parent_id)?.name || "Unknown"}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 align-middle text-zinc-400 font-mono text-xs">{category.slug}</td>
-                      <td className="px-6 py-4 align-middle">
-                        <Badge className={cn(
-                          "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest",
-                          category.status === "Active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-zinc-100 text-zinc-600"
-                        )}>
-                          {category.status}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 align-middle text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger render={
-                            <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white shadow-sm border border-transparent hover:border-zinc-100">
-                              <MoreHorizontal className="w-4 h-4 text-zinc-400" />
-                            </Button>
-                          } />
-                          <DropdownMenuContent align="end" className="w-48 p-2 rounded-2xl shadow-xl border-zinc-100">
-                            <DropdownMenuGroup>
-                              <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">Manage</DropdownMenuLabel>
-                              <DropdownMenuItem className="gap-3 p-3 rounded-xl font-bold text-sm cursor-pointer" onClick={() => handleOpenDrawer(category.parent_id ? 'sub' : 'main', category)}>
-                                <Edit className="w-4 h-4" /> Edit Details
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator className="my-1" />
-                            <DropdownMenuItem 
-                              className="gap-3 p-3 rounded-xl font-bold text-sm text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                              onClick={() => handleDelete(category.id)}
-                            >
-                              <Trash2 className="w-4 h-4" /> Remove Category
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {categories.length === 0 && (
-                <div className="p-20 text-center text-zinc-400 space-y-3">
-                   <FolderTree className="w-12 h-12 mx-auto opacity-20" />
-                   <p className="font-bold">No categories found.</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-2xl w-fit">
+        {[
+          { id: 'all', label: 'All View' },
+          { id: 'main', label: 'Main Categories' },
+          { id: 'sub', label: 'Subcategories' }
+        ].map((tab) => (
+          <button 
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={cn(
+              "px-6 py-2.5 text-sm font-bold rounded-xl transition-all", 
+              activeTab === tab.id ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950"
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* CRUD Drawer */}
+      <div className="grid grid-cols-1 gap-8">
+        {(activeTab === 'all' || activeTab === 'main') && (
+          <Section 
+            title="Main Categories" 
+            description="Top-level product groupings"
+            icon={<FolderTree className="w-5 h-5 text-primary" />}
+            categories={categories.filter(c => !c.parent_id)}
+            onAdd={() => handleOpenDrawer('main')}
+            onEdit={(cat: any) => handleOpenDrawer('main', cat)}
+            onDelete={handleDelete}
+            allCategories={categories}
+            addButtonLabel="Add Main Category"
+          />
+        )}
+
+        {(activeTab === 'all' || activeTab === 'sub') && (
+          <Section 
+            title="Subcategories" 
+            description="Detailed product subgroups"
+            icon={<ChevronRight className="w-5 h-5 text-emerald-600" />}
+            categories={categories.filter(c => c.parent_id !== null)}
+            onAdd={() => handleOpenDrawer('sub')}
+            onEdit={(cat: any) => handleOpenDrawer('sub', cat)}
+            onDelete={handleDelete}
+            allCategories={categories}
+            addButtonLabel="Add Subcategory"
+          />
+        )}
+      </div>
+
       <AnimatePresence>
         {isDrawerOpen && (
-          <>
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex justify-end"
+          >
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsDrawerOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50"
-            />
-            <motion.div 
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 w-full max-w-md bg-white z-[60] shadow-2xl flex flex-col"
+              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
+              className="w-full max-w-md bg-white h-full shadow-2xl p-6 overflow-y-auto"
             >
-              <div className="p-8 border-b flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-black tracking-tight">
-                    {editingCategory 
-                      ? `Edit ${drawerMode === 'main' ? 'Main Category' : 'Subcategory'}` 
-                      : `New ${drawerMode === 'main' ? 'Main Category' : 'Subcategory'}`}
-                  </h2>
-                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Details</p>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsDrawerOpen(false)} className="rounded-2xl">
-                  <X className="w-5 h-5" />
-                </Button>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-bold">{editingCategory ? "Edit" : "Add"} {drawerMode === 'main' ? 'Category' : 'Subcategory'}</h2>
+                <Button variant="ghost" size="icon" onClick={() => setIsDrawerOpen(false)}><X className="w-5 h-5" /></Button>
               </div>
-
-              <form onSubmit={handleSubmit} className="flex-1 flex flex-col p-8 space-y-6 overflow-y-auto">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Category Name</label>
-                  <Input 
-                    value={formData.name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    placeholder="Enter category name..."
-                    className="h-12 rounded-2xl bg-zinc-50 border-zinc-100 font-bold"
-                    required
-                  />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase text-zinc-500">Name</label>
+                  <Input value={formData.name} onChange={(e) => handleNameChange(e.target.value)} required />
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Slug (Auto-generated)</label>
-                  <Input 
-                    value={formData.slug}
-                    readOnly
-                    className="h-12 rounded-2xl bg-zinc-100 border-transparent text-zinc-400 font-mono text-xs"
-                  />
+                <div>
+                  <label className="text-xs font-bold uppercase text-zinc-500">Slug</label>
+                  <Input value={formData.slug} onChange={(e) => setFormData({...formData, slug: e.target.value})} />
                 </div>
-
                 {drawerMode === 'sub' && (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Parent Category</label>
-                    <Select 
-                      value={formData.parent_id || "none"} 
-                      onValueChange={(val) => setFormData({...formData, parent_id: val === "none" ? null : val})}
-                    >
-                      <SelectTrigger className="h-12 rounded-2xl bg-zinc-50 border-zinc-100 font-bold">
-                        <SelectValue placeholder="Select Parent Category" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-2xl border-zinc-100 shadow-xl z-[70]">
-                        <SelectItem value="none" className="font-bold cursor-pointer" disabled>Select a Main Category</SelectItem>
-                        {categories
-                          .filter(c => !c.parent_id && c.id !== editingCategory?.id)
-                          .map(c => (
-                          <SelectItem key={c.id} value={c.id} className="cursor-pointer">{c.name}</SelectItem>
-                        ))}
+                  <div>
+                    <label className="text-xs font-bold uppercase text-zinc-500">Parent Category</label>
+                    <Select value={formData.parent_id || ""} onValueChange={(val) => setFormData({...formData, parent_id: val})}>
+                      <SelectTrigger><SelectValue placeholder="Select parent" /></SelectTrigger>
+                      <SelectContent>
+                        {categories.filter(c => !c.parent_id).map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                 )}
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Description</label>
-                  <Textarea 
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    placeholder="Brief description..."
-                    className="min-h-[120px] rounded-2xl bg-zinc-50 border-zinc-100 resize-none"
-                  />
+                <div>
+                  <label className="text-xs font-bold uppercase text-zinc-500">Tax Rate (%)</label>
+                  <Input type="number" value={formData.tax_rate} onChange={(e) => setFormData({...formData, tax_rate: parseFloat(e.target.value)})} />
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Status</label>
-                  <div className="flex gap-4">
-                    {["Active", "Draft"].map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setFormData({...formData, status: s})}
-                        className={cn(
-                          "flex-1 h-12 rounded-2xl font-bold text-sm transition-all border",
-                          formData.status === s 
-                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
-                            : "bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-zinc-200"
-                        )}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Category Icon / Image</label>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 rounded-2xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden flex items-center justify-center">
-                        {formData.image_url ? (
-                          <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
-                        ) : (
-                          <ImageIcon className="w-6 h-6 text-zinc-300" />
-                        )}
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          className="h-10 rounded-xl bg-zinc-50 border-zinc-100"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            
-                            setSaving(true);
-                            try {
-                              const fileName = `${Date.now()}-${file.name}`;
-                              const { data, error } = await supabase.storage
-                                .from('category-icons')
-                                .upload(fileName, file);
-                              
-                              if (error) throw error;
-                              
-                              const { data: { publicUrl } } = supabase.storage
-                                .from('category-icons')
-                                .getPublicUrl(fileName);
-                                
-                              setFormData(prev => ({ ...prev, image_url: publicUrl }));
-                              toast.success("Icon uploaded successfully!");
-                            } catch (err: any) {
-                              toast.error(err.message || "Upload failed");
-                            } finally {
-                              setSaving(false);
-                            }
-                          }}
-                        />
-                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Recommended: 128x128px PNG or SVG</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Input 
-                        value={formData.image_url}
-                        onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                        placeholder="Or paste icon URL here..."
-                        className="h-10 rounded-xl bg-zinc-50 border-zinc-100 text-xs"
-                      />
-                      {formData.image_url && (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="rounded-xl text-red-500 hover:bg-red-50"
-                          onClick={() => setFormData({...formData, image_url: ""})}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-auto pt-8">
-                  <Button 
-                    type="submit"
-                    className="w-full h-14 rounded-2xl font-black text-lg gap-3 shadow-xl shadow-primary/20"
-                    disabled={saving}
-                  >
-                    {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                    {editingCategory ? "Update Category" : "Save Category"}
-                  </Button>
-                </div>
+                <Button type="submit" className="w-full" disabled={saving}>{saving ? <Loader2 className="animate-spin" /> : "Save Category"}</Button>
               </form>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
+
+function Section({ title, description, icon, categories, onAdd, onEdit, onDelete, allCategories, addButtonLabel }: any) {
+  return (
+    <Card className="border-none shadow-sm overflow-hidden">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between border-b bg-white/50 backdrop-blur-sm">
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-white rounded-xl border border-zinc-100 shadow-sm">
+            {icon}
+          </div>
+          <div>
+            <CardTitle className="text-xl font-black">{title}</CardTitle>
+            <CardDescription className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{description}</CardDescription>
+          </div>
+        </div>
+        <Button className="gap-2 shadow-lg shadow-primary/20 rounded-xl px-6" onClick={onAdd}>
+          <Plus className="w-4 h-4" />
+          {addButtonLabel}
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="relative w-full overflow-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-zinc-50/50">
+                <th className="h-12 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Name</th>
+                <th className="h-12 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Slug</th>
+                <th className="h-12 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Tax Rate</th>
+                <th className="h-12 px-6 text-left align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Status</th>
+                <th className="h-12 px-6 text-right align-middle font-bold text-zinc-500 uppercase tracking-widest text-[10px]">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100">
+              {categories.map((category: any) => (
+                <tr key={category.id} className="group transition-colors hover:bg-zinc-50/50">
+                  <td className="px-6 py-4 align-middle font-bold text-zinc-900">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 overflow-hidden flex items-center justify-center shrink-0">
+                        {category.image_url ? (
+                          <img src={category.image_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <ImageIcon className="w-5 h-5 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <span>{category.name}</span>
+                        {category.parent_id && (
+                          <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">
+                            Under {allCategories.find((c: any) => c.id === category.parent_id)?.name || "Unknown"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 align-middle text-zinc-400 font-mono text-xs">{category.slug}</td>
+                  <td className="px-6 py-4 align-middle font-bold text-zinc-900">{category.tax_rate}%</td>
+                  <td className="px-6 py-4 align-middle">
+                    <Badge className={cn(
+                      "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest",
+                      category.status === "Active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-zinc-100 text-zinc-600"
+                    )}>
+                      {category.status}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 align-middle text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-xl hover:bg-white shadow-sm border border-transparent hover:border-zinc-100 text-zinc-400 hover:text-primary transition-all"
+                        onClick={() => onEdit(category)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-xl hover:bg-red-50 shadow-sm border border-transparent hover:border-red-100 text-zinc-400 hover:text-red-600 transition-all"
+                        onClick={() => onDelete(category.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {categories.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-12 text-center text-zinc-400">
+                    <p className="font-bold">No categories found in this section.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+

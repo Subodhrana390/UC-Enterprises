@@ -39,6 +39,7 @@ export default function AddProductPage() {
     warranty_info: "",
     image_url: "",
     images: [] as string[],
+    tax_rate: "0",
   });
 
   useEffect(() => {
@@ -86,6 +87,7 @@ export default function AddProductPage() {
           image_url: formData.images[0] || null,
           images: formData.images,
           status: "Active",
+          tax_rate: parseFloat(formData.tax_rate || "0"),
         },
       ]);
 
@@ -167,23 +169,56 @@ export default function AddProductPage() {
                     id="category"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={formData.category_id}
-                    onChange={(e) => setFormData({...formData, category_id: e.target.value})}
+                    onChange={(e) => {
+                      const catId = e.target.value;
+                      const selectedCat = categories.find(c => c.id === catId);
+                      setFormData({
+                        ...formData, 
+                        category_id: catId,
+                        tax_rate: selectedCat ? selectedCat.tax_rate.toString() : formData.tax_rate
+                      });
+                    }}
                   >
                     <option value="">Select Category</option>
                     {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
+                  {formData.category_id && (
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
+                        Category Tax Default: {categories.find(c => c.id === formData.category_id)?.tax_rate || 0}%
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="short_description">Short Description</Label>
-                <Input 
-                  id="short_description" 
-                  placeholder="e.g. A brief overview of the product for quick reading." 
-                  value={formData.short_description}
-                  onChange={(e) => setFormData({...formData, short_description: e.target.value})}
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tax_rate">Product Tax Rate (%)</Label>
+                  <div className="relative">
+                    <Input 
+                      id="tax_rate" 
+                      type="number" 
+                      placeholder="0" 
+                      value={formData.tax_rate}
+                      onChange={(e) => setFormData({...formData, tax_rate: e.target.value})}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-bold">%</div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground font-medium italic">Defaults to category rate, but can be overridden.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="short_description">Short Description</Label>
+                  <Input 
+                    id="short_description" 
+                    placeholder="e.g. A brief overview..." 
+                    value={formData.short_description}
+                    onChange={(e) => setFormData({...formData, short_description: e.target.value})}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
