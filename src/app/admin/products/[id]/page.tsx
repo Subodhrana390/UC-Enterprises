@@ -35,6 +35,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     price: "",
     category_id: "",
     stock_quantity: "0",
+    short_description: "",
+    long_description: "",
     description: "",
     specification: "",
     manufacturing_info: "",
@@ -58,6 +60,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             price: productData.price.toString(),
             category_id: productData.category_id || "",
             stock_quantity: productData.stock_quantity.toString(),
+            short_description: productData.short_description || "",
+            long_description: productData.long_description || "",
             description: productData.description || "",
             specification: productData.specification || "",
             manufacturing_info: productData.manufacturing_info || "",
@@ -106,7 +110,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           price: parseFloat(formData.price),
           category_id: formData.category_id || null,
           stock_quantity: parseInt(formData.stock_quantity),
-          description: formData.description,
+          short_description: formData.short_description,
+          long_description: formData.long_description,
+          description: formData.short_description || formData.description, // For backward compatibility
           specification: formData.specification,
           manufacturing_info: formData.manufacturing_info,
           warranty_info: formData.warranty_info,
@@ -226,6 +232,14 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   </select>
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="short_description">Short Description</Label>
+                <Input 
+                  id="short_description" 
+                  value={formData.short_description}
+                  onChange={(e) => setFormData({...formData, short_description: e.target.value})}
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -243,9 +257,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 </TabsList>
                 <TabsContent value="description" className="mt-6">
                   <RichTextEditor 
-                    label="Product Description"
-                    value={formData.description}
-                    onChange={(content) => handleEditorChange("description", content)}
+                    label="Product Long Description"
+                    value={formData.long_description}
+                    onChange={(content) => handleEditorChange("long_description", content)}
                   />
                 </TabsContent>
                 <TabsContent value="specification" className="mt-6">

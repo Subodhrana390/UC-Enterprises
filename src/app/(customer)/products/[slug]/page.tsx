@@ -13,6 +13,7 @@ import AddToCartButton from "@/components/storefront/AddToCartButton";
 import WishlistToggleButton from "@/components/storefront/WishlistToggleButton";
 import ProductReviews from "@/components/storefront/ProductReviews";
 import QuoteRequestForm from "@/components/storefront/QuoteRequestForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -112,7 +113,11 @@ export default function ProductDetailPage() {
             <div className="space-y-3">
               <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">{product.categories?.name || "UC Enterprises"}</p>
               <h1 className="text-4xl font-black tracking-tight text-zinc-950">{product.name}</h1>
-              <p className="text-sm leading-6 text-zinc-600">Real-time product content from the connected backend catalog.</p>
+              {product.short_description ? (
+                <p className="text-sm leading-6 text-zinc-600">{product.short_description}</p>
+              ) : (
+                <p className="text-sm leading-6 text-zinc-600">Real-time product content from the connected backend catalog.</p>
+              )}
             </div>
 
             <div className="space-y-2 border-y border-orange-100 py-5">
@@ -133,10 +138,8 @@ export default function ProductDetailPage() {
               />
             </div>
 
-            <div
-              className="prose prose-sm max-w-none text-zinc-700"
-              dangerouslySetInnerHTML={{ __html: product.description || "<p>No description available yet.</p>" }}
-            />
+            {/* Short description removed from here as it's now above the price */}
+
 
             <div className="flex flex-wrap gap-3">
               <AddToCartButton
@@ -168,19 +171,49 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <section className="mt-12 grid gap-6 lg:grid-cols-3">
-          <div className="border border-zinc-200 bg-white p-6 lg:col-span-1">
-            <h2 className="text-lg font-black text-zinc-950">Specification</h2>
-            <div className="mt-4 prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.specification || "<p>Specification details will be updated soon.</p>" }} />
-          </div>
-          <div className="border border-zinc-200 bg-white p-6 lg:col-span-1">
-            <h2 className="text-lg font-black text-zinc-950">Manufacturing</h2>
-            <div className="mt-4 prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.manufacturing_info || "<p>Manufacturing details will be updated soon.</p>" }} />
-          </div>
-          <div className="border border-zinc-200 bg-white p-6 lg:col-span-1">
-            <h2 className="text-lg font-black text-zinc-950">Warranty</h2>
-            <div className="mt-4 prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.warranty_info || "<p>Warranty details will be updated soon.</p>" }} />
-          </div>
+        <section className="mt-12">
+          <Tabs defaultValue="description" className="w-full">
+            <TabsList className="flex w-full justify-start rounded-none border-b border-zinc-200 bg-transparent p-0 h-auto gap-8">
+              <TabsTrigger 
+                value="description" 
+                className="rounded-none border-b-2 border-transparent px-0 py-4 text-xs font-black uppercase tracking-widest text-zinc-500 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-zinc-950"
+              >
+                Description
+              </TabsTrigger>
+              <TabsTrigger 
+                value="specification" 
+                className="rounded-none border-b-2 border-transparent px-0 py-4 text-xs font-black uppercase tracking-widest text-zinc-500 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-zinc-950"
+              >
+                Specification
+              </TabsTrigger>
+              <TabsTrigger 
+                value="manufacturing" 
+                className="rounded-none border-b-2 border-transparent px-0 py-4 text-xs font-black uppercase tracking-widest text-zinc-500 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-zinc-950"
+              >
+                Manufacturing
+              </TabsTrigger>
+              <TabsTrigger 
+                value="warranty" 
+                className="rounded-none border-b-2 border-transparent px-0 py-4 text-xs font-black uppercase tracking-widest text-zinc-500 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-zinc-950"
+              >
+                Warranty
+              </TabsTrigger>
+            </TabsList>
+            <div className="mt-8">
+              <TabsContent value="description">
+                <div className="prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.long_description || product.description || "<p>No detailed description available yet.</p>" }} />
+              </TabsContent>
+              <TabsContent value="specification">
+                <div className="prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.specification || "<p>Specification details will be updated soon.</p>" }} />
+              </TabsContent>
+              <TabsContent value="manufacturing">
+                <div className="prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.manufacturing_info || "<p>Manufacturing details will be updated soon.</p>" }} />
+              </TabsContent>
+              <TabsContent value="warranty">
+                <div className="prose prose-sm max-w-none text-zinc-700" dangerouslySetInnerHTML={{ __html: product.warranty_info || "<p>Warranty details will be updated soon.</p>" }} />
+              </TabsContent>
+            </div>
+          </Tabs>
         </section>
 
         {/* Similar Products */}

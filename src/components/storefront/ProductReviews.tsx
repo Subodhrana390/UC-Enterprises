@@ -8,6 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/utils/supabase/client";
 import { formatDate } from "@/lib/format";
 import { toast } from "sonner";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const REVIEWS_PER_PAGE = 5;
 
 type Review = {
   id: string;
@@ -26,23 +29,31 @@ export default function ProductReviews({ productId }: { productId: string }) {
   const [title, setTitle] = useState("");
   const [review, setReview] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  async function loadReviews() {
-    const { data, error } = await supabase
+  async function loadReviews(page = 1) {
+    setLoading(true);
+    const from = (page - 1) * REVIEWS_PER_PAGE;
+    const to = from + REVIEWS_PER_PAGE - 1;
+
+    const { data, error, count } = await supabase
       .from("product_reviews")
-      .select("id, reviewer_name, rating, title, review, created_at")
+      .select("id, reviewer_name, rating, title, review, created_at", { count: "exact" })
       .eq("product_id", productId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
     if (!error) {
       setReviews((data as Review[]) || []);
+      setTotalCount(count || 0);
     }
     setLoading(false);
   }
 
   useEffect(() => {
-    loadReviews();
-  }, [productId]);
+    loadReviews(currentPage);
+  }, [productId, currentPage]);
 
   async function handleSubmit() {
     if (!review.trim()) {
@@ -90,8 +101,11 @@ export default function ProductReviews({ productId }: { productId: string }) {
     setReview("");
     setRating(5);
     toast.success("Review submitted");
-    loadReviews();
+    setCurrentPage(1);
+    loadReviews(1);
   }
+
+  const totalPages = Math.ceil(totalCount / REVIEWS_PER_PAGE);
 
   return (
     <section className="mt-12 space-y-6">
@@ -104,24 +118,65 @@ export default function ProductReviews({ productId }: { productId: string }) {
         <div className="space-y-4">
           {loading ? (
             <div className="border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Loading reviews...</div>
-          ) : reviews.length ? (
-            reviews.map((item) => (
-              <div key={item.id} className="border border-zinc-200 bg-white p-6">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-bold text-zinc-950">{item.reviewer_name}</p>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">{formatDate(item.created_at)}</p>
+          ) : reviews.length > 0 ? (
+            <>
+              <div className="space-y-4">
+                {reviews.map((item) => (
+                  <div key={item.id} className="border border-zinc-200 bg-white p-6">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-zinc-950">{item.reviewer_name}</p>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400">{formatDate(item.created_at)}</p>
+                      </div>
+                      <div className="flex items-center gap-1 text-amber-500">
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <Star key={index} className={`h-4 w-4 ${index < item.rating ? "fill-current" : ""}`} />
+                        ))}
+                      </div>
+                    </div>
+                    {item.title && <h3 className="mt-4 text-lg font-bold text-zinc-950">{item.title}</h3>}
+                    <p className="mt-2 text-sm leading-6 text-zinc-600">{item.review}</p>
                   </div>
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <Star key={index} className={`h-4 w-4 ${index < item.rating ? "fill-current" : ""}`} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="h-8 w-8 rounded-none border-zinc-200"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                      <Button
+                        key={i}
+                        variant={currentPage === i + 1 ? "default" : "outline"}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={`h-8 min-w-[2rem] rounded-none px-2 text-xs font-bold ${
+                          currentPage === i + 1 ? "bg-zinc-950" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                        }`}
+                      >
+                        {i + 1}
+                      </Button>
                     ))}
                   </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-8 w-8 rounded-none border-zinc-200"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
-                {item.title && <h3 className="mt-4 text-lg font-bold text-zinc-950">{item.title}</h3>}
-                <p className="mt-2 text-sm leading-6 text-zinc-600">{item.review}</p>
-              </div>
-            ))
+              )}
+            </>
           ) : (
             <div className="border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-500">
               No reviews yet. Be the first customer to share feedback.

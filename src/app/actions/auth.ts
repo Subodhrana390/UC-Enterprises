@@ -30,7 +30,6 @@ export async function signup(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const name = formData.get('name') as string
-  const company = formData.get('company') as string
   const phone = formData.get('phone') as string
   const gst = formData.get('gst') as string
 
@@ -40,7 +39,6 @@ export async function signup(formData: FormData) {
     options: {
       data: {
         full_name: name,
-        company_name: company,
         phone_number: phone,
         gst_number: gst,
       },
@@ -56,7 +54,6 @@ export async function signup(formData: FormData) {
       id: data.user.id,
       email,
       full_name: name,
-      company_name: company,
       phone,
       gst_number: gst || null,
       role: 'customer',

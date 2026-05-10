@@ -132,22 +132,7 @@ export default function AdminLayout({
             })}
           </div>
 
-          <div className="mt-8 mb-4">
-            <Separator className="bg-zinc-100 mb-6" />
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start gap-4 text-zinc-500 hover:text-red-600 hover:bg-red-50 h-12 rounded-2xl font-bold px-4 transition-all"
-              onClick={async () => {
-                const { signout } = await import("@/app/actions/auth");
-                await signout();
-              }}
-            >
-              <div className="p-1.5 rounded-lg bg-red-50 text-red-500">
-                <LogOut className="w-4 h-4" />
-              </div>
-              Terminate Session
-            </Button>
-          </div>
+
         </ScrollArea>
       </aside>
 
@@ -187,12 +172,7 @@ export default function AdminLayout({
               <DropdownMenuContent align="end" className="w-56 mt-2 rounded-2xl p-2 shadow-xl border-zinc-100">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="font-black text-[10px] uppercase tracking-widest text-zinc-400 p-3">Account Settings</DropdownMenuLabel>
-                  <DropdownMenuItem className="rounded-xl gap-3 p-3 font-bold text-sm">
-                    <Users className="w-4 h-4" /> Profile Details
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-xl gap-3 p-3 font-bold text-sm">
-                    <Settings className="w-4 h-4" /> Preferences
-                  </DropdownMenuItem>
+
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="my-2" />
                 <DropdownMenuItem 
@@ -260,18 +240,7 @@ export default function AdminLayout({
                     })}
                   </div>
                 </ScrollArea>
-                <div className="p-6 border-t">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start gap-4 text-red-600 hover:bg-red-50 h-12 rounded-2xl font-bold px-4"
-                    onClick={async () => {
-                      const { signout } = await import("@/app/actions/auth");
-                      await signout();
-                    }}
-                  >
-                    <LogOut className="w-4 h-4" /> Log Out
-                  </Button>
-                </div>
+
               </motion.aside>
             </>
           )}

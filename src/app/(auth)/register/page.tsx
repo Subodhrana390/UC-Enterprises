@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { User, Mail, Lock, ArrowRight, ShieldCheck, Building2, Loader2 } from "lucide-react";
+import { User, Mail, Lock, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signup } from "@/app/actions/auth";
 import { toast } from "sonner";
@@ -60,19 +60,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Company Name</label>
-              <div className="relative">
-                <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                <input 
-                  name="company"
-                  type="text" 
-                  placeholder="Industrial Solutions Ltd"
-                  required
-                  className="w-full bg-zinc-50 border border-zinc-100 px-12 py-4 text-sm font-bold focus:outline-none focus:border-primary focus:bg-white transition-all rounded-none"
-                />
-              </div>
-            </div>
+
 
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Email ID</label>
