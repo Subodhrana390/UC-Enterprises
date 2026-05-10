@@ -103,13 +103,13 @@ export default function ProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Maal Ki Suchi (Product Inventory)</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Product Inventory</h1>
           <p className="text-muted-foreground">Manage your industrial product inventory.</p>
         </div>
         <Link href="/admin/products/add">
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
-            Naya Maal Jodein (Add)
+            Add Product
           </Button>
         </Link>
       </div>
@@ -133,11 +133,11 @@ export default function ProductsPage() {
               <thead>
                 <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-[100px]">Image</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Maal Ka Naam (Product)</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Shreni (Category)</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Keemat (Price)</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Bachaa Hua Maal (Stock)</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Sthiti (Status)</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Product</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Category</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Price</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Stock</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
                   <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
@@ -190,7 +190,7 @@ export default function ProductsPage() {
                             className="gap-2 text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer rounded-lg"
                             onClick={() => handleDeleteProduct(product.id)}
                           >
-                            <Trash2 className="w-4 h-4" /> Remove Maal
+                            <Trash2 className="w-4 h-4" /> Remove Product
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

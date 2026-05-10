@@ -16,7 +16,9 @@ import {
   Clock,
   IndianRupee, 
   Activity,
-  Terminal
+  Terminal,
+  Image,
+  BadgePercent
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,8 +61,8 @@ export default function AdminLayout({
           table: 'orders'
         },
         (payload) => {
-          toast.success(`Naya Order Mila! #${payload.new.id.slice(0, 8).toUpperCase()}`, {
-            description: `${payload.new.customer_name} ne ₹${payload.new.total_amount} ka order diya hai.`,
+          toast.success(`New Order Received! #${payload.new.id.slice(0, 8).toUpperCase()}`, {
+            description: `${payload.new.customer_name} placed an order worth ₹${payload.new.total_amount}.`,
             duration: 5000,
           });
         }
@@ -84,6 +86,8 @@ export default function AdminLayout({
     { icon: <Clock className="w-4 h-4" />, label: "Orders", href: "/admin/orders" },
     { icon: <IndianRupee className="w-4 h-4" />, label: "Payments", href: "/admin/payments" },
     { icon: <Activity className="w-4 h-4" />, label: "Inventory", href: "/admin/inventory" },
+    { icon: <Image className="w-4 h-4" />, label: "Banners", href: "/admin/banners" },
+    { icon: <BadgePercent className="w-4 h-4" />, label: "Deals", href: "/admin/deals" },
     { icon: <Users className="w-4 h-4" />, label: "Customers", href: "/admin/customers" },
     { icon: <Settings className="w-4 h-4" />, label: "Settings", href: "/admin/settings" },
   ];

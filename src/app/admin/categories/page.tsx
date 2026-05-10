@@ -171,12 +171,12 @@ export default function CategoriesPage() {
     <div className="space-y-6 relative min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Shreni Prabandhan (Categories)</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Category Management</h1>
           <p className="text-muted-foreground">Manage your product hierarchy and taxonomy.</p>
         </div>
         <Button className="gap-2 shadow-lg shadow-primary/20" onClick={() => handleOpenDrawer()}>
           <Plus className="w-4 h-4" />
-          Nayi Shreni (Add)
+          Add Category
         </Button>
       </div>
 
@@ -272,7 +272,7 @@ export default function CategoriesPage() {
                               className="gap-3 p-3 rounded-xl font-bold text-sm text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                               onClick={() => handleDelete(category.id)}
                             >
-                              <Trash2 className="w-4 h-4" /> Remove Shreni
+                              <Trash2 className="w-4 h-4" /> Remove Category
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -312,7 +312,7 @@ export default function CategoriesPage() {
             >
               <div className="p-8 border-b flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight">{editingCategory ? "Edit Shreni" : "Nayi Shreni"}</h2>
+                  <h2 className="text-2xl font-black tracking-tight">{editingCategory ? "Edit Category" : "New Category"}</h2>
                   <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Details</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => setIsDrawerOpen(false)} className="rounded-2xl">
@@ -322,7 +322,7 @@ export default function CategoriesPage() {
 
               <form onSubmit={handleSubmit} className="flex-1 flex flex-col p-8 space-y-6 overflow-y-auto">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Shreni Ka Naam (Name)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Category Name</label>
                   <Input 
                     value={formData.name}
                     onChange={(e) => handleNameChange(e.target.value)}
@@ -444,7 +444,7 @@ export default function CategoriesPage() {
                     disabled={saving}
                   >
                     {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                    {editingCategory ? "Update Shreni" : "Jodein (Save Category)"}
+                    {editingCategory ? "Update Category" : "Save Category"}
                   </Button>
                 </div>
               </form>

@@ -110,15 +110,15 @@ export default function AdminDashboardPage() {
 
   const cards = [
     {
-      title: "Kul Kamai (Revenue)",
+      title: "Total Revenue",
       value: `₹${stats.totalRevenue.toLocaleString('en-IN')}`,
-      description: "+20.1% pichle mahine se",
+      description: "+20.1% from last month",
       icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,
       color: "bg-emerald-500/10",
       trend: "up"
     },
     {
-      title: "Upalabdh Maal (Products)",
+      title: "Active Products",
       value: stats.activeProducts.toString(),
       description: "Live in store",
       icon: <Package className="w-5 h-5 text-blue-500" />,
@@ -126,15 +126,15 @@ export default function AdminDashboardPage() {
       trend: "up"
     },
     {
-      title: "Kul Bikri (Orders)",
+      title: "Total Orders",
       value: `+${stats.totalSales}`,
-      description: "Saphaltapoorvak Orders",
+      description: "Successful orders",
       icon: <ShoppingBag className="w-5 h-5 text-purple-500" />,
       color: "bg-purple-500/10",
       trend: "up"
     },
     {
-      title: "Kul Grahak (Customers)",
+      title: "Total Customers",
       value: stats.activeUsers.toLocaleString(),
       description: "Registered accounts",
       icon: <Users className="w-5 h-5 text-amber-500" />,
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-10">
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <h1 className="text-4xl font-black tracking-tighter uppercase italic">Vyapaar <span className="text-primary">Dashboard</span></h1>
+          <h1 className="text-4xl font-black tracking-tighter uppercase italic">Business <span className="text-primary">Dashboard</span></h1>
           <p className="text-sm text-muted-foreground font-medium">Strategic overview of UC Enterprises operations (Zirakpur Hub).</p>
         </div>
         <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border shadow-sm">
@@ -210,8 +210,8 @@ export default function AdminDashboardPage() {
           <CardHeader className="p-8 pb-0">
             <div className="flex items-center justify-between">
                <div>
-                  <CardTitle className="text-xl font-black tracking-tight">Kamai Ka Vivaran (Revenue Analytics)</CardTitle>
-                  <CardDescription className="text-xs font-medium">Bikri ka graph - Last 7 Days.</CardDescription>
+                  <CardTitle className="text-xl font-black tracking-tight">Revenue Analytics</CardTitle>
+                  <CardDescription className="text-xs font-medium">Sales performance — Last 7 Days.</CardDescription>
                </div>
                <Button variant="outline" size="sm" className="rounded-xl border-zinc-100 font-bold text-[10px] uppercase tracking-widest h-9">Export Data</Button>
             </div>
@@ -260,8 +260,8 @@ export default function AdminDashboardPage() {
         
         <Card className="col-span-3 border-none shadow-sm rounded-[2.5rem]">
           <CardHeader className="p-8 pb-4">
-            <CardTitle className="text-xl font-black tracking-tight">Haal Hi Ke Order (Recent Activity)</CardTitle>
-            <CardDescription className="text-xs font-medium">Naye orders aur updates.</CardDescription>
+            <CardTitle className="text-xl font-black tracking-tight">Recent Activity</CardTitle>
+            <CardDescription className="text-xs font-medium">Latest orders and updates.</CardDescription>
           </CardHeader>
           <CardContent className="p-8 pt-0">
              <div className="space-y-6">
@@ -283,12 +283,12 @@ export default function AdminDashboardPage() {
                 ))}
                 {recentOrders.length === 0 && (
                   <div className="text-center py-10 text-muted-foreground text-xs font-bold uppercase tracking-widest">
-                    Abhi koi order nahi hai
+                    No orders yet
                   </div>
                 )}
              </div>
              <Button variant="ghost" className="w-full mt-8 rounded-2xl font-black text-[10px] uppercase tracking-widest text-primary hover:bg-primary/5 h-12">
-                Saare Orders Dekhein
+                View All Orders
              </Button>
           </CardContent>
         </Card>
