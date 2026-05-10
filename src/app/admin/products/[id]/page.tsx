@@ -1,0 +1,310 @@
+"use client";
+
+import { useState, useEffect, use } from "react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-[300px] w-full bg-zinc-50 animate-pulse rounded-md border" />
+});
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Save, Loader2, Trash2, Plus, X } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import MultiImageUpload from "@/components/admin/MultiImageUpload";
+
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const productId = resolvedParams.id;
+  
+  const router = useRouter();
+  const supabase = createClient();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    category_id: "",
+    stock_quantity: "0",
+    description: "",
+    specification: "",
+    manufacturing_info: "",
+    warranty_info: "",
+    image_url: "",
+    images: [] as string[],
+    status: "Active",
+  });
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [{ data: productData }, { data: categoriesData }] = await Promise.all([
+          supabase.from("products").select("*").eq("id", productId).single(),
+          supabase.from("categories").select("*").order("name")
+        ]);
+
+        if (productData) {
+          setFormData({
+            name: productData.name,
+            price: productData.price.toString(),
+            category_id: productData.category_id || "",
+            stock_quantity: productData.stock_quantity.toString(),
+            description: productData.description || "",
+            specification: productData.specification || "",
+            manufacturing_info: productData.manufacturing_info || "",
+            warranty_info: productData.warranty_info || "",
+            image_url: productData.image_url || "",
+            images: productData.images || [],
+            status: productData.status || "Active",
+          });
+        }
+        if (categoriesData) setCategories(categoriesData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load product data.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [supabase, productId]);
+
+  const handleEditorChange = (field: string, content: string) => {
+    setFormData((prev) => ({ ...prev, [field]: content }));
+  };
+
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^\w ]+/g, "")
+      .replace(/ +/g, "-");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.price) {
+      toast.error("Please fill in the required fields.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const slug = generateSlug(formData.name);
+      const { error } = await supabase.from("products").update(
+        {
+          name: formData.name,
+          slug,
+          price: parseFloat(formData.price),
+          category_id: formData.category_id || null,
+          stock_quantity: parseInt(formData.stock_quantity),
+          description: formData.description,
+          specification: formData.specification,
+          manufacturing_info: formData.manufacturing_info,
+          warranty_info: formData.warranty_info,
+          image_url: formData.images[0] || null,
+          images: formData.images,
+          status: formData.status,
+        },
+      ).eq("id", productId);
+
+      if (error) throw error;
+
+      toast.success("Product updated successfully!");
+      router.push("/admin/products");
+    } catch (error: any) {
+      console.error("Error updating product:", error);
+      toast.error(error.message || "Failed to update product.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    
+    try {
+      const { error } = await supabase.from("products").delete().eq("id", productId);
+      if (error) throw error;
+      toast.success("Product deleted");
+      router.push("/admin/products");
+    } catch (error: any) {
+      toast.error(error.message || "Delete failed");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/products">
+            <Button variant="outline" size="icon">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Edit Product</h1>
+            <p className="text-muted-foreground">Update product information and inventory.</p>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={handleDelete} className="text-red-600 hover:bg-red-50 hover:text-red-600 border-red-100">
+            <Trash2 className="w-4 h-4 mr-2" /> Delete
+          </Button>
+          <Button onClick={handleSubmit} className="gap-2" disabled={saving}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? "Saving..." : "Update Product"}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Basic Information</CardTitle>
+              <CardDescription>Update name, price and category.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Product Name *</Label>
+                <Input 
+                  id="name" 
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price (₹) *</Label>
+                  <Input 
+                    id="price" 
+                    type="number" 
+                    value={formData.price}
+                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="stock">Stock Quantity</Label>
+                  <Input 
+                    id="stock" 
+                    type="number" 
+                    value={formData.stock_quantity}
+                    onChange={(e) => setFormData({...formData, stock_quantity: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <select
+                    id="category"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={formData.category_id}
+                    onChange={(e) => setFormData({...formData, category_id: e.target.value})}
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Content</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="description" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="description">Description</TabsTrigger>
+                  <TabsTrigger value="specification">Specification</TabsTrigger>
+                  <TabsTrigger value="manufacturing">Manufacturing</TabsTrigger>
+                  <TabsTrigger value="warranty">Warranty</TabsTrigger>
+                </TabsList>
+                <TabsContent value="description" className="mt-6">
+                  <RichTextEditor 
+                    label="Product Description"
+                    value={formData.description}
+                    onChange={(content) => handleEditorChange("description", content)}
+                  />
+                </TabsContent>
+                <TabsContent value="specification" className="mt-6">
+                  <RichTextEditor 
+                    label="Product Specification"
+                    value={formData.specification}
+                    onChange={(content) => handleEditorChange("specification", content)}
+                  />
+                </TabsContent>
+                <TabsContent value="manufacturing" className="mt-6">
+                  <RichTextEditor 
+                    label="Manufacturing Information"
+                    value={formData.manufacturing_info}
+                    onChange={(content) => handleEditorChange("manufacturing_info", content)}
+                  />
+                </TabsContent>
+                <TabsContent value="warranty" className="mt-6">
+                  <RichTextEditor 
+                    label="Warranty Information"
+                    value={formData.warranty_info}
+                    onChange={(content) => handleEditorChange("warranty_info", content)}
+                  />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Image</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MultiImageUpload 
+                images={formData.images} 
+                onChange={(images) => setFormData(prev => ({ ...prev, images }))} 
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+              >
+                <option value="Active">Active</option>
+                <option value="Draft">Draft</option>
+                <option value="Archived">Archived</option>
+              </select>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
