@@ -46,7 +46,7 @@ export default async function CategoriesPage({
           <p className="max-w-2xl text-sm text-zinc-600">
             {activeMeta
               ? activeMeta.description
-              : "Our categories are grouped into hardware welding, electronic goods, lab chemicals and powders, and general order supply."}
+              : "Our categories are grouped into chemicals, glassware, tools, safety equipment, and industrial goods."}
           </p>
         </div>
 

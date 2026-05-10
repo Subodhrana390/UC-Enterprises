@@ -2,12 +2,17 @@ export const supportPhone = "+91 98888 63377";
 export const supportPhoneHref = "tel:+919888863377";
 export const supportEmail = "ucenterprises1@gmail.com";
 export const supportEmailHref = "mailto:ucenterprises1@gmail.com";
+export const companyAddress = "Shop No. 1, Khairabad Village, Near Bus Stand, Bela Road, Khairabad, Ropar, Punjab - 140001, India.";
+export const companyTagline = "Complete solutions for laboratory, industrial & safety requirements.";
+export const companyCoreValues = "Quality is our Promise, Safety is our Priority.";
+export const companyWebsite = "www.ucenterprises.in";
 
 export type StoreDepartment =
-  | "hardware-welding"
-  | "electronic-goods"
-  | "lab-chemicals-powders"
-  | "general-order-supply";
+  | "chemicals-reagents"
+  | "glassware-plasticware"
+  | "tools-hardware"
+  | "safety-equipment-ppe"
+  | "industrial-electrical";
 
 export const storeDepartments: Array<{
   id: StoreDepartment;
@@ -15,68 +20,78 @@ export const storeDepartments: Array<{
   description: string;
 }> = [
   {
-    id: "hardware-welding",
-    label: "Hardware Welding",
-    description: "Welding tools, metal hardware, fabrication support items, and workshop materials.",
+    id: "chemicals-reagents",
+    label: "Chemicals & Reagents",
+    description: "Laboratory chemicals, analytical reagents, solvents, powders, and specialty chemicals.",
   },
   {
-    id: "electronic-goods",
-    label: "Electronic Goods",
-    description: "Business electronics, accessories, office devices, and project equipment supply.",
+    id: "glassware-plasticware",
+    label: "Glassware & Plasticware",
+    description: "Beakers, flasks, test tubes, measuring cylinders, pipettes, and lab consumables.",
   },
   {
-    id: "lab-chemicals-powders",
-    label: "Lab Chemicals & Powders",
-    description: "Chemicals, powders, lab-use consumables, and institutional procurement support.",
+    id: "tools-hardware",
+    label: "Tools & Hardware",
+    description: "Power tools, hand tools, measuring tools, cutting tools, and hardware fasteners.",
   },
   {
-    id: "general-order-supply",
-    label: "General Order Supply",
-    description: "Mixed-category sourcing for daily business, office, and recurring supply needs.",
+    id: "safety-equipment-ppe",
+    label: "Safety Equipment & PPE",
+    description: "Personal protective equipment, first aid, hazard signage, fire safety, and fall protection.",
+  },
+  {
+    id: "industrial-electrical",
+    label: "Industrial & Electrical",
+    description: "Electrical accessories, electronic equipment, wires, detectors, and lockout/tagout devices.",
   },
 ];
 
 const departmentKeywordMap: Record<StoreDepartment, string[]> = {
-  "hardware-welding": [
-    "weld",
-    "welding",
-    "hardware",
-    "industrial",
-    "metal",
-    "tool",
-    "fastener",
-    "safety",
-  ],
-  "electronic-goods": [
-    "electronic",
-    "electronics",
-    "computer",
-    "laptop",
-    "printer",
-    "network",
-    "cctv",
-    "monitor",
-    "mobile",
-    "ups",
-    "server",
-  ],
-  "lab-chemicals-powders": [
-    "lab",
+  "chemicals-reagents": [
     "chemical",
-    "chemicals",
-    "powder",
-    "powders",
     "reagent",
     "solvent",
+    "powder",
+    "buffer",
+    "indicator",
   ],
-  "general-order-supply": [
-    "general",
-    "office",
-    "supply",
-    "supplies",
-    "stationery",
-    "housekeeping",
-    "packing",
+  "glassware-plasticware": [
+    "glassware",
+    "plasticware",
+    "beaker",
+    "flask",
+    "tube",
+    "cylinder",
+    "pipette",
+    "bottle",
+  ],
+  "tools-hardware": [
+    "tool",
+    "hardware",
+    "power",
+    "hand",
+    "measure",
+    "cut",
+    "fastener",
+  ],
+  "safety-equipment-ppe": [
+    "safety",
+    "ppe",
+    "protective",
+    "first aid",
+    "hazard",
+    "fire",
+    "mask",
+    "goggle",
+  ],
+  "industrial-electrical": [
+    "industrial",
+    "electrical",
+    "electronic",
+    "wire",
+    "detector",
+    "lockout",
+    "tagout",
   ],
 };
 
@@ -91,11 +106,11 @@ export function getDepartmentFromCategoryName(name: string | null | undefined): 
     }
   }
 
-  return "general-order-supply";
+  return "industrial-electrical";
 }
 
 export function getDepartmentMeta(department: StoreDepartment) {
-  return storeDepartments.find((item) => item.id === department) || storeDepartments[3];
+  return storeDepartments.find((item) => item.id === department) || storeDepartments[4];
 }
 
 export const primaryNavLinks = [

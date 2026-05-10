@@ -15,7 +15,7 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: "UC Enterprises",
-  description: "UC Enterprises supplies hardware welding materials, electronic goods, lab chemicals and powders, and general order requirements across India.",
+  description: "UC Enterprises supplies laboratory chemicals, glassware, tools, safety equipment, and industrial electrical goods across India.",
   icons: {
     icon: [
       { url: "/favicon.ico" },

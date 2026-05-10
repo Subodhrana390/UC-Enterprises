@@ -212,7 +212,7 @@ export default function DealsAdminPage() {
                   <div className="flex gap-2">{[true, false].map((val) => (<button key={String(val)} type="button" onClick={() => setFormData({ ...formData, is_active: val })} className={cn("flex-1 h-12 rounded-2xl font-bold text-sm transition-all border", formData.is_active === val ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "bg-zinc-50 text-zinc-500 border-zinc-100")}>{val ? "Active" : "Inactive"}</button>))}</div>
                 </div>
               </div>
-              <div className="mt-auto pt-6"><Button className="w-full h-14 rounded-2xl font-black text-lg gap-3 shadow-xl shadow-primary/20" disabled={saving}>{saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}{editingDeal ? "Update Deal" : "Save Deal"}</Button></div>
+              <div className="mt-auto pt-6"><Button type="submit" className="w-full h-14 rounded-2xl font-black text-lg gap-3 shadow-xl shadow-primary/20" disabled={saving}>{saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}{editingDeal ? "Update Deal" : "Save Deal"}</Button></div>
             </form>
           </motion.div>
         </>)}

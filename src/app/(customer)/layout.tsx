@@ -42,7 +42,7 @@ export default async function CustomerLayout({
               <h2 className="text-xl font-black tracking-tight uppercase">UC ENTERPRISES</h2>
             </div>
             <p className="text-sm leading-6 text-zinc-300">
-              Indian ecommerce storefront for hardware welding materials, electronic goods, lab chemicals, powders, and general order supply needs.
+              Indian ecommerce storefront for laboratory chemicals, glassware, tools, safety equipment, and industrial goods.
             </p>
           </div>
           <div>

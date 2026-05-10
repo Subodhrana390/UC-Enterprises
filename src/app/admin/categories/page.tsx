@@ -32,6 +32,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -43,6 +50,8 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerMode, setDrawerMode] = useState<'main' | 'sub'>('main');
+  const [activeTab, setActiveTab] = useState<'main' | 'sub' | 'all'>('main');
   const [saving, setSaving] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
   
@@ -52,6 +61,7 @@ export default function CategoriesPage() {
     description: "",
     status: "Active",
     image_url: "",
+    parent_id: null as string | null,
   });
 
   const supabase = createClient();
@@ -91,7 +101,8 @@ export default function CategoriesPage() {
     });
   };
 
-  const handleOpenDrawer = (category?: any) => {
+  const handleOpenDrawer = (mode: 'main' | 'sub', category?: any) => {
+    setDrawerMode(mode);
     if (category) {
       setEditingCategory(category);
       setFormData({
@@ -100,6 +111,7 @@ export default function CategoriesPage() {
         description: category.description || "",
         status: category.status || "Active",
         image_url: category.image_url || "",
+        parent_id: category.parent_id || null,
       });
     } else {
       setEditingCategory(null);
@@ -109,6 +121,7 @@ export default function CategoriesPage() {
         description: "",
         status: "Active",
         image_url: "",
+        parent_id: null,
       });
     }
     setIsDrawerOpen(true);
@@ -120,13 +133,22 @@ export default function CategoriesPage() {
       toast.error("Category name is required");
       return;
     }
+    if (drawerMode === 'sub' && (!formData.parent_id || formData.parent_id === "none")) {
+      toast.error("Please select a parent category for the subcategory");
+      return;
+    }
+
+    const payload = { ...formData };
+    if (drawerMode === 'main') {
+      payload.parent_id = null;
+    }
 
     setSaving(true);
     try {
       if (editingCategory) {
         const { error } = await supabase
           .from("categories")
-          .update(formData)
+          .update(payload)
           .eq("id", editingCategory.id);
         if (error) throw error;
         toast.success("Category updated successfully");
@@ -167,6 +189,12 @@ export default function CategoriesPage() {
     );
   }
 
+  const filteredCategories = categories.filter(c => {
+    if (activeTab === 'main') return !c.parent_id;
+    if (activeTab === 'sub') return c.parent_id !== null;
+    return true;
+  });
+
   return (
     <div className="space-y-6 relative min-h-[calc(100vh-120px)]">
       <div className="flex items-center justify-between">
@@ -174,10 +202,16 @@ export default function CategoriesPage() {
           <h1 className="text-3xl font-bold tracking-tight">Category Management</h1>
           <p className="text-muted-foreground">Manage your product hierarchy and taxonomy.</p>
         </div>
-        <Button className="gap-2 shadow-lg shadow-primary/20" onClick={() => handleOpenDrawer()}>
-          <Plus className="w-4 h-4" />
-          Add Category
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button className="gap-2 bg-white text-zinc-950 hover:bg-zinc-50 border border-zinc-200 shadow-sm" onClick={() => handleOpenDrawer('sub')}>
+            <Plus className="w-4 h-4" />
+            Add Subcategory
+          </Button>
+          <Button className="gap-2 shadow-lg shadow-primary/20" onClick={() => handleOpenDrawer('main')}>
+            <Plus className="w-4 h-4" />
+            Add Main Category
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -212,9 +246,29 @@ export default function CategoriesPage() {
         <Card className="md:col-span-2 border-none shadow-sm overflow-hidden">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-4">
-              <div className="relative flex-1">
+              <div className="flex items-center gap-1 bg-zinc-50 p-1 rounded-xl">
+                <button 
+                  onClick={() => setActiveTab('main')}
+                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'main' ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950")}
+                >
+                  Main Categories
+                </button>
+                <button 
+                  onClick={() => setActiveTab('sub')}
+                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'sub' ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950")}
+                >
+                  Subcategories
+                </button>
+                <button 
+                  onClick={() => setActiveTab('all')}
+                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'all' ? "bg-white text-primary shadow-sm" : "text-zinc-500 hover:text-zinc-950")}
+                >
+                  All
+                </button>
+              </div>
+              <div className="relative flex-1 max-w-[250px]">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search categories..." className="pl-12 bg-zinc-50 border-none h-12 rounded-2xl" />
+                <Input placeholder="Search categories..." className="pl-12 bg-zinc-50 border-none h-10 rounded-xl" />
               </div>
             </div>
           </CardHeader>
@@ -230,18 +284,25 @@ export default function CategoriesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100">
-                  {categories.map((category) => (
+                  {filteredCategories.map((category) => (
                     <tr key={category.id} className="group transition-colors hover:bg-zinc-50/50">
                       <td className="px-6 py-4 align-middle font-bold text-zinc-900">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 overflow-hidden flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 overflow-hidden flex items-center justify-center shrink-0">
                             {category.image_url ? (
                               <img src={category.image_url} alt="" className="w-full h-full object-cover" />
                             ) : (
                               <FolderTree className="w-5 h-5 text-primary" />
                             )}
                           </div>
-                          {category.name}
+                          <div className="flex flex-col">
+                            <span>{category.name}</span>
+                            {category.parent_id && (
+                              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">
+                                Subcategory of {categories.find(c => c.id === category.parent_id)?.name || "Unknown"}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 align-middle text-zinc-400 font-mono text-xs">{category.slug}</td>
@@ -263,7 +324,7 @@ export default function CategoriesPage() {
                           <DropdownMenuContent align="end" className="w-48 p-2 rounded-2xl shadow-xl border-zinc-100">
                             <DropdownMenuGroup>
                               <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">Manage</DropdownMenuLabel>
-                              <DropdownMenuItem className="gap-3 p-3 rounded-xl font-bold text-sm cursor-pointer" onClick={() => handleOpenDrawer(category)}>
+                              <DropdownMenuItem className="gap-3 p-3 rounded-xl font-bold text-sm cursor-pointer" onClick={() => handleOpenDrawer(category.parent_id ? 'sub' : 'main', category)}>
                                 <Edit className="w-4 h-4" /> Edit Details
                               </DropdownMenuItem>
                             </DropdownMenuGroup>
@@ -312,7 +373,11 @@ export default function CategoriesPage() {
             >
               <div className="p-8 border-b flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight">{editingCategory ? "Edit Category" : "New Category"}</h2>
+                  <h2 className="text-2xl font-black tracking-tight">
+                    {editingCategory 
+                      ? `Edit ${drawerMode === 'main' ? 'Main Category' : 'Subcategory'}` 
+                      : `New ${drawerMode === 'main' ? 'Main Category' : 'Subcategory'}`}
+                  </h2>
                   <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Details</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => setIsDrawerOpen(false)} className="rounded-2xl">
@@ -340,6 +405,28 @@ export default function CategoriesPage() {
                     className="h-12 rounded-2xl bg-zinc-100 border-transparent text-zinc-400 font-mono text-xs"
                   />
                 </div>
+
+                {drawerMode === 'sub' && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Parent Category</label>
+                    <Select 
+                      value={formData.parent_id || "none"} 
+                      onValueChange={(val) => setFormData({...formData, parent_id: val === "none" ? null : val})}
+                    >
+                      <SelectTrigger className="h-12 rounded-2xl bg-zinc-50 border-zinc-100 font-bold">
+                        <SelectValue placeholder="Select Parent Category" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-zinc-100 shadow-xl z-[70]">
+                        <SelectItem value="none" className="font-bold cursor-pointer" disabled>Select a Main Category</SelectItem>
+                        {categories
+                          .filter(c => !c.parent_id && c.id !== editingCategory?.id)
+                          .map(c => (
+                          <SelectItem key={c.id} value={c.id} className="cursor-pointer">{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Description</label>
@@ -440,6 +527,7 @@ export default function CategoriesPage() {
 
                 <div className="mt-auto pt-8">
                   <Button 
+                    type="submit"
                     className="w-full h-14 rounded-2xl font-black text-lg gap-3 shadow-xl shadow-primary/20"
                     disabled={saving}
                   >

@@ -124,7 +124,7 @@ export default function DealsPage() {
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
               { title: "Welding and hardware volume pricing", description: "Special commercial pricing for repeat industrial orders, contractors, and workshop supply requirements." },
-              { title: "Electronic goods combo savings", description: "Bundle electronics and accessories for offices, stores, schools, and project deployments." },
+              { title: "Industrial & Electrical combo savings", description: "Bundle electrical accessories and project equipment for your facility." },
               { title: "Lab chemicals and powders support", description: "Priority handling and negotiated rates for recurring lab consumables and powder supply procurement." },
             ].map((deal) => (
               <div key={deal.title} className="border border-orange-100 bg-white p-6 shadow-sm">

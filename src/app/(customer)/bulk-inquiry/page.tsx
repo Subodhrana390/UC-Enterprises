@@ -9,7 +9,7 @@ export default function BulkInquiryPage() {
           <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">Bulk Inquiry</p>
           <h1 className="text-4xl font-black tracking-tight text-zinc-950">Commercial sourcing for Indian businesses</h1>
           <p className="text-sm leading-6 text-zinc-600">
-            We support enterprise procurement, recurring supply, GST invoicing, delivery planning, and product substitution for welding hardware, electronic goods, lab chemicals, powders, and general order items.
+            We support enterprise procurement, recurring supply, GST invoicing, delivery planning, and product substitution for laboratory chemicals, glassware, tools, safety equipment, and industrial goods.
           </p>
         </div>
 

@@ -19,7 +19,7 @@ export default async function ProductsPage() {
           <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">Catalog</p>
           <h1 className="text-4xl font-black tracking-tight text-zinc-950">Business-ready products for every order size</h1>
           <p className="max-w-2xl text-sm text-zinc-600">
-            Explore our live catalog with current pricing, stock visibility, and direct category navigation across hardware welding, electronics, lab chemicals and powders, and general supply.
+            Explore our live catalog with current pricing, stock visibility, and direct category navigation across chemicals, glassware, tools, safety equipment, and industrial goods.
           </p>
         </div>
 

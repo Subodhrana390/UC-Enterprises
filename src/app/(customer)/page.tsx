@@ -52,7 +52,7 @@ export default function HomePage() {
       <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-orange-500/20 blur-3xl" />
       <p className="relative z-10 text-xs font-black uppercase tracking-[0.3em] text-orange-300">Trusted Indian B2B Supply</p>
       <h1 className="relative z-10 mt-4 max-w-2xl text-4xl font-black tracking-tight md:text-6xl">
-        Hardware welding, electronic goods, lab chemicals, powders, and general supply in one storefront
+        Laboratory chemicals, glassware, tools, safety equipment, and industrial goods in one storefront
       </h1>
       <p className="relative z-10 mt-4 max-w-xl text-sm leading-6 text-zinc-300">
         Browse real product data, category pages, customer account tools, and quote-focused business flows built for industrial buyers, labs, resellers, and general procurement teams.
