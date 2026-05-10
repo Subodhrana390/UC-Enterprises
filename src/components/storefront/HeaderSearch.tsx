@@ -4,7 +4,9 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function HeaderSearch() {
+import { Suspense } from "react";
+
+function SearchInput() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") || "");
@@ -31,5 +33,15 @@ export default function HeaderSearch() {
         className="h-12 w-full rounded-full border border-orange-100 bg-orange-50 pl-11 pr-4 text-sm outline-none transition focus:border-primary focus:bg-white"
       />
     </form>
+  );
+}
+
+export default function HeaderSearch() {
+  return (
+    <Suspense fallback={
+      <div className="h-12 w-full rounded-full border border-orange-100 bg-orange-50 animate-pulse" />
+    }>
+      <SearchInput />
+    </Suspense>
   );
 }
