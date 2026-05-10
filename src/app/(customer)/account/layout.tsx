@@ -28,7 +28,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-zinc-50 pt-28 sm:pt-32 pb-20 px-4 sm:px-6">
+    <div className="bg-zinc-50 pt-28 sm:pt-32 pb-20 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Mobile Header & Nav */}
         <div className="md:hidden mb-8 space-y-6">

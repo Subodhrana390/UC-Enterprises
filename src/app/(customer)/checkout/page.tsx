@@ -303,7 +303,7 @@ export default function CheckoutPage() {
   if (loading) return <div className="py-20 text-center font-bold text-zinc-400 animate-pulse">PREPARING CHECKOUT...</div>;
 
   return (
-    <div className="bg-zinc-50 min-h-screen pb-20">
+    <div className="bg-zinc-50 pb-20">
       <div className="container mx-auto px-4 py-10">
         <Link href="/cart" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-primary mb-8">
           <ChevronLeft className="h-4 w-4" />

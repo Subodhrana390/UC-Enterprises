@@ -71,33 +71,72 @@ export default function OrdersPage() {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status })
-        .eq("id", id);
+      const response = await fetch("/api/orders/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: id, status })
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to update status");
+      }
+
       setOrders(orders.map(o => o.id === id ? { ...o, status } : o));
-      toast.success(`Order marked as ${status}`);
+      toast.success(`Order marked as ${status}${status === "Delivered" ? ". Invoice sent to customer." : ""}`);
     } catch (error: any) {
       toast.error(error.message || "Failed to update status");
     }
   };
 
+  const downloadInvoice = async (order: any) => {
+    try {
+      const { generateInvoicePDF } = await import("@/lib/invoice");
+      
+      // Fetch items if not present
+      let items = order.items;
+      if (!items || items.length === 0) {
+        const { data } = await supabase
+          .from("order_items")
+          .select("*, products(name, image_url)")
+          .eq("order_id", order.id);
+        items = data || [];
+      }
+
+      const invoiceData = {
+        orderId: order.id,
+        date: order.created_at,
+        customerName: order.customer_name,
+        customerEmail: order.customer_email,
+        customerPhone: order.phone,
+        address: order.shipping_address || "N/A",
+        items: items,
+        totalAmount: parseFloat(order.total_amount)
+      };
+
+      const doc = generateInvoicePDF(invoiceData);
+      doc.save(`Invoice_${order.id.slice(0, 8).toUpperCase()}.pdf`);
+      toast.success("Invoice downloaded");
+    } catch (error: any) {
+      toast.error("Failed to generate invoice");
+    }
+  };
+
   const updateTracking = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ 
-          tracking_id: trackingId,
-          carrier: carrier,
-          status: "Shipped" // Auto mark as shipped if tracking is added
-        })
-        .eq("id", id);
+      const response = await fetch("/api/orders/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: id, status: "Shipped", trackingId, carrier })
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to update tracking");
+      }
+
       setOrders(orders.map(o => o.id === id ? { ...o, tracking_id: trackingId, carrier, status: "Shipped" } : o));
-      toast.success("Tracking information updated");
+      toast.success("Tracking information updated and marked as Shipped");
       setIsTrackingModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || "Failed to update tracking");
@@ -270,6 +309,13 @@ export default function OrdersPage() {
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => updateStatus(order.id, "Cancelled")} className="gap-2 rounded-xl">
                                <XCircle className="w-4 h-4 text-red-500" /> Mark Cancelled
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                          <DropdownMenuSeparator className="my-1" />
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-zinc-400 px-3 py-1">Invoicing</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => downloadInvoice(order)} className="gap-2 rounded-xl">
+                               <Download className="w-4 h-4 text-primary" /> Download Invoice
                             </DropdownMenuItem>
                           </DropdownMenuGroup>
                           <DropdownMenuSeparator className="my-1" />

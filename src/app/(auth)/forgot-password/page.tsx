@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center py-20 px-6">
+    <div className="bg-zinc-50 flex items-center justify-center py-20 px-6">
       <div className="w-full max-w-md bg-white border border-zinc-100 shadow-2xl p-10 space-y-8">
         <div className="text-center space-y-2">
           <div className="w-12 h-12 bg-primary mx-auto flex items-center justify-center mb-4">

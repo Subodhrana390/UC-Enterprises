@@ -39,7 +39,7 @@ export default function SearchPage() {
   }, [query, supabase]);
 
   return (
-    <div className="bg-zinc-50 min-h-screen">
+    <div className="bg-zinc-50">
       <div className="container mx-auto px-4 py-12">
         <div className="mb-8 flex flex-col gap-2">
            <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">Search Results</p>

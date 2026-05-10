@@ -138,10 +138,10 @@ export default function LoginPage() {
   }, [supabase]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <Header categories={categories} user={user} />
       
-      <main className="flex-1 bg-zinc-50 flex items-center justify-center py-20 px-6">
+      <main className="bg-zinc-50 flex items-center justify-center py-20 px-6">
         <Suspense fallback={
           <div className="w-full max-w-md bg-white border border-zinc-100 shadow-2xl p-10 flex flex-col items-center justify-center space-y-4">
             <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -153,6 +153,6 @@ export default function LoginPage() {
       </main>
 
       <Footer />
-    </div>
+    </>
   );
 }

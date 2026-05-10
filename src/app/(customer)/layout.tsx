@@ -19,7 +19,7 @@ export default async function CustomerLayout({
   const user = authData.user;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-full flex-col bg-white">
       <Header categories={categories || []} user={user} />
 
       <main className="flex-1">{children}</main>
