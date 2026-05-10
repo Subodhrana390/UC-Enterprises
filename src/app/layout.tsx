@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   title: "UC Enterprises",
   description: "UC Enterprises supplies hardware welding materials, electronic goods, lab chemicals and powders, and general order requirements across India.",
   icons: {
-    icon: "/favicon.jpg",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo.jpg" },
+    ],
+    apple: "/logo.jpg",
   },
 };
 
